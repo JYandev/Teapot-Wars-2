@@ -1,0 +1,7 @@
+# Ignore python optimizations:
+*.pyo
+*.pyc
+__pycache__/
+
+# Ignore directories:
+external/
