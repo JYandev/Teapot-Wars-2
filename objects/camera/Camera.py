@@ -1,6 +1,7 @@
 from direct.showbase import DirectObject
 from direct.task import Task
 from math import sin, cos, pi
+from panda3d.core import LPoint3f
 
 CAM_INITIAL_TARGET_DISTANCE = 50 #TODO: Replace with config
 CAM_INTERPOLATION_SPEED = 1 #TODO: Replace with a config
@@ -24,7 +25,7 @@ class Camera (DirectObject.DirectObject):
         self._currentUpdateOrbitTask = None
         self._currentTheta = CAM_INITIAL_RELATIVE_ANGLE[0] # In radians
         self._currentPhi = CAM_INITIAL_RELATIVE_ANGLE[1] # In radians
-        self._currentTargetPosition = (0, 0, 0)
+        self._currentTargetPosition = LPoint3f(0,0,0)
         self._currentDistance = CAM_INITIAL_TARGET_DISTANCE
         # --- ---
 
@@ -37,6 +38,7 @@ class Camera (DirectObject.DirectObject):
                                             self.target.getPos())
 
         taskMgr.add(self._cameraFollowTask, "CameraFollowTask")
+
         #TODO: Eventually optimize this to End once it gets close enough and
         # start when something moves!
 
@@ -95,10 +97,12 @@ class Camera (DirectObject.DirectObject):
             Once started, this task interpolates camera position to reach the
              currentTargetPosition.
         """
-
-        #TODO: Calculus. Lerp to this instead of jumping to it
-        self.cameraInstance.setPos(self._currentTargetPosition)
-        self.cameraInstance.lookAt(0,0,0)
+        deltaTime = globalClock.getDt()
+        newPosition = self.cameraInstance.getPos() * (1-deltaTime) + \
+            self._currentTargetPosition * deltaTime
+        self.cameraInstance.setPos(newPosition)
+        # Aim the camera to face the target:
+        self.cameraInstance.lookAt(self.target)
         # Repeat task indefinitely.
         return task.cont
 
@@ -130,4 +134,4 @@ def calculateOrbit (Theta, Phi, distance, origin):
     posY = origin[1] + distance * sin(Theta) * sin(Phi)
     posZ = origin[2] + distance * cos(Theta)
 
-    return (posX, posY, posZ)
+    return LPoint3f(posX, posY, posZ)
