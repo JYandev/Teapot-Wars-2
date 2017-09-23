@@ -96,6 +96,7 @@ def setObjectSelectedHelper (selectObject, select, hover=False):
          selection, and select is the bool that determines whether to select or
          deselect the given selectObject.
     """
-    classInstance = selectObject.getPythonTag("selectable")
-    if isinstance(classInstance, Tile):
-        classInstance.setSelected(select)
+    if selectObject != None:
+        classInstance = selectObject.getPythonTag("selectable")
+        if isinstance(classInstance, Tile):
+            classInstance.setSelected(select)
