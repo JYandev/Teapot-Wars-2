@@ -2,6 +2,7 @@ from direct.showbase import DirectObject
 from direct.task import Task
 from panda3d.core import CollisionTraverser, CollisionHandlerQueue,\
                                 CollisionNode, CollisionRay, GeomNode
+from ..tile.Tile import Tile
 
 class InputSystem (DirectObject.DirectObject):
     """
@@ -26,15 +27,20 @@ class InputSystem (DirectObject.DirectObject):
 
     def selectObj (self, selectObject=None):
         """
-            Selects the given object. This is usually done when called from
-             another place.
+            Selects the given object. This functionality usually occurs when
+             called from another place besides mouse events.
             Otherwise, selects the object mouse is hovering over.
         """
         if selectObject != None:
             self._currentSelectedObject = selectObject
+            print ("Unimplemented!")
         else:
+            # Get last object (if it exists) and deselect it:
+            if self._currentSelectedObject:
+                setObjectSelectedHelper(self._currentSelectedObject, False)
+            # Set the new object:
             self._currentSelectedObject = self._hoveredObject
-            #TODO: Play effects and stuff
+            setObjectSelectedHelper(self._currentSelectedObject, True)
 
     def _hoverSelectionTask (self, task):
         """
@@ -76,8 +82,20 @@ class InputSystem (DirectObject.DirectObject):
             # Attempt to get the first selectable root object (if it exists):
             parentObject = pickedObject.getParent()
             while parentObject != base.render:
-                if parentObject.getTag("selectable")=="true":
+                if parentObject.getPythonTag("selectable") != None:
                     return parentObject
                 else:
                     parentObject = parentObject.getParent()
         # Otherwise, none is auto returned.
+
+def setObjectSelectedHelper (selectObject, select, hover=False):
+    """
+        Performs an actual check on the object and select/deselects it with
+         either a "hover selection" or regular selection.
+        "selectObject" is a nodePath, hover determines whether this is a hover
+         selection, and select is the bool that determines whether to select or
+         deselect the given selectObject.
+    """
+    classInstance = selectObject.getPythonTag("selectable")
+    if isinstance(classInstance, Tile):
+        classInstance.setSelected(select)

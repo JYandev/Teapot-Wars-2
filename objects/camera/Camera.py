@@ -12,11 +12,11 @@ class Camera (DirectObject.DirectObject):
     """
         Accepts input and controls the camera based on an orbit around a target.
     """
-    def __init__ (self, cam, target=None):
+    def __init__ (self, target=None):
         self.target = None # This will be a node
         if target:
             self.setTarget(target)
-        self.cameraInstance = cam
+        self.cameraInstance = base.cam
         # --- Right Mouse Orbit Control ---:
         self.accept("mouse3", self._onRightMouseButtonDown)
         self.accept("mouse3-up", self._onRightMouseButtonUp)
