@@ -3,7 +3,7 @@ from direct.task import Task
 from math import sin, cos, pi
 from panda3d.core import LPoint3f
 
-CAM_INITIAL_TARGET_DISTANCE = 50 #TODO: Replace with config
+CAM_INITIAL_TARGET_DISTANCE = 15 #TODO: Replace with config
 CAM_INTERPOLATION_SPEED = 1 #TODO: Replace with a config
 CAMERA_ORBIT_SENSITIVITY = 1 #TODO: REPLACE WITH CONFIG
 CAM_INITIAL_RELATIVE_ANGLE = (0.5, 0)
