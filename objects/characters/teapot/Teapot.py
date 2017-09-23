@@ -9,3 +9,4 @@ class Teapot (GameObject):
         # Initialize our model and set up our object:
         GameObject.__init__(self, loader, renderer, MODEL_FILE_PATH, position)
         self.model.setScale(MODEL_SCALE)
+        

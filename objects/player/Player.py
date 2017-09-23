@@ -1,6 +1,7 @@
 from direct.actor.Actor import Actor
 from ..camera.Camera import Camera
 from ..characters.teapot.Teapot import Teapot
+from .InputSystem import InputSystem
 
 class Player ():
     """
@@ -14,3 +15,6 @@ class Player ():
 
         # Initialize Camera Input:
         self.cameraSystem = Camera(mainCamera, target=self.character.model)
+
+        # Initialize the player's Input and UI:
+        self.inputSystem = InputSystem()

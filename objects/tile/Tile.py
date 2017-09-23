@@ -9,3 +9,5 @@ class Tile (GameObject):
         # Initialize our model and set up our object:
         GameObject.__init__(self, loader, renderer, MODEL_FILE_PATH, position)
         self.model.setScale(MODEL_SCALE)
+        # Make sure our mouse raycasting can interact with this object:
+        self.model.setTag("selectable", "true")
