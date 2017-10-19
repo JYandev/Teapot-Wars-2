@@ -38,8 +38,10 @@ class InputSystem (DirectObject.DirectObject):
              are not none.
             If coords are None, then we hide the _selector.
         """
-        if coords:
-            self._selector.showAt(self._hoveredTileCoords)
+        self._selectedTileCoords = coords
+        if self._selectedTileCoords:
+            self._selector.showAt(self._selectedTileCoords)
+            self._setHoveredAt(None) # Remove the last highlighter
         else:
             self._selector.hide()
 
@@ -59,7 +61,8 @@ class InputSystem (DirectObject.DirectObject):
                     render.getRelativePoint(base.cam, nearPoint),
                     render.getRelativePoint(base.cam, farPoint)):
                 highlCoords = Point2D(int(pos3D.x), int(pos3D.y))
-                if self._tileMap.isFloor(highlCoords):
+                if highlCoords != self._selectedTileCoords and\
+                    self._tileMap.isFloor(highlCoords):
                     self._setHoveredAt(highlCoords)
                 else:
                     self._setHoveredAt(None)
