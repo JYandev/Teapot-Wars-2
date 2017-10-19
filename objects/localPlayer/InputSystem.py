@@ -12,14 +12,42 @@ class InputSystem (DirectObject.DirectObject):
     """
     def __init__ (self, tileMap):
         self._groundPlane = Plane(Point3(0, 0, 1), Point3(0, 0, 1))
-        self._selectedTileCoord = None
-        self._hoveredTileCoord = None
-        taskMgr.add(self._getMouseCoord, "mouseScanning")
+        self._selectedTileCoords = None
+        self._hoveredTileCoords = None
+        taskMgr.add(self._updateHighlighter, "mouseScanning")
         self._tileMap = tileMap
         self._selector = Selector("Selector", SELECTOR_TINT)
         self._highlighter = Selector("Highlighter", HIGHLIGHTER_TINT)
 
-    def _getMouseCoord (self, task):
+        self.accept("mouse1", self._onMouseButtonDown)
+
+    def _onMouseButtonDown(self):
+        """
+            Handler for mouse presses.
+        """
+        if (self._hoveredTileCoords):
+            # Select the tile we are hovering over:
+            self.selectTileAt(self._hoveredTileCoords)
+        else:
+            # Deselect tile:
+            self.selectTileAt(None)
+
+    def selectTileAt(self, coords):
+        """
+            Updates the _selector to highlight the given coordinates if coords
+             are not none.
+            If coords are None, then we hide the _selector.
+        """
+        if coords:
+            self._selector.showAt(self._hoveredTileCoords)
+        else:
+            self._selector.hide()
+
+    def _updateHighlighter (self, task):
+        """
+            Updates the position of the Highlighter selector based on mouse
+             position.
+        """
         if base.mouseWatcherNode.hasMouse():
             mPos = base.mouseWatcherNode.getMouse()
             pos3D = Point3() # Output stored here.
@@ -30,18 +58,28 @@ class InputSystem (DirectObject.DirectObject):
             if self._groundPlane.intersectsLine(pos3D,
                     render.getRelativePoint(base.cam, nearPoint),
                     render.getRelativePoint(base.cam, farPoint)):
-                self._hoveredTileCoord = Point2D(int(pos3D.x), int(pos3D.y))
-                self._highlightHovered()
+                highlCoords = Point2D(int(pos3D.x), int(pos3D.y))
+                if self._tileMap.isFloor(highlCoords):
+                    self._setHoveredAt(highlCoords)
+                else:
+                    self._setHoveredAt(None)
+
         return task.cont
 
     def _setTileMap (self, tileMap):
         self._tileMap = tileMap
 
-    def _highlightHovered (self):
+    def _setHoveredAt (self, hoveredTileCoords):
         """
-            Highlights the tile at self._hoveredTileCoord, if there is one.
+            Sets and highlights the tile at hoveredTileCoords, if coords are
+             given.
+            Assumes due to earlier processes that we are either given valid
+             floor coords or None.
+            If None is given as the coords, we set this instance's coords to
+             None and hide the highlighter.
         """
-        if self._tileMap.isFloor(self._hoveredTileCoord):
-            self._highlighter.showAt(self._hoveredTileCoord)
+        self._hoveredTileCoords = hoveredTileCoords
+        if self._hoveredTileCoords:
+            self._highlighter.showAt(self._hoveredTileCoords)
         else:
             self._highlighter.hide()
