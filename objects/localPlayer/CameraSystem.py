@@ -8,7 +8,7 @@ CAM_INTERPOLATION_SPEED = 1 #TODO: Replace with a config
 CAMERA_ORBIT_SENSITIVITY = 1 #TODO: REPLACE WITH CONFIG
 CAM_INITIAL_RELATIVE_ANGLE = (0.5, 0)
 
-class Camera (DirectObject.DirectObject):
+class CameraSystem (DirectObject.DirectObject):
     """
         Accepts input and controls the camera based on an orbit around a target.
     """

@@ -1,16 +1,17 @@
 from panda3d.core import NodePath
+from ..tileMap.TileMap import coordToRealPosition
 class GameObject (object):
 
-    def __init__ (self, modelPath, position, name):
-        self.np = NodePath(name) # Initializes our nodePath
+    def __init__ (self, modelPath, coords, nodeName):
+        self.np = NodePath(nodeName) # Initializes our nodePath()
         self.model = None
-        self._loadModel(modelPath, position)
+        self._loadModel(modelPath, coords)
 
-    def _loadModel(self, modelPath, position):
+    def _loadModel(self, modelPath, coords):
         """
             Given a loader and renderer instance, will load and enable
              rendering of this object.
-            Sets the initial position of this model to position.
+            Sets the initial position of this model to coords.
         """
         # Load model
         self.model = base.loader.loadModel(modelPath)
@@ -19,4 +20,4 @@ class GameObject (object):
         #  class:
         self.model.reparentTo(self.np)
         self.np.reparentTo(base.render)
-        self.np.setPos(position)
+        self.np.setPos(coordToRealPosition(coords))
