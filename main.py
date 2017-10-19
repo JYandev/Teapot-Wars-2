@@ -1,3 +1,6 @@
+from panda3d.core import loadPrcFile
+loadPrcFile("config/Config.prc") # Load main config file.
+
 from direct.showbase.ShowBase import ShowBase
 from objects.gameManager.GameManager import GameManager
 
