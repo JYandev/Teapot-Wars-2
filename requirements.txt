@@ -1,1 +1,2 @@
+--extra-index-url https://archive.panda3d.org/
 panda3d==1.10.0.dev1209

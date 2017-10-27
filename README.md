@@ -8,6 +8,9 @@ Note: the instructions below are for development only. If you are looking just t
 
 ## Getting it Running:
 First, open a command prompt.
-`git clone` the project if you haven't already. Then `cd` into the root and type `pip install -r requirements.txt`
+`git clone` the project if you haven't already.
+Then `cd` into the root and type `pip install -r requirements.txt`
 
-Now we are ready to run `python main.py` to start up the game!
+Also, the project requires my PyBSP Dungeon Generator. To set it up, `cd` into the root folder of Teapot-Wars-2 and type `mkdir external`. `cd` into external and `git clone https://github.com/JYandev/PyBSP_Dungeon_Generator.git`
+
+Assuming you change back to the root folder, we are now ready to run `python main.py` to start up the game!
