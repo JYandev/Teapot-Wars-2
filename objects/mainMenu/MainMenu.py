@@ -36,7 +36,7 @@ class MainMenu ():
                                       frameSize=(0, bCSizeX, -bCSizeY, 0),
                                       frameTexture=TITLE_SCREEN_CONTAINER_PATH)
         buttonContainer.setTransparency(TransparencyAttrib.MAlpha)
-        buttonContainer.setColorScale(0.5,1,0.5,1)
+        buttonContainer.setColor(0.5,1,0.5,1)
         # TODO Set this to favorite color
 
 
