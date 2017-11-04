@@ -1,6 +1,7 @@
-from direct.gui.DirectGui import DirectFrame
-from direct.gui.DirectGui import DirectButton
+from direct.gui.DirectGui import DirectFrame, DirectButton, DirectEntry
 from panda3d.core import TextNode
+from panda3d.core import TransparencyAttrib
+from objects.defaultConfig.DefaultConfig import *
 
 TITLE_SCREEN_BACKGROUND_PATH = "objects/mainMenu/TitleScreen.png"
 PIERCEROMAN_FONT_PATH = "objects/mainMenu/PierceRoman.otf"
@@ -14,6 +15,7 @@ class MainMenu ():
     def __init__ (self, gameManager):
         self._gameManager = gameManager
         self._buttonFont = loader.loadFont(PIERCEROMAN_FONT_PATH)
+        self._ipAddress = DEFAULT_IP_ADDRESS
 
     def draw(self):
         """
@@ -33,12 +35,16 @@ class MainMenu ():
                                       pos=(bCStartX, 0, -bCStartY),
                                       frameSize=(0, bCSizeX, -bCSizeY, 0),
                                       frameTexture=TITLE_SCREEN_CONTAINER_PATH)
+        buttonContainer.setTransparency(TransparencyAttrib.MAlpha)
+        buttonContainer.setColorScale(0.5,1,0.5,1)
+        # TODO Set this to favorite color
+
 
         #TODO: Change buttons to an image. Will be easier to animate, color etc.
-        textColor = (0, 0, 0, 1)
+        textColor = (1, 1, 1, 1)
         topMargin = 0.25
         hostButton = DirectButton(parent=buttonContainer,
-                                  pos = (0.5, 0, -topMargin),
+                                  pos=(0.5, 0, -topMargin),
                                   frameColor=(0,0,0,0),
                                   text="Host Game",
                                   text_font=self._buttonFont,
@@ -47,9 +53,21 @@ class MainMenu ():
                                   text_align=TextNode.ACenter,
                                   command=self._onButtonHostGame)
 
+        ipEntry = DirectEntry(parent=buttonContainer,
+                              pos=(0, 0, -topMargin*3),
+                              frameSize=(0, 1, -0.5, 0),
+                              text_scale=(0.15, 0.15),
+                              text="", initialText=self._ipAddress,
+                              entryFont=self._buttonFont, numLines=1,
+                              command=self._onIPEntrySet,
+                              focusOutCommand=self._onIPEntrySet)
+
     def _onButtonHostGame (self):
         """
             Called when the Host Game button is pressed.
             Signals to gameManager that the player wishes to host game.
         """
-        pass
+        self._gameManager.startHostGame()
+
+    def _onIPEntrySet (self, textEntered):
+        self._ipAddress = textEntered
