@@ -1,7 +1,9 @@
-from direct.gui.DirectGui import DirectFrame, DirectButton, DirectEntry
+from direct.gui.DirectGui import DirectFrame, DirectButton, DirectEntry,\
+                                 DirectLabel
 from panda3d.core import TextNode
 from panda3d.core import TransparencyAttrib
 from objects.defaultConfig.DefaultConfig import *
+import sys
 
 TITLE_SCREEN_BACKGROUND_PATH = "objects/mainMenu/TitleScreen.png"
 PIERCEROMAN_FONT_PATH = "objects/mainMenu/PierceRoman.otf"
@@ -36,31 +38,38 @@ class MainMenu ():
                                       frameSize=(0, bCSizeX, -bCSizeY, 0),
                                       frameTexture=TITLE_SCREEN_CONTAINER_PATH)
         buttonContainer.setTransparency(TransparencyAttrib.MAlpha)
-        buttonContainer.setColor(0.5,1,0.5,1)
-        # TODO Set this to favorite color
+        buttonContainer.setColor(0.5,1,0.5,1) # TODO Set this to favorite color
 
-
-        #TODO: Change buttons to an image. Will be easier to animate, color etc.
+        buttons = [
+            ("Host Game", self._onButtonHostGame),
+            ("Join Party", self._onButtonJoinGame),
+            ("Options", self._onButtonOptions),
+            ("Exit", self._onButtonExit)
+        ]
         textColor = (1, 1, 1, 1)
-        topMargin = 0.25
-        hostButton = DirectButton(parent=buttonContainer,
-                                  pos=(0.5, 0, -topMargin),
-                                  frameColor=(0,0,0,0),
-                                  text="Host Game",
-                                  text_font=self._buttonFont,
-                                  text_scale=(0.15, 0.15),
-                                  text_fg=textColor,
-                                  text_align=TextNode.ACenter,
-                                  command=self._onButtonHostGame)
-
-        ipEntry = DirectEntry(parent=buttonContainer,
-                              pos=(0, 0, -topMargin*3),
-                              frameSize=(0, 1, -0.5, 0),
-                              text_scale=(0.15, 0.15),
-                              text="", initialText=self._ipAddress,
-                              entryFont=self._buttonFont, numLines=1,
-                              command=self._onIPEntrySet,
-                              focusOutCommand=self._onIPEntrySet)
+        topAndBottomMargin = 0.155
+        sidesMargin = 0.0275
+        buttonHeight = 0.25
+        buttonBackgroundColor = (0,0,0,1)
+        # Create buttons:
+        index = 0
+        for button in buttons:
+            newButton = DirectButton(parent=buttonContainer,
+                                      pos=(0.5, 0,
+                                      -topAndBottomMargin-buttonHeight*index),
+                                      frameColor=buttonBackgroundColor,
+                                      frameSize=(-0.5+sidesMargin,
+                                                 0.5-sidesMargin,
+                                                 -buttonHeight/2,
+                                                 buttonHeight/2),
+                                      text=button[0],
+                                      text_font=self._buttonFont,
+                                      text_scale=(0.15, 0.15),
+                                      text_fg=textColor,
+                                      text_pos=(0, -0.03),
+                                      text_align=TextNode.ACenter,
+                                      command=button[1])
+            index += 1
 
     def _onButtonHostGame (self):
         """
@@ -68,6 +77,26 @@ class MainMenu ():
             Signals to gameManager that the player wishes to host game.
         """
         self._gameManager.startHostGame()
+
+    def _onButtonJoinGame (self):
+        """
+            Called when the Join Game button is pressed.
+            Brings up the join game dialogue.
+        """
+        pass
+
+    def _onButtonOptions (self):
+        """
+            Called when the Options button is pressed.
+            Brings up the options menu.
+        """
+        pass
+
+    def _onButtonExit (self):
+        """
+            Quits the game.
+        """
+        sys.exit()
 
     def _onIPEntrySet (self, textEntered):
         self._ipAddress = textEntered

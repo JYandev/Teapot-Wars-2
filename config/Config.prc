@@ -14,3 +14,7 @@ win-fixed-size 1
 # --- [Networking Config] ---
 default-port 9099
 max-backlog 1000
+
+# --- [Debug Config] ---
+#TODO REMOVE ALL
+direct-gui-edit True
