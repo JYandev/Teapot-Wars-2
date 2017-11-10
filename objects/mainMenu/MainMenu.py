@@ -1,9 +1,9 @@
-from direct.gui.DirectGui import DirectFrame, DirectButton, DirectEntry,\
-                                 DirectLabel
+from direct.gui.DirectGui import DirectFrame, DirectButton, DirectLabel
 from panda3d.core import TextNode
 from panda3d.core import TransparencyAttrib
 from objects.defaultConfig.DefaultConfig import *
 import sys
+from objects.mainMenu.JoinGameDialogue import JoinGameDialogue
 
 TITLE_SCREEN_BACKGROUND_PATH = "objects/mainMenu/TitleScreen.png"
 PIERCEROMAN_FONT_PATH = "objects/mainMenu/PierceRoman.otf"
@@ -17,7 +17,6 @@ class MainMenu ():
     def __init__ (self, gameManager):
         self._gameManager = gameManager
         self._buttonFont = loader.loadFont(PIERCEROMAN_FONT_PATH)
-        self._ipAddress = DEFAULT_IP_ADDRESS
 
     def draw(self):
         """
@@ -83,7 +82,14 @@ class MainMenu ():
             Called when the Join Game button is pressed.
             Brings up the join game dialogue.
         """
-        pass
+        joinDialogue = JoinGameDialogue(self._onJoinGameDialogueConfirmed)
+
+    def _onJoinGameDialogueConfirmed (self):
+        """
+            Called when the join game dialogue is finished with confirm.
+            Starts the gameManager's NetworkClient with the chosen parameters.
+        """
+        print("UNIMPLEMENTED")
 
     def _onButtonOptions (self):
         """
@@ -97,6 +103,3 @@ class MainMenu ():
             Quits the game.
         """
         sys.exit()
-
-    def _onIPEntrySet (self, textEntered):
-        self._ipAddress = textEntered
