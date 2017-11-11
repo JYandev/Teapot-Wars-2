@@ -1,12 +1,11 @@
-from direct.gui.DirectGui import DirectFrame, DirectButton, DirectLabel
-from panda3d.core import TextNode
-from panda3d.core import TransparencyAttrib
+from direct.gui.DirectGui import DirectFrame, DirectButton
+from panda3d.core import TransparencyAttrib, TextNode
 from objects.defaultConfig.DefaultConfig import *
+from objects.defaultConfig.StaticPaths import *
 import sys
 from objects.mainMenu.JoinGameDialogue import JoinGameDialogue
 
 TITLE_SCREEN_BACKGROUND_PATH = "objects/mainMenu/TitleScreen.png"
-PIERCEROMAN_FONT_PATH = "objects/mainMenu/PierceRoman.otf"
 TITLE_SCREEN_CONTAINER_PATH = "objects/mainMenu/TitleScreenContainer.png"
 
 class MainMenu ():
@@ -16,7 +15,7 @@ class MainMenu ():
     """
     def __init__ (self, gameManager):
         self._gameManager = gameManager
-        self._buttonFont = loader.loadFont(PIERCEROMAN_FONT_PATH)
+        self._buttonFont = loader.loadFont(PIERCEROMAN_FONT)
 
     def draw(self):
         """
@@ -65,7 +64,7 @@ class MainMenu ():
                                       text_font=self._buttonFont,
                                       text_scale=(0.15, 0.15),
                                       text_fg=textColor,
-                                      text_pos=(0, -0.03),
+                                      text_pos=PIERCEROMAN_OFFSET,
                                       text_align=TextNode.ACenter,
                                       command=button[1])
             index += 1
