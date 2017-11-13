@@ -2,9 +2,11 @@ from panda3d.core import QueuedConnectionManager, QueuedConnectionListener,\
                          QueuedConnectionReader, ConnectionWriter
 from panda3d.core import ConfigVariableInt
 from panda3d.core import PointerToConnection, NetAddress, NetDatagram
+from direct.distributed.PyDatagramIterator import PyDatagramIterator
 from objects.defaultConfig.DefaultConfig import *
 from objects.defaultConfig.Consts import *
 from direct.task import Task
+from objects.networking.NetworkMessages import *
 
 class NetworkHost ():
     """
@@ -83,7 +85,7 @@ class NetworkHost ():
         if self._connReader.dataAvailable():
             newDatagram = NetDatagram()
             # Double check to make sure (Multithreading safety):
-            if self._connReader.getData(datagram):
+            if self._connReader.getData(newDatagram):
                 self._interpretDatagram(newDatagram)
         return Task.cont # Repeat this call on an interval
 
@@ -92,7 +94,9 @@ class NetworkHost ():
             Interprets a received datagram and performs actions based on its
              values.
         """
-        pass
+        msg = PyDatagramIterator(datagram)
+        if msg.getUint8() == DEBUG_MESSAGE:
+            print (msg.getString())
 
     def isHosting (self):
         """

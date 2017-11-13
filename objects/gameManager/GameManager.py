@@ -4,6 +4,7 @@ from panda3d.core import Point2D
 from objects.mainMenu.MainMenu import MainMenu
 from objects.networking.NetworkHost import NetworkHost
 from objects.networking.NetworkClient import NetworkClient
+from objects.networking.NetworkMessages import *
 
 class GameManager ():
     """
@@ -42,3 +43,4 @@ class GameManager ():
         """
         self._networkClient = NetworkClient()
         self._networkClient.startClient(ipAddress)
+        self._networkClient.sendMessage(DEBUG_MESSAGE, "Yo, Server!")

@@ -5,6 +5,7 @@ from panda3d.core import PointerToConnection, NetAddress, NetDatagram
 from direct.task import Task
 from objects.defaultConfig.DefaultConfig import *
 from objects.defaultConfig.Consts import *
+from objects.networking.NetworkMessages import *
 
 class NetworkClient ():
     """
@@ -48,6 +49,13 @@ class NetworkClient ():
             if self._connReader.getData(datagram):
                 self._interpretDatagram(newDatagram)
         return Task.cont # Repeat this call on an interval
+
+    def sendMessage (self, msgType, command):
+        """
+            Writes and sends a new message to the server.
+        """
+        newMsg = createMessage(msgType, command)
+        self._connWriter.send(newMsg, self._connection)
 
     def _interpretDatagram (self, datagram):
         """
