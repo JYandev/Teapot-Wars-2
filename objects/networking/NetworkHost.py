@@ -3,6 +3,7 @@ from panda3d.core import QueuedConnectionManager, QueuedConnectionListener,\
 from panda3d.core import ConfigVariableInt
 from panda3d.core import PointerToConnection, NetAddress, NetDatagram
 from objects.defaultConfig.DefaultConfig import *
+from objects.defaultConfig.Consts import *
 from direct.task import Task
 
 class NetworkHost ():
@@ -17,6 +18,7 @@ class NetworkHost ():
         self._loadConfig()
         self._activeConns = [] # Active connections list.
         self._isActive = False
+        self._backlog = HOST_MAX_BACKLOG
 
     def _initListener (self):
         """
@@ -33,8 +35,6 @@ class NetworkHost ():
         """
         self._portAddress = ConfigVariableInt("default-port",
                                               DEFAULT_PORT).getValue()
-        self._backlog = ConfigVariableInt("max-backlog",
-                                          DEFAULT_MAX_BACKLOG).getValue()
 
     def startHost (self):
         """
@@ -71,7 +71,7 @@ class NetworkHost ():
                                                    newConnection):
                 newConnection = newConnection.p()
                 print ("[Host Received New Connection: %s]" % netAddress)
-                self._activeConnections.append(newConnection)
+                self._activeConns.append(newConnection)
                 # Begin reading messages from this new connection:
                 self._connReader.addConnection(newConnection)
         return Task.cont # Repeat this call on an interval

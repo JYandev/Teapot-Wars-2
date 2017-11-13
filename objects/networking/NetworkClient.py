@@ -2,6 +2,9 @@ from panda3d.core import QueuedConnectionManager, QueuedConnectionReader,\
                          ConnectionWriter
 from panda3d.core import ConfigVariableInt
 from panda3d.core import PointerToConnection, NetAddress, NetDatagram
+from direct.task import Task
+from objects.defaultConfig.DefaultConfig import *
+from objects.defaultConfig.Consts import *
 
 class NetworkClient ():
     """
@@ -11,14 +14,15 @@ class NetworkClient ():
 
     def __init__ (self):
         self._connManager = QueuedConnectionManager()
+        self._timeout = CLIENT_TIMEOUT
         self._loadConfig()
 
     def _loadConfig (self):
         """
             Loads network configuration defaults.
         """
-        self._portAddress = ConfigVariableInt("default-port").getValue()
-        self._timeout = ConfigVariableInt("client-timeout").getValue()
+        self._portAddress = ConfigVariableInt("default-port",
+                                              DEFAULT_PORT).getValue()
 
     def startClient (self, ipAddress):
         """
@@ -32,7 +36,7 @@ class NetworkClient ():
                             ipAddress, self._portAddress, self._timeout)
         if self._connection:
             # Begin handling messages (start listening):
-            taskMgr.add((self._onReaderPoll,"Poll the connection reader",-40))
+            taskMgr.add(self._onReaderPoll,"Poll the connection reader",-40)
 
     def _onReaderPoll (self, taskdata):
         """

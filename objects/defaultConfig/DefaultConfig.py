@@ -9,7 +9,6 @@
 
 # --- [Networking] ---
 DEFAULT_PORT = 9099
-DEFAULT_MAX_BACKLOG = 1000
 DEFAULT_IP_ADDRESS = "127.0.0.1"
 
 def resetConfigToDefaults ():

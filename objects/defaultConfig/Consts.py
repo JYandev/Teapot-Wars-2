@@ -4,6 +4,11 @@
     Images, models, etc. are stored in public static variables here.
 """
 
+# === [Networking] ===
+HOST_MAX_BACKLOG = 1000
+CLIENT_TIMEOUT = 3000 # 3 Seconds
+
+# === ===
 
 # === [User Interface] ===
 UI_WINDOW = "objects/mainMenu/UIContainer.png"
