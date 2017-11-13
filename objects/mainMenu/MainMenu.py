@@ -1,7 +1,7 @@
 from direct.gui.DirectGui import DirectFrame, DirectButton
 from panda3d.core import TransparencyAttrib, TextNode
 from objects.defaultConfig.DefaultConfig import *
-from objects.defaultConfig.StaticPaths import *
+from objects.defaultConfig.Consts import *
 import sys
 from objects.mainMenu.JoinGameDialogue import JoinGameDialogue
 
@@ -83,12 +83,12 @@ class MainMenu ():
         """
         joinDialogue = JoinGameDialogue(self._onJoinGameDialogueConfirmed)
 
-    def _onJoinGameDialogueConfirmed (self):
+    def _onJoinGameDialogueConfirmed (self, ipAddress, userName):
         """
             Called when the join game dialogue is finished with confirm.
             Starts the gameManager's NetworkClient with the chosen parameters.
         """
-        print("UNIMPLEMENTED")
+        self._gameManager.startJoinGame(ipAddress)
 
     def _onButtonOptions (self):
         """

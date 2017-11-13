@@ -2,7 +2,7 @@ from direct.gui.DirectGui import DirectFrame, DirectButton, DirectEntry,\
                                  DirectLabel
 from panda3d.core import TransparencyAttrib, TextNode
 from objects.defaultConfig.DefaultConfig import *
-from objects.defaultConfig.StaticPaths import *
+from objects.defaultConfig.Consts import *
 
 class JoinGameDialogue ():
     """
@@ -18,6 +18,7 @@ class JoinGameDialogue ():
         # Draw this GUI on object creation.
         self._confirmHandler = confirmHandler # The callback handler to this GUI
         self._ipAddressEntry = None # Reference to the IP Address Text Entry
+        self._userNameEntry = None # Reference to the User Name Text Entry
         self._font = loader.loadFont(PIERCEROMAN_FONT)
         self._elements = []
         self._draw()
@@ -56,6 +57,9 @@ class JoinGameDialogue ():
                                     text_scale=titleFontSize,
                                     text_pos=PIERCEROMAN_OFFSET,
                                     text="Join Party Configuration")
+
+        self._drawControls(dialogueFrame) # Draw options for the pop-up frame.
+
         # Draw Back Button:
         buttonVerticalMargin = 0.203
         buttonHeight = 0.2
@@ -77,15 +81,80 @@ class JoinGameDialogue ():
                                   frameSize=(-buttonWidth/2,
                                              buttonWidth/2,
                                              -buttonHeight/2,
-                                             buttonHeight/2))
+                                             buttonHeight/2),
+                                  command=self._onConnectButton)
         # Add parent elements to be deleted in self._close()
         self._elements.extend([blockingFrame, dialogueFrame])
+
+    def _drawControls (self, dialogueFrame):
+        """ Draw Helper that draws client settings controls """
+        iTopMrgn = JOPTS_CONTROL_TOP_MARGIN
+        spacing = JOPTS_CONTROL_SPACING
+        height = JOPTS_CONTROL_HEIGHT
+        width = dialogueFrame.getWidth()
+        # Create containers for UI:
+        ipFrame = DirectFrame(parent=dialogueFrame,
+                              pos=(width/2, 0, -iTopMrgn - spacing),
+                              frameSize=(-width/2, width/2, -height/2,
+                                         height/2))
+        nameFrame = DirectFrame(parent=dialogueFrame,
+                                pos=(width/2, 0, -iTopMrgn - spacing * 2),
+                                frameSize=(-width/2, width/2, -height/2,
+                                           height/2))
+        # Create the UI:
+        ctrlWidth = ipFrame.getWidth()*(1/3)
+        ctrlFontSize = (0.15, 0.15)
+        self._ipAddressEntry = DirectEntry(parent=ipFrame,
+                               pos=(ctrlWidth/2-ctrlWidth*1, 0, 0),
+                               frameSize=(0, ctrlWidth*2, -height/2, height/2),
+                               text_font=self._font,
+                               text_scale=ctrlFontSize,
+                               text_pos=PIERCEROMAN_OFFSET,
+                               initialText=DEFAULT_IP_ADDRESS,
+                               width=8,
+                               cursorKeys=1,
+                               numLines=1)
+        ipLabel = DirectLabel(parent=ipFrame,
+                              pos=(ctrlWidth-ctrlWidth*2, 0, 0),
+                              frameSize=(-ctrlWidth/2, ctrlWidth/2, -height/2,
+                                         height/2),
+                              text="Host IP:",
+                              text_font=self._font,
+                              text_scale=ctrlFontSize,
+                              text_pos=PIERCEROMAN_OFFSET,
+                              frameColor=(0.25,0.5,0.5,1))
+
+        self._userNameEntry = DirectEntry(parent=nameFrame,
+                              pos=(ctrlWidth/2-ctrlWidth*1, 0, 0),
+                              frameSize=(0, ctrlWidth*2, -height/2, height/2),
+                              text_font=self._font,
+                              text_scale=ctrlFontSize,
+                              text_pos=PIERCEROMAN_OFFSET,
+                              width=8,
+                              cursorKeys=1,
+                              numLines=1)
+        nmLabel = DirectLabel(parent=nameFrame,
+                              pos=(ctrlWidth-ctrlWidth*2, 0, 0),
+                              frameSize=(-ctrlWidth/2, ctrlWidth/2, -height/2,
+                                         height/2),
+                              text="User Name:",
+                              text_font=self._font,
+                              text_scale=(0.12, 0.12),
+                              text_pos=PIERCEROMAN_OFFSET,
+                              frameColor=(0.25,0.5,0.5,1))
+
+    def _onConnectButton (self):
+        """
+            Called when the connect button is pressed.
+            Read the user's inputs and tell the gameManager to create a client.
+        """
+        targetIP = str(self._ipAddressEntry.get())
+        userName = self._userNameEntry.get()
+        self._confirmHandler(targetIP, userName)
 
     def _close(self):
         """
             Closes this window and deletes all elements inside.
         """
-        print("CLOSING UNIMPLEMENTED")
         for element in self._elements:
-            print(element)
             element.destroy()

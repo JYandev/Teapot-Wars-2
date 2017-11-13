@@ -18,10 +18,9 @@ class NetworkClient ():
             Loads network configuration defaults.
         """
         self._portAddress = ConfigVariableInt("default-port").getValue()
-        self._ipAddress = ConfigVariableInt("default-address").getValue()
         self._timeout = ConfigVariableInt("client-timeout").getValue()
 
-    def startClient (self):
+    def startClient (self, ipAddress):
         """
             Finishes client init and attempts a connection.
         """
@@ -29,8 +28,8 @@ class NetworkClient ():
         self._connReader = QueuedConnectionReader(self._connManager, 0)
         self._connWriter = ConnectionWriter(self._connManager, 0)
         # Initialize connection:
-        self._connection = self._connManager.openTPCClientConnection(
-                            self._ipAddress, self._portAddress, self._timeout)
+        self._connection = self._connManager.openTCPClientConnection(
+                            ipAddress, self._portAddress, self._timeout)
         if self._connection:
             # Begin handling messages (start listening):
             taskMgr.add((self._onReaderPoll,"Poll the connection reader",-40))

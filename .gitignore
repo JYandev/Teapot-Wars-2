@@ -6,3 +6,6 @@ __pycache__/
 # Ignore directories:
 external/
 sourceAssets/
+
+# Ignore atom editor and plugins:
+.imdone/

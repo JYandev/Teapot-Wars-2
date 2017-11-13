@@ -41,4 +41,4 @@ class GameManager ():
             Creates and starts the NetworkClient and begins the game process.
         """
         self._networkClient = NetworkClient()
-        self._networkClient.startClient()
+        self._networkClient.startClient(ipAddress)
