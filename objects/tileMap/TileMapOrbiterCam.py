@@ -54,7 +54,6 @@ class TileMapOrbiterCam ():
             # Randomly choose our distance in a range:
             self._currentDistance = random.uniform(TILEMAP_ORBITER_MIN_DIST,
                                                    TILEMAP_ORBITER_MAX_DIST)
-            print (self._currentTheta)
         else:
             # Keep Rotating around point
             self._currentPhi += deltaTime * TILEMAP_ORBITER_SPEED
