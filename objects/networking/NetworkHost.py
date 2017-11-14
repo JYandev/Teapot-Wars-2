@@ -16,12 +16,13 @@ class NetworkHost ():
         One player will have a NetworkHost and the rest of players will have
          NetworkClients.
     """
-    def __init__ (self):
+    def __init__ (self, gameManager):
         self._connManager = QueuedConnectionManager()
         self._loadConfig()
         self._activeConns = [] # Active connections list.
         self._isActive = False
         self._backlog = HOST_MAX_BACKLOG
+        self._gameManager = gameManager
 
     def _initListener (self):
         """
@@ -57,6 +58,7 @@ class NetworkHost ():
         self._isActive = True
         print ("[Host Started at %s]" % socket.gethostbyname(
                                             socket.gethostname()))
+        self._gameManager.onHostInitialized()
 
     def _onListenerPoll(self, taskdata):
         """

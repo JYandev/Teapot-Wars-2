@@ -5,6 +5,8 @@ from objects.mainMenu.MainMenu import MainMenu
 from objects.networking.NetworkHost import NetworkHost
 from objects.networking.NetworkClient import NetworkClient
 from objects.networking.NetworkMessages import *
+from objects.tileMap.TileMapOrbiterCam import TileMapOrbiterCam
+from objects.generalUI.ClassSelectionMenu import ClassSelectionMenu
 
 class GameManager ():
     """
@@ -14,15 +16,14 @@ class GameManager ():
     def __init__ (self):
         self._networkHost = None
         self._networkClient = None
+        self._mainMenu = None
+        self._classSelectionMenu = None
+        self._tilemapOrbiterCam = None
 
     def startMainMenu (self):
-        mainMenu = MainMenu(self)
-        mainMenu.draw()
-
-    def runTest (self):
-        self._tileMap = TileMap()
-        spawnPoint = self._tileMap.getRandomFloor()
-        self._localPlayer = PlayerController(spawnPoint, self)
+        """ Draws the main menu """
+        self._mainMenu = MainMenu(self)
+        self._mainMenu.draw()
 
     def getTileMap (self):
         return self._tileMap
@@ -32,15 +33,42 @@ class GameManager ():
             Initializes the NetworkHost and begins the game process.
         """
         # If we somehow are already hosting, do nothing:
-        if self._networkHost and self._networkHost.isHosting():
-            return
-        self._networkHost = NetworkHost()
+        if self._networkHost and self._networkHost.isHosting(): return
+        self._networkHost = NetworkHost(self)
         self._networkHost.startHost()
 
     def startJoinGame (self, ipAddress):
         """
             Creates and starts the NetworkClient and begins the game process.
         """
-        self._networkClient = NetworkClient()
+        # TODO Safety check for client already connected, etc.
+        self._networkClient = NetworkClient(self)
         self._networkClient.startClient(ipAddress)
-        self._networkClient.sendMessage(DEBUG_MESSAGE, "Yo, Server!")
+
+    # --- Networking Interface ---
+    def onClientJoinedParty (self):
+        """ Start the Class Selection screen and sets up camera view """
+        self._networkClient.sendMessage(DEBUG_MESSAGE, "Yo, Server! Gimme Map!")
+        self._mainMenu.close()
+        # Draw the class selection screen:
+        self._classSelectionMenu = ClassSelectionMenu(self)
+
+    def onClientFirstReceivedMap (self):
+        """
+            Called when the active client gets new map data from the host.
+            Only should be called once in a client's lifetime.
+        """
+        # self._tileMap = TileMap(newDungeon) #TODO Make a way to send over big 2d list.
+        # self._tilemapOrbiterCam = TileMapOrbiterCam(self._tileMap())
+
+    def onHostInitialized (self):
+        """
+            Generates a dungeon and shares it with clients. Starts the class
+             selection menu and sets up the view for the game.
+        """
+        self._mainMenu.close()
+        self._tileMap = TileMap() # Generate dungeon
+        # Create camera controller for visual tour of generated dungeon:
+        self._tilemapOrbiterCam = TileMapOrbiterCam(self._tileMap)
+        # Draw the class selection screen:
+        self._classSelectionMenu = ClassSelectionMenu(self)

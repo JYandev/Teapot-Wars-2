@@ -13,10 +13,11 @@ class NetworkClient ():
          class communicates with a server (NetworkHost) to update game state.
     """
 
-    def __init__ (self):
+    def __init__ (self, gameManager):
         self._connManager = QueuedConnectionManager()
         self._timeout = CLIENT_TIMEOUT
         self._loadConfig()
+        self._gameManager = gameManager
 
     def _loadConfig (self):
         """
@@ -36,8 +37,10 @@ class NetworkClient ():
         self._connection = self._connManager.openTCPClientConnection(
                             ipAddress, self._portAddress, self._timeout)
         if self._connection:
+            print ("[Client Connected]")
             # Begin handling messages (start listening):
             taskMgr.add(self._onReaderPoll,"Poll the connection reader",-40)
+            self._gameManager.onClientJoinedParty() # GameManager callback
 
     def _onReaderPoll (self, taskdata):
         """

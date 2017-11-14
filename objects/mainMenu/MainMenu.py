@@ -16,6 +16,8 @@ class MainMenu ():
     def __init__ (self, gameManager):
         self._gameManager = gameManager
         self._buttonFont = loader.loadFont(PIERCEROMAN_FONT)
+        self._joinDialogue = None
+        self._elements = []
 
     def draw(self):
         """
@@ -68,6 +70,15 @@ class MainMenu ():
                                       text_align=TextNode.ACenter,
                                       command=button[1])
             index += 1
+        self._elements.extend([backgroundFrame])
+
+    def close (self):
+        """ Closes the main menu """
+        # Close the dialogue if there is one:
+        if self._joinDialogue: self._joinDialogue.close()
+        for element in self._elements:
+            element.destroy()
+        del self # Destroy this instance
 
     def _onButtonHostGame (self):
         """
@@ -81,7 +92,7 @@ class MainMenu ():
             Called when the Join Game button is pressed.
             Brings up the join game dialogue.
         """
-        joinDialogue = JoinGameDialogue(self._onJoinGameDialogueConfirmed)
+        self._joinDialogue = JoinGameDialogue(self._onJoinGameDialogueConfirmed)
 
     def _onJoinGameDialogueConfirmed (self, ipAddress, userName):
         """
