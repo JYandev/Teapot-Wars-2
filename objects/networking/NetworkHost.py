@@ -7,6 +7,7 @@ from objects.defaultConfig.DefaultConfig import *
 from objects.defaultConfig.Consts import *
 from direct.task import Task
 from objects.networking.NetworkMessages import *
+import socket
 
 class NetworkHost ():
     """
@@ -54,7 +55,8 @@ class NetworkHost ():
         taskMgr.add(self._onListenerPoll,"Poll the connection listener",-39)
         taskMgr.add(self._onReaderPoll,"Poll the connection reader",-40)
         self._isActive = True
-        print ("[Host Started]")
+        print ("[Host Started at %s]" % socket.gethostbyname(
+                                            socket.gethostname()))
 
     def _onListenerPoll(self, taskdata):
         """
