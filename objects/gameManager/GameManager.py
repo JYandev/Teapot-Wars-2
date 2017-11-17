@@ -1,5 +1,5 @@
 from objects.localPlayer.PlayerController import PlayerController
-from objects.tileMap.TileMap import TileMap
+from objects.tileMap.TileMap import TileMap, convertDungeonFromString
 from panda3d.core import Point2D
 from objects.mainMenu.MainMenu import MainMenu
 from objects.networking.NetworkHost import NetworkHost
@@ -19,6 +19,7 @@ class GameManager ():
         self._mainMenu = None
         self._classSelectionMenu = None
         self._tilemapOrbiterCam = None
+        self._tileMap = None
 
     def startMainMenu (self):
         """ Draws the main menu """
@@ -53,13 +54,15 @@ class GameManager ():
         # Draw the class selection screen:
         self._classSelectionMenu = ClassSelectionMenu(self)
 
-    def onClientFirstReceivedMap (self):
+    def onClientFirstReceivedMap (self, dungeonString):
         """
             Called when the active client gets new map data from the host.
             Only should be called once in a client's lifetime.
+            We received a string of tiles and their values. Convert into
+             a TileMap
         """
-        # self._tileMap = TileMap(newDungeon) #TODO Make a way to send over big 2d list.
-        # self._tilemapOrbiterCam = TileMapOrbiterCam(self._tileMap())
+        self._tileMap = TileMap(dungeonString)
+        self._tilemapOrbiterCam = TileMapOrbiterCam(self._tileMap)
 
     def onHostInitialized (self):
         """

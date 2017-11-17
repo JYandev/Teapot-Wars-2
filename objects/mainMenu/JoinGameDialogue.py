@@ -73,7 +73,7 @@ class JoinGameDialogue ():
                                              buttonWidth/2,
                                              -buttonHeight/2,
                                              buttonHeight/2),
-                                  command=self._close)
+                                  command=self.close)
         # Draw Connect Button:
         connButton = DirectButton(parent=dialogueFrame,
                                   pos=(dFSizeX/2 + buttonWidth/2, 0,
@@ -83,7 +83,7 @@ class JoinGameDialogue ():
                                              -buttonHeight/2,
                                              buttonHeight/2),
                                   command=self._onConnectButton)
-        # Add parent elements to be deleted in self._close()
+        # Add parent elements to be deleted in self.close()
         self._elements.extend([blockingFrame, dialogueFrame])
 
     def _drawControls (self, dialogueFrame):
@@ -152,7 +152,7 @@ class JoinGameDialogue ():
         userName = self._userNameEntry.get()
         self._confirmHandler(targetIP, userName)
 
-    def _close(self):
+    def close(self):
         """
             Closes this window and deletes all elements inside.
         """

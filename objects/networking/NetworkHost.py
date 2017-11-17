@@ -7,7 +7,7 @@ from objects.defaultConfig.DefaultConfig import *
 from objects.defaultConfig.Consts import *
 from direct.task import Task
 from objects.networking.NetworkMessages import *
-import socket
+import socket, json, sys
 
 class NetworkHost ():
     """
@@ -80,6 +80,8 @@ class NetworkHost ():
                 self._activeConns.append(newConnection)
                 # Begin reading messages from this new connection:
                 self._connReader.addConnection(newConnection)
+                # activate the onClientConnected functionalities:
+                self.onClientConnected(newConnection)
         return Task.cont # Repeat this call on an interval
 
     def _onReaderPoll (self, taskdata):
@@ -92,6 +94,24 @@ class NetworkHost ():
             if self._connReader.getData(newDatagram):
                 self._interpretDatagram(newDatagram)
         return Task.cont # Repeat this call on an interval
+
+    def sendToClient (self, conn, msgType, command, large=False):
+        """
+            Writes and sends a new message to a client at the other end of conn.
+        """
+        if large:
+            newMsg = createLargeMessage(msgType, command)
+        else:
+            newMsg = createMessage(msgType, command)
+        print("[Server Sending %s message type %s]"%(str(conn), str(msgType)))
+        self._connWriter.send(newMsg, conn)
+
+    def sendToAll (self, conn, msgType, command, large=False):
+        """
+            Writes and sends a new message to all connected clients.
+        """
+        for conn in self._activeConns:
+            self.sendToClient(conn, msgType, command, large)
 
     def _interpretDatagram (self, datagram):
         """
@@ -107,3 +127,14 @@ class NetworkHost ():
             Returns whether this NetworkHost is actively hosting.
         """
         return self._isActive
+
+    # === [Gameplay specific] ===:
+    def onClientConnected (self, clientConn):
+        """
+            If we have a map and/or any positional data, give it to this client.
+        """
+        tileMap = self._gameManager.getTileMap()
+        if tileMap != None:
+            data = tileMap.getTileMapStr()
+            self.sendToClient(clientConn, MAP_MESSAGE, data, True)
+    # === ===
