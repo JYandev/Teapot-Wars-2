@@ -6,7 +6,7 @@ from objects.networking.NetworkHost import NetworkHost
 from objects.networking.NetworkClient import NetworkClient
 from objects.networking.NetworkMessages import *
 from objects.tileMap.TileMapOrbiterCam import TileMapOrbiterCam
-from objects.generalUI.ClassSelectionMenu import ClassSelectionMenu
+from objects.classSelectionMenu.ClassSelectionMenu import ClassSelectionMenu
 
 class GameManager ():
     """
@@ -53,6 +53,7 @@ class GameManager ():
         self._mainMenu.close()
         # Draw the class selection screen:
         self._classSelectionMenu = ClassSelectionMenu(self)
+        #TODO Create part of the player UI (PartyList)
 
     def onClientFirstReceivedMap (self, dungeonString):
         """
@@ -75,3 +76,4 @@ class GameManager ():
         self._tilemapOrbiterCam = TileMapOrbiterCam(self._tileMap)
         # Draw the class selection screen:
         self._classSelectionMenu = ClassSelectionMenu(self)
+        #TODO Create part of the player UI (PartyList)
