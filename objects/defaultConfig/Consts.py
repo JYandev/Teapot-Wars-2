@@ -1,3 +1,4 @@
+from objects.characterClass.Classes import *
 """
     Python file containing static paths.
     Used by: "from objects/defaultConfig.StaticPaths import *
@@ -29,6 +30,14 @@ CPKR_INFO_HEIGHT_RATIO = 0.2
 CPKR_PIERCEROMAN_OFFSET_TC = (0, -0.11)
 CPKR_PIERCEROMAN_OFFSET_TL = (-0.7, -0.07)
 CPKR_INFO_WRAP = 19
+# Represented in a grid:
+CPKR_CLASSES_LIST = [
+[(BaseClass, "objects/characterClass/icons/BarbarianIcon.png"),
+ (BaseClass, "objects/characterClass/icons/WizardIcon.png")],
+[(BaseClass, "objects/characterClass/icons/BarbarianIcon.png")]
+                    ]
+CPKR_BUTTONCONTAINER_MARGIN = 0.1
+CPKR_BUTTONCONTAINER_WIDTH_PERCENTAGE = 0.7
 # --- ---
 
 #=== ===

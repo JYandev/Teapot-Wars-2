@@ -1,4 +1,4 @@
-from direct.gui.DirectGui import DirectFrame, DirectRadioButton, DirectLabel
+from direct.gui.DirectGui import DirectFrame, DirectButton, DirectLabel
 from objects.defaultConfig.Consts import *
 from panda3d.core import TransparencyAttrib, TextNode
 
@@ -10,7 +10,9 @@ class ClassPicker ():
 
     def __init__ (self):
         self._font = loader.loadFont(PIERCEROMAN_FONT)
+        self._buttonsList = []
         self._draw()
+        self._selectedClass = None
 
     def _draw (self):
         winWidth = base.getAspectRatio() * 2
@@ -56,17 +58,36 @@ class ClassPicker ():
 
         # Class Radio Button Frame:
         bFColor = (0.25,0.25,0.25,0.5)
+        bFWidth = containFrame.getWidth()*CPKR_BUTTONCONTAINER_WIDTH_PERCENTAGE
         buttonFrame = DirectFrame(parent=containFrame,
                             pos=(0, 0, -CPKR_CONTROL_TOP_MARGIN - titleHeight),
-                            frameSize=(-0.5, 0.5, -bFSizeY, 0),
+                            frameSize=(-bFWidth/2, bFWidth/2, -bFSizeY, 0),
                             frameColor=bFColor)
 
-        # Class Radio Buttons
+        # Create Class Radio Buttons: (Buttons are height dependent)
+        bSizeY = (buttonFrame.getHeight() - CPKR_BUTTONCONTAINER_MARGIN*2)\
+                        / len(CPKR_CLASSES_LIST)
+        bSizeX = (buttonFrame.getWidth() - CPKR_BUTTONCONTAINER_MARGIN*2)\
+                        / len(CPKR_CLASSES_LIST[0])
+        for row in range(len(CPKR_CLASSES_LIST)):
+            for col in range(len(CPKR_CLASSES_LIST[row])):
+                verticalPos = -CPKR_BUTTONCONTAINER_MARGIN - bSizeY * col
+                horizontalPos = -CPKR_BUTTONCONTAINER_MARGIN*2 + bSizeX * row
+                image = CPKR_CLASSES_LIST[row][col][1]
+                newButton = DirectButton(parent=buttonFrame,
+                                    pos=(horizontalPos, 0, verticalPos),
+                                    frameSize=(-bSizeX/2, bSizeX/2, -bSizeY, 0),
+                                    command=self._selectClass,
+                                    extraArgs=[CPKR_CLASSES_LIST[row][col][0]])
+                self._buttonsList.append(newButton)
 
-
+    def _selectClass (self, chosenClass):
+        """ Selects the given class """
+        self._selectedClass = chosenClass
+        print(self._selectedClass)
 
     def getSelected (self):
-        pass
+        return self._selectedClass
 
     def close (self):
         pass
