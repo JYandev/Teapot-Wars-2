@@ -66,7 +66,7 @@ class MainMenu ():
                                       text_font=self._buttonFont,
                                       text_scale=(0.15, 0.15),
                                       text_fg=textColor,
-                                      text_pos=PIERCEROMAN_OFFSET,
+                                      text_pos=PIERCEROMAN_OFFSET_MC,
                                       text_align=TextNode.ACenter,
                                       command=button[1])
             index += 1

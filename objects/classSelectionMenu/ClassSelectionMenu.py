@@ -1,3 +1,6 @@
+from objects.classSelectionMenu.ClassPicker import ClassPicker
+from objects.classSelectionMenu.NamePicker import NamePicker
+
 class ClassSelectionMenu ():
     """
         The class selection menu is where the User picks a name, favorite color,
@@ -8,5 +11,12 @@ class ClassSelectionMenu ():
     def __init__ (self, gameManager):
         self._gameManager = gameManager
         # self._colorPicker
-        # self._classPicker
-        # self._namePicker
+        self._classPicker = None
+        self._namePicker = None
+        self._draw()
+
+
+    def _draw (self):
+        """ Draws the sub-elements. """
+        self._classPicker = ClassPicker()
+        self._namePicker = NamePicker()

@@ -55,7 +55,7 @@ class JoinGameDialogue ():
                                     text_align=TextNode.ACenter,
                                     text_font=self._font,
                                     text_scale=titleFontSize,
-                                    text_pos=PIERCEROMAN_OFFSET,
+                                    text_pos=PIERCEROMAN_OFFSET_MC,
                                     text="Join Party Configuration")
 
         self._drawControls(dialogueFrame) # Draw options for the pop-up frame.
@@ -109,7 +109,7 @@ class JoinGameDialogue ():
                                frameSize=(0, ctrlWidth*2, -height/2, height/2),
                                text_font=self._font,
                                text_scale=ctrlFontSize,
-                               text_pos=PIERCEROMAN_OFFSET,
+                               text_pos=PIERCEROMAN_OFFSET_MC,
                                initialText=DEFAULT_IP_ADDRESS,
                                width=8,
                                cursorKeys=1,
@@ -121,7 +121,7 @@ class JoinGameDialogue ():
                               text="Host IP:",
                               text_font=self._font,
                               text_scale=ctrlFontSize,
-                              text_pos=PIERCEROMAN_OFFSET,
+                              text_pos=PIERCEROMAN_OFFSET_MC,
                               frameColor=(0.25,0.5,0.5,1))
 
         self._userNameEntry = DirectEntry(parent=nameFrame,
@@ -129,7 +129,7 @@ class JoinGameDialogue ():
                               frameSize=(0, ctrlWidth*2, -height/2, height/2),
                               text_font=self._font,
                               text_scale=ctrlFontSize,
-                              text_pos=PIERCEROMAN_OFFSET,
+                              text_pos=PIERCEROMAN_OFFSET_MC,
                               width=8,
                               cursorKeys=1,
                               numLines=1)
@@ -140,7 +140,7 @@ class JoinGameDialogue ():
                               text="User Name:",
                               text_font=self._font,
                               text_scale=(0.12, 0.12),
-                              text_pos=PIERCEROMAN_OFFSET,
+                              text_pos=PIERCEROMAN_OFFSET_MC,
                               frameColor=(0.25,0.5,0.5,1))
 
     def _onConnectButton (self):
