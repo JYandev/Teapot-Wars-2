@@ -9,12 +9,12 @@ def findTilesFromTo (fromPos, toPos, tileMap):
         Returns a list of grid coordinates to get from fromPos to toPos.
         All calculations are done and returned in grid space (row, col).
     """
-    visitedNodes = set()
+    visitedNodes = list()
     queue = [fromPos]
     while len(queue) > 0:
         # Check each starting node to ensure we haven't already visited:
         node = queue.pop(0)
-        if node not in visitedNodes:
+        if not node in visitedNodes:
             visitedNodes.add(node)
             #TODO: get list of legal tiles in any legal direction in tileMap
             #TODO: queue.extend([ABOVE LIST])
