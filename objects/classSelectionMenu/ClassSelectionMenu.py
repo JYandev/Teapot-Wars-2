@@ -31,8 +31,10 @@ class ClassSelectionMenu ():
             return
 
         # Create Player
+        self._gameManager.createPlayer(newName, newClass)
 
-        # Close UI:
+    def close (self):
+        """ Close UI """
         self._classPicker.close()
         self._namePicker.close()
         del self #Destroy this instance

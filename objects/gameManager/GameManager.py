@@ -20,6 +20,7 @@ class GameManager ():
         self._classSelectionMenu = None
         self._tilemapOrbiterCam = None
         self._tileMap = None
+        self._localPlayer = None
 
     def startMainMenu (self):
         """ Draws the main menu """
@@ -77,3 +78,15 @@ class GameManager ():
         # Draw the class selection screen:
         self._classSelectionMenu = ClassSelectionMenu(self)
         #TODO Create part of the player UI (PartyList)
+
+    def createPlayer (self, newName, newClass):
+        """
+            Called at the end of the class selection menu sequence.
+            Create a new player and remove the tileOrbiterCam and classSelection
+             UI.
+        """
+        self._tilemapOrbiterCam.destroy()
+        self._classSelectionMenu.close()
+        #TODO Tell other players to spawn an object with newName and newClass
+        newSpawnPosition = self._tileMap.getRandomFloor() #TODO Make this get the dungeon's spawn position
+        self._localPlayer = PlayerController(newSpawnPosition, self)

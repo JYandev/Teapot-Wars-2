@@ -63,3 +63,8 @@ class TileMapOrbiterCam ():
             self._camInstance.setPos(newPos)
             self._camInstance.lookAt(self._currentPoint)
         return task.cont
+
+    def destroy(self):
+        """ Destroys this object and cleans up the orbiting task. """
+        taskMgr.remove(self._orbiterTask)
+        del self
