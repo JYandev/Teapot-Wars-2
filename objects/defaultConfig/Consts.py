@@ -29,15 +29,25 @@ CPKR_TITLE_HEIGHT_RATIO = 0.1
 CPKR_INFO_HEIGHT_RATIO = 0.2
 CPKR_PIERCEROMAN_OFFSET_TC = (0, -0.11)
 CPKR_PIERCEROMAN_OFFSET_TL = (-0.7, -0.07)
-CPKR_INFO_WRAP = 19
+CPKR_INFO_WRAP_DEFAULT = 19
+CPKR_INFO_FONT_SIZE_DEFAULT = (0.075, 0.075)
 # Represented in a grid:
 CPKR_CLASSES_LIST = [
-[(BaseClass, "objects/characterClass/icons/BarbarianIcon.png"),
+[(Barbarian, "objects/characterClass/icons/BarbarianIcon.png"),
  (BaseClass, "objects/characterClass/icons/WizardIcon.png")],
-[(BaseClass, "objects/characterClass/icons/BarbarianIcon.png")]
+[(Barbarian, "objects/characterClass/icons/BarbarianIcon.png")]
                     ]
 CPKR_BUTTONCONTAINER_MARGIN = 0.1
 CPKR_BUTTONCONTAINER_WIDTH_PERCENTAGE = 0.7
+# --- ---
+
+# --- (Name Picker) ---
+NPKR_WIDTH_PERCENTAGE = 0.5 # In terms of screen width
+NPKR_HEIGHT_PERCENTAGE = 0.1 # In terms of screen height
+NPKR_ENTRY_WIDTH_PERCENTAGE = 0.6 # How long compared to confirm button.
+NPKR_ENTRY_FONT_SIZE = (0.075, 0.075)
+NPKR_ENTRY_INITIAL_TEXT = "Enter Name"
+NPKR_ENTRY_FONT_OFFSET = (0, -0.03)
 # --- ---
 
 #=== ===

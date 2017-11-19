@@ -15,8 +15,24 @@ class ClassSelectionMenu ():
         self._namePicker = None
         self._draw()
 
-
     def _draw (self):
         """ Draws the sub-elements. """
         self._classPicker = ClassPicker()
-        self._namePicker = NamePicker()
+        self._namePicker = NamePicker(self)
+
+    def createCharacter (self, newName):
+        """
+            Creates a new localPlayer and spawns it with the given name and
+             chosen class.
+            If there is no name or class, this will not spawn a player.
+        """
+        newClass = self._classPicker.getSelected()
+        if newName == None or newClass == None:
+            return
+
+        # Create Player
+
+        # Close UI:
+        self._classPicker.close()
+        self._namePicker.close()
+        del self #Destroy this instance

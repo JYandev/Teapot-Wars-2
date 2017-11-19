@@ -158,4 +158,4 @@ class JoinGameDialogue ():
         """
         for element in self._elements:
             element.destroy()
-        del self #Destroy this instance
+        del self # Destroy this instance
