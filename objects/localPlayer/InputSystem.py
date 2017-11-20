@@ -84,5 +84,6 @@ class InputSystem (DirectObject.DirectObject):
         self._hoveredTileCoords = hoveredTileCoords
         if self._hoveredTileCoords:
             self._highlighter.showAt(self._hoveredTileCoords)
+            print(self._hoveredTileCoords)
         else:
             self._highlighter.hide()

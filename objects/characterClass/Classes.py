@@ -1,3 +1,4 @@
+from objects.characterAbilities import *
 class BaseClass ():
     """
         This class is meant to be held by any character and represents the
@@ -16,3 +17,4 @@ class Barbarian (BaseClass):
 Also, the Barbarian's table manners are the worst."""
     classDescFontSize = (0.05, 0.05)
     classDescWrap = 27
+    classAbilities = [Move]

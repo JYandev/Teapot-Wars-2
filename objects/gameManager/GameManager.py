@@ -89,4 +89,4 @@ class GameManager ():
         self._classSelectionMenu.close()
         #TODO Tell other players to spawn an object with newName and newClass
         newSpawnPosition = self._tileMap.getRandomFloor() #TODO Make this get the dungeon's spawn position
-        self._localPlayer = PlayerController(newSpawnPosition, self)
+        self._localPlayer = PlayerController(newSpawnPosition, self, newClass)

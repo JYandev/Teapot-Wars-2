@@ -55,8 +55,32 @@ class TileMap ():
                 return True
         return False
 
+    def isTileOccupied (self, coords):
+        """
+            Returns whether the tile at Point2D coords is occupied or exists.
+            If the tile is free and exists, this returns False.
+        """
+        # Check if tile is a floor:
+        if self.isFloor(coords):
+            # Check if the tile is free of characters/obstructions:
+            tile = self._tileMap[coords]
+            if len(tile[1]) == 0:
+                return False # Tile exists and free!
+        return True # Tile doesn't exist at this spot or is occupied.
+
     def getTileMap (self):
         return self._tileMap
+
+    def updateObjectLocation (self, node, oldLocation, newLocation):
+        """
+            Finds the node at old location and moves it to newLocation.
+        """
+        if node in self._tileMap[oldLocation][1]:
+            self._tileMap[oldLocation][1].remove(node)
+        self._tileMap[newLocation][1].append(node)
+
+    def spawnObject (self, node, newLocation):
+        self._tileMap[newLocation][1].append(node)
 
     def getTileMapStr (self):
         """
