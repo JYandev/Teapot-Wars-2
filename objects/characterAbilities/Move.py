@@ -5,6 +5,8 @@ from direct.interval.FunctionInterval import Func
 from objects.pathfinding.BFS import findTilesFromTo
 from objects.tileMap.TileMap import coordToRealPosition
 
+MOVEMENT_ENERGY_COST = 10
+
 class MoveEffect (Effect):
     """
         Moves a target to a position. Requires a position and an object to move.
@@ -22,12 +24,16 @@ class Move (BaseAbility):
     """
         Moves a target to a position.
     """
-    targeterType = Targeter.Position
+    targeterType = Targeter.Path
     baseEnergyCost = 0
     effect = MoveEffect
+    #effectParameters = ['target', 'position', 'tileMap']
 
     @staticmethod
     def getEnergyCost ():
+        #if 'path' in kwargs:
+        #    return len(kwargs['path'] - 1) * MOVEMENT_ENERGY_COST
+        #else:
         return baseEnergyCost
 
 def moveTargetToPosition (caster, position, tileMap):
@@ -40,7 +46,10 @@ def moveTargetToPosition (caster, position, tileMap):
     moveSequence = Sequence()
     # Get list of steps to destination:
     steps = findTilesFromTo(caster.getGridPosition(), position, tileMap)
-    print (caster.getGridPosition(), position, tileMap.isFloor(caster.getGridPosition()), tileMap.isFloor(position))
+    # Our algorithm always includes the start position, which we don't want in
+    #  this case:
+    steps.pop(0)
+    print ("From %s\nTo %s\nSteps:\n%s" % (caster.getGridPosition(), position, steps))
     # For every step, create a movement interpolation interval and then update:
     if steps == None:
         print ("NO PATH FOUND") #TODO: Implement case when no path is found!

@@ -16,7 +16,7 @@ class PlayerController ():
         # Initialize Camera Input:
         self.cameraSystem = CameraSystem(target=self._character)
         # Initialize the player's Input and UI:
-        self.inputSystem = InputSystem(gameManager.getTileMap())
+        self.inputSystem = InputSystem(self, gameManager.getTileMap())
         #self.maxEnergy
         #self.currentEnergy
         self._gridPos = initialPos

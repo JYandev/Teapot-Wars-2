@@ -10,6 +10,7 @@ class BaseAbility ():
     targeterType = None
     baseEnergyCost = 0
     effect = None
+    effectParameters = []
 
     @staticmethod
     def getEnergyCost ():
@@ -23,6 +24,7 @@ class Targeter ():
     Self = 1
     Position = 2
     Area = 3
+    Path = 4
 
 class Effect ():
     """
