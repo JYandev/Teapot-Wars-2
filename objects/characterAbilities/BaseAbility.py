@@ -10,10 +10,9 @@ class BaseAbility ():
     targeterType = None
     baseEnergyCost = 0
     effect = None
-    effectParameters = []
 
     @staticmethod
-    def getEnergyCost ():
+    def getEnergyCost (**kwargs):
         return baseEnergyCost
 
 class Targeter ():
@@ -25,6 +24,7 @@ class Targeter ():
     Position = 2
     Area = 3
     Path = 4
+    SelfPath = 5
 
 class Effect ():
     """

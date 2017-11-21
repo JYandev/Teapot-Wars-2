@@ -99,7 +99,7 @@ class TileMap ():
         for key in self._tileMap.keys():
             if self._tileMap[key][0] == 1:
                 validKeys.append(key)
-        return validKeys[random.randint(0, len(validKeys))]
+        return validKeys[random.randint(0, len(validKeys)-1)] # Random inclusive
 
 def coordToRealPosition (coords):
     """

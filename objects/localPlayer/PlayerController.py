@@ -20,11 +20,8 @@ class PlayerController ():
         #self.maxEnergy
         #self.currentEnergy
         self._gridPos = initialPos
-        gameManager.getTileMap().spawnObject(self._character, initialPos)
+        gameManager.getTileMap().spawnObject(self, initialPos)
         self._charClass = charClass
-        self.getClass().classAbilities[0].effect.doEffect(target=self,
-                                                    position=gameManager.getTileMap().getRandomFloor(),
-                                                    tileMap=gameManager.getTileMap())
 
     def getGridPosition (self):
         return self._gridPos
@@ -32,5 +29,16 @@ class PlayerController ():
     def getClass (self):
         return self._charClass
 
+    def getClassAbilities (self):
+        return self._charClass.classAbilities
+
     def getCharacter (self):
         return self._character
+
+    def updateGridPosition (self, newPos):
+        self._gridPos = newPos
+
+    # Define equality and representation functions for searching.
+    def __eq__ (self, other):
+        if not isinstance(other, PlayerController): return False
+        return True # This is the one and only player controller

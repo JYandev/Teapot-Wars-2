@@ -16,25 +16,26 @@ class MoveEffect (Effect):
 
     @staticmethod
     def doEffect(**kwargs):
-        if 'target' in kwargs and 'position' in kwargs and 'tileMap' in kwargs:
-            moveTargetToPosition(kwargs['target'], kwargs['position'],
+        if 'targetNode' in kwargs and 'targetPos' in kwargs\
+                                  and 'tileMap' in kwargs:
+            moveTargetToPosition(kwargs['targetNode'], kwargs['targetPos'],
                                  kwargs['tileMap'])
 
 class Move (BaseAbility):
     """
         Moves a target to a position.
     """
-    targeterType = Targeter.Path
+    targeterType = Targeter.SelfPath
     baseEnergyCost = 0
     effect = MoveEffect
-    #effectParameters = ['target', 'position', 'tileMap']
 
     @staticmethod
-    def getEnergyCost ():
-        #if 'path' in kwargs:
-        #    return len(kwargs['path'] - 1) * MOVEMENT_ENERGY_COST
-        #else:
-        return baseEnergyCost
+    def getEnergyCost (**kwargs):
+        # Energy cost of movement is dependent on the amount of spaces moved:
+        if 'path' in kwargs:
+            return len(kwargs['targetPath'] - 1) * MOVEMENT_ENERGY_COST
+        else:
+            return baseEnergyCost
 
 def moveTargetToPosition (caster, position, tileMap):
     """
@@ -54,12 +55,15 @@ def moveTargetToPosition (caster, position, tileMap):
     if steps == None:
         print ("NO PATH FOUND") #TODO: Implement case when no path is found!
         return
+    initialPos = caster.getGridPosition()
+    count = 0
     for step in steps:
-        initialPos = caster.getGridPosition()
+        lastPos = initialPos if count == 0 else steps[count-1]
         newPos = coordToRealPosition(step)
-        moveSequence.append(LerpPosInterval(caster.getCharacter(), 1.0, newPos))
-        moveSequence.append(Func(updateObjectLocation, caster.getCharacter(),
-                                 initialPos, step, tileMap))
+        moveSequence.append(LerpPosInterval(caster.getCharacter(), 1.0, newPos)) #TODO make 1.0 a speed constant
+        moveSequence.append(Func(updateObjectLocation, caster,
+                                 lastPos, step, tileMap))
+        count += 1
     # Finally, play the movement sequence:
     moveSequence.start()
 
@@ -69,3 +73,4 @@ def updateObjectLocation (node, oldPosition, position, tileMap):
         Removes the reference at the oldPosition.
     """
     tileMap.updateObjectLocation(node, oldPosition, position)
+    node.updateGridPosition(position)

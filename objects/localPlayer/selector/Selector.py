@@ -30,3 +30,8 @@ class Selector ():
             Stops rendering this selector.
         """
         self.np.hide()
+
+    def destroy (self):
+        """ Destroys this object and the node path associated with it """
+        self.np.removeNode()
+        del self
