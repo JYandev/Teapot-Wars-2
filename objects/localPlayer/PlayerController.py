@@ -2,6 +2,8 @@ from direct.actor.Actor import Actor
 from .CameraSystem import CameraSystem
 from ..characters.teapot.Teapot import Teapot
 from .InputSystem import InputSystem
+from objects.gameUI.BarUI import BarUI
+from objects.defaultConfig.Consts import *
 
 class PlayerController ():
     """
@@ -22,6 +24,8 @@ class PlayerController ():
         self._gridPos = initialPos
         gameManager.getTileMap().spawnObject(self, initialPos)
         self._charClass = charClass
+        self._energyBar = BarUI(self._character, ENERGY_BAR_OFFSET, 1,
+                                ENERGY_BAR_FG_COLOR, ENERGY_BAR_BG_COLOR)
 
     def getGridPosition (self):
         return self._gridPos

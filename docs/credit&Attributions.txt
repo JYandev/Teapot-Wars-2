@@ -1,0 +1,2 @@
+Health Bar code based on "Wannes" version here:
+https://www.panda3d.org/forums/viewtopic.php?p=19902
