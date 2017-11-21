@@ -24,7 +24,6 @@ class InputSystem (DirectObject.DirectObject):
         #  ability:
         if key.isdigit():
             activatedHotkey = 9 if key == '0' else int(key)-1
-            print(activatedHotkey)
             classAbilities = self._plyrCtrl.getClassAbilities()
             if 0 <= activatedHotkey < len(classAbilities):
                 self._currentAbility = classAbilities[activatedHotkey]
@@ -37,11 +36,9 @@ class InputSystem (DirectObject.DirectObject):
         """
         if self._currentAbility:
             targeter = self._currentAbility.targeterType
-            print ("Activating targeter for ability, %s" % str(self._currentAbility))
             # Show how much energy it will take updateEnergyRequirement()
             if targeter == Targeter.SelfPath:
                 params = {'origin':self._plyrCtrl.getGridPosition()}
-                print(params)
                 self._pointerSystem.setHighightMode(targeter, params)
 
     def _onMouseButtonDown(self):
@@ -49,7 +46,6 @@ class InputSystem (DirectObject.DirectObject):
             Handler for mouse presses.
         """
         if self._currentAbility:
-            print("Activating ability: %s" % str(self._currentAbility))
             if self._currentAbility.targeterType == Targeter.SelfPath:
                 params = {'targetPos' : self._pointerSystem.getHovered(),
                           'targetNode' : self._plyrCtrl,

@@ -48,14 +48,14 @@ def moveTargetToPosition (caster, position, tileMap):
     moveSequence = Sequence()
     # Get list of steps to destination:
     steps = findTilesFromTo(caster.getGridPosition(), position, tileMap)
+    # Safety Check:
+    if steps == None:
+        print ("NO PATH FOUND") #TODO: Implement case when no path is found! Perhaps cancel caster targeter!
+        return
     # Our algorithm always includes the start position, which we don't want in
     #  this case:
     steps.pop(0)
-    print ("From %s\nTo %s\nSteps:\n%s" % (caster.getGridPosition(), position, steps))
     # For every step, create a movement interpolation interval and then update:
-    if steps == None:
-        print ("NO PATH FOUND") #TODO: Implement case when no path is found!
-        return
     initialPos = caster.getGridPosition()
     count = 0
     for step in steps:

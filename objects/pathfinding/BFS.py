@@ -13,11 +13,15 @@ def findTilesFromTo (fromPos, toPos, tileMap):
         "fromPos" and "toPos" are Point2D inputs.
         Returns None if failed.
     """
+
+    # Do two efficiency checks:
+    if not tileMap.isFloor(toPos): return None
+    if fromPos == toPos: return None
+
     visitedNodes = list()
     queue = [[fromPos]] # list of paths to check
     while len(queue) > 0:
         # Check each starting node to ensure we haven't already visited:
-        #print (queue)
         currentPath = queue.pop(0)
         node = currentPath[-1] # Last node in the current Path
         if not node in visitedNodes:
