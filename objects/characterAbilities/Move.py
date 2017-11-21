@@ -66,6 +66,7 @@ def moveTargetToPosition (caster, position, tileMap):
         moveSequence.append(Func(updateObjectLocation, caster,
                                  lastPos, step, tileMap))
         count += 1
+    moveSequence.append(Func(endAction, caster)) # Apply end signal to action.
     # Finally, play the movement sequence:
     caster.startAction(moveSequence)
 

@@ -7,6 +7,8 @@ from objects.characterClass.Classes import *
 
 # === [Game Balance] ===
 PLAYER_MAX_ENERGY = 100
+PLAYER_ENERGY_RECOVERY_DELAY = 2
+PLAYER_ENERGY_RECOVERY_RATE = 5
 # === ===
 
 # === [Networking] ===

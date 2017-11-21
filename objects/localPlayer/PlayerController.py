@@ -4,6 +4,8 @@ from ..characters.teapot.Teapot import Teapot
 from .InputSystem import InputSystem
 from objects.gameUI.BarUI import BarUI
 from objects.defaultConfig.Consts import *
+from direct.task import Task
+import time
 
 class PlayerController ():
     """
@@ -28,6 +30,10 @@ class PlayerController ():
         self._energyBar = BarUI(self._character, ENERGY_BAR_OFFSET, 1,
                                 ENERGY_BAR_FG_COLOR, ENERGY_BAR_BG_COLOR)
         self._currentActionSequence = None
+        self._lastActionEndTime = 0 # Used for energy recharge delay
+
+        self._energyRecharger = taskMgr.add(self._rechargeEnergyTask,
+                                            "Player Energy Recharger")
 
     def drainEnergy (self, energyCost):
         """
@@ -51,6 +57,27 @@ class PlayerController ():
         percentage = self._energy / PLAYER_MAX_ENERGY
         self._energyBar.setValue(percentage)
 
+    def _rechargeEnergyTask (self, task):
+        """
+            Recharges the player's energy if they haven't acted for a certain
+             delay.
+        """
+        # If we are currently in an action, simply update the _lastActionEndTime
+        if self._currentActionSequence:
+            self._lastActionEndTime = time.time()
+            return task.cont
+        # If we are already full, skip this function:
+        if self._energy > PLAYER_MAX_ENERGY:
+            self._energy = PLAYER_MAX_ENERGY
+            self.updateEnergyBar()
+            return task.cont
+        if time.time() >= self._lastActionEndTime\
+                            + PLAYER_ENERGY_RECOVERY_DELAY:
+            deltaTime = globalClock.getDt()
+            self._energy += PLAYER_ENERGY_RECOVERY_RATE * deltaTime
+            self.updateEnergyBar()
+        return task.cont
+
     def getGridPosition (self):
         return self._gridPos
 
@@ -71,12 +98,24 @@ class PlayerController ():
         #TODO Figure out what to do when action is already running!
         self._currentActionSequence = actionSequence
         self._currentActionSequence.start()
+        self._lastActionEndTime = time.time()
 
     def cancelCurrentAction (self):
         """ Cancels the _currentActionSequence """
         if self._currentActionSequence:
             self._currentActionSequence.pause()
             self._currentActionSequence = None
+            self._lastActionEndTime = time.time()
+            #TODO: Warn the user that the action canceled prematurely
+
+    def endCurrentAction (self):
+        """
+            Similar to cancel, but doesn't warn the user because no stuns/energy
+             limits were occured.
+        """
+        if self._currentActionSequence:
+            self._currentActionSequence = None
+            self._lastActionEndTime = time.time()
 
     # Define equality and representation functions for searching.
     def __eq__ (self, other):

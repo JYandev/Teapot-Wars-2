@@ -43,3 +43,10 @@ def checkDrainEnergy (caster, energyDrainFunction):
     """
     if not caster.drainEnergy(energyDrainFunction()):
         caster.cancelCurrentAction()
+
+def endAction (caster):
+    """
+        Place this at the end of an action sequence to signal to the caster that
+         the action has ended.
+    """
+    caster.endCurrentAction()
