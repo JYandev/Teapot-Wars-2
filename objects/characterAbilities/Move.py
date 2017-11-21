@@ -26,16 +26,16 @@ class Move (BaseAbility):
         Moves a target to a position.
     """
     targeterType = Targeter.SelfPath
-    baseEnergyCost = 0
+    baseEnergyCost = MOVEMENT_ENERGY_COST
     effect = MoveEffect
 
     @staticmethod
     def getEnergyCost (**kwargs):
         # Energy cost of movement is dependent on the amount of spaces moved:
         if 'path' in kwargs:
-            return len(kwargs['targetPath'] - 1) * MOVEMENT_ENERGY_COST
+            return len(kwargs['targetPath'] - 1) * MOVE.baseEnergyCost
         else:
-            return baseEnergyCost
+            return Move.baseEnergyCost
 
 def moveTargetToPosition (caster, position, tileMap):
     """
@@ -43,6 +43,7 @@ def moveTargetToPosition (caster, position, tileMap):
         Uses Breadth First Search to get a path to the position.
         Create and play a sequence of intervals to travel from node to node
          until reaching the final tile.
+        Drains energy on each move:
     """
     moveSequence = Sequence()
     # Get list of steps to destination:
@@ -60,12 +61,13 @@ def moveTargetToPosition (caster, position, tileMap):
     for step in steps:
         lastPos = initialPos if count == 0 else steps[count-1]
         newPos = coordToRealPosition(step)
+        moveSequence.append(Func(checkDrainEnergy, caster, Move.getEnergyCost))
         moveSequence.append(LerpPosInterval(caster.getCharacter(), 1.0, newPos)) #TODO make 1.0 a speed constant
         moveSequence.append(Func(updateObjectLocation, caster,
                                  lastPos, step, tileMap))
         count += 1
     # Finally, play the movement sequence:
-    moveSequence.start()
+    caster.startAction(moveSequence)
 
 def updateObjectLocation (node, oldPosition, position, tileMap):
     """

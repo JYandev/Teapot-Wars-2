@@ -35,3 +35,11 @@ class Effect ():
     @staticmethod
     def doEffect (caster, **kwargs):
         pass
+
+def checkDrainEnergy (caster, energyDrainFunction):
+    """
+        Checks if the energy drain on the caster can be completed, otherwise,
+         cancels the currentAction.
+    """
+    if not caster.drainEnergy(energyDrainFunction()):
+        caster.cancelCurrentAction()

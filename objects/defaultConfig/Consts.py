@@ -5,6 +5,10 @@ from objects.characterClass.Classes import *
     Images, models, etc. are stored in public static variables here.
 """
 
+# === [Game Balance] ===
+PLAYER_MAX_ENERGY = 100
+# === ===
+
 # === [Networking] ===
 HOST_MAX_BACKLOG = 1000
 CLIENT_TIMEOUT = 3000 # 3 Seconds

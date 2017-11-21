@@ -24,8 +24,32 @@ class PlayerController ():
         self._gridPos = initialPos
         gameManager.getTileMap().spawnObject(self, initialPos)
         self._charClass = charClass
+        self._energy = PLAYER_MAX_ENERGY
         self._energyBar = BarUI(self._character, ENERGY_BAR_OFFSET, 1,
                                 ENERGY_BAR_FG_COLOR, ENERGY_BAR_BG_COLOR)
+        self._currentActionSequence = None
+
+    def drainEnergy (self, energyCost):
+        """
+            Drains energy and returns true if there was enough energy for the
+             action.
+            If there is not enough energy to perform the action, returns false
+             and activates a UI warning.
+        """
+        if self._energy - energyCost < 0:
+            # TODO: Perform energy warning!
+            return False
+        else:
+            self._energy -= energyCost
+            self.updateEnergyBar()
+            return True
+
+    def updateEnergyBar (self):
+        """
+            Visually updates the energyBar value.
+        """
+        percentage = self._energy / PLAYER_MAX_ENERGY
+        self._energyBar.setValue(percentage)
 
     def getGridPosition (self):
         return self._gridPos
@@ -41,6 +65,18 @@ class PlayerController ():
 
     def updateGridPosition (self, newPos):
         self._gridPos = newPos
+
+    def startAction (self, actionSequence):
+        """ Assigns and starts the current action sequence """
+        #TODO Figure out what to do when action is already running!
+        self._currentActionSequence = actionSequence
+        self._currentActionSequence.start()
+
+    def cancelCurrentAction (self):
+        """ Cancels the _currentActionSequence """
+        if self._currentActionSequence:
+            self._currentActionSequence.pause()
+            self._currentActionSequence = None
 
     # Define equality and representation functions for searching.
     def __eq__ (self, other):
