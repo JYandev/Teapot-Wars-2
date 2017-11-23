@@ -164,6 +164,11 @@ class NetworkHost ():
         # Update the playerInfo dict with the new data:
         self._playerInfo[newPlayerData.cID] = newPlayerData
         self._gameManager.updatePartyInfo(self._playerInfo, 'host')
+        # Send player info to every client:
+        for player in self._playerInfo:
+            # Don't send an info message about the player to the same player!
+            newInfoMsg = createPlayerInfoMessage(self._playerInfo[player])
+            self.sendToAll(newInfoMsg, UPDATE_PLAYER_INFO)
 
     def updateLocalPlayerInfo (self, info=None):
         """
