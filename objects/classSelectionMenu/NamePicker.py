@@ -39,7 +39,9 @@ class NamePicker ():
                                       text_scale=NPKR_ENTRY_FONT_SIZE,
                                       text_pos=NPKR_ENTRY_FONT_OFFSET,
                                       initialText=NPKR_ENTRY_INITIAL_TEXT,
-                                      numLines=1)
+                                      numLines=1,
+                                      focusOutCommand=self._syncName,
+                                      command=self._syncName)
         # Draw Confirm Button:
         confirmWidth = self._rootFrame.getWidth()\
                             * (1-NPKR_ENTRY_WIDTH_PERCENTAGE)
@@ -57,6 +59,10 @@ class NamePicker ():
     def _onConfirmPressed (self):
         """ Reroutes this input to the parent ClassSelectionMenu """
         self._classSelectionMenu.createCharacter(self.getName())
+
+    def _syncName (self, extraArgs=None):
+        """ Syncs name with this game's host/client manager """
+        self._classSelectionMenu.syncInfo(cName=self.getName())
 
     def close (self):
         self._rootFrame.destroy() # Destroy ui

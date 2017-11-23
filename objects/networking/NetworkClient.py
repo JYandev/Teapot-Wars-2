@@ -8,6 +8,7 @@ from objects.defaultConfig.DefaultConfig import *
 from objects.defaultConfig.Consts import *
 from objects.networking.NetworkMessages import *
 import sys
+from objects.networking.PlayerInfo import PlayerInfo
 
 class NetworkClient ():
     """
@@ -20,6 +21,8 @@ class NetworkClient ():
         self._timeout = CLIENT_TIMEOUT
         self._loadConfig()
         self._gameManager = gameManager
+        self._playerInfo = dict() # Party Member Info
+        self._connection = None
 
     def _loadConfig (self):
         """
@@ -42,8 +45,10 @@ class NetworkClient ():
             print ("[Client Connected]")
             self._connReader.addConnection(self._connection)
             # Begin handling messages (start listening):
-            taskMgr.add(self._onReaderPoll,"Poll the connection reader",-40)
-            self._gameManager.onClientJoinedParty() # GameManager callback
+            taskMgr.add(self._onReaderPoll,"Poll the connection reader",
+                        -40)
+            self._gameManager.onLocalClientJoinedParty(self._connection\
+                .this) # GameManager callback
 
     def _onReaderPoll (self, taskdata):
         """
@@ -56,19 +61,18 @@ class NetworkClient ():
                 self._interpretDatagram(newDatagram)
         return Task.cont # Repeat this call on an interval
 
-    def sendMessage (self, msgType, command):
+    def sendMessage (self, msg, msgType):
         """
-            Writes and sends a new message to the server.
+            Sends a given message to the server.
         """
-        newMsg = createMessage(msgType, command)
         print("[Client Sending %s message type %s]"%(str(self._connection),
                                                      str(msgType)))
-        self._connWriter.send(newMsg, self._connection)
+        self._connWriter.send(msg, self._connection)
 
     def _interpretDatagram (self, datagram):
         """
-            Interprets a received datagram and performs actions based on its
-             values.
+            Interprets a received datagram and performs actions based on
+             its values.
         """
         msg = PyDatagramIterator(datagram)
         msgType = msg.getUint8()
@@ -79,3 +83,28 @@ class NetworkClient ():
             if self._gameManager.getTileMap() == None:
                 data = msg.getString32()
                 self._gameManager.onClientFirstReceivedMap(data)
+        elif msgType == UPDATE_PLAYER_INFO:
+            data = msg.getString()
+            self._updatePlayerInfoHandler(data)
+
+    def _updatePlayerInfoHandler (self, data):
+        """
+            Update our player list with a player info given by data.
+        """
+        newPlayerData = PlayerInfo(fromJson=data)
+        self._playerInfo[newPlayerData.cID] = newPlayerData
+        self._gameManager.updatePartyInfo(self._playerInfo,
+                                          self._connection.this)
+
+    def updateLocalPlayerInfo (self, info=None):
+        """
+            Updates info for this local player and sends it to the server.
+        """
+        if not info:
+            initData = PlayerInfo(cID=self._connection.this)
+            self._playerInfo[self._connection.this] = initData
+            infoMsg = createPlayerInfoMessage(initData)
+            self.sendMessage(infoMsg, UPDATE_PLAYER_INFO)
+        else:
+            infoMsg = createPlayerInfoMessage(info)
+            self.sendMessage(infoMsg, UPDATE_PLAYER_INFO)

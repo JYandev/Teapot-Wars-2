@@ -8,6 +8,7 @@ from objects.defaultConfig.Consts import *
 from direct.task import Task
 from objects.networking.NetworkMessages import *
 import socket, json, sys
+from .PlayerInfo import PlayerInfo
 
 class NetworkHost ():
     """
@@ -23,6 +24,7 @@ class NetworkHost ():
         self._isActive = False
         self._backlog = HOST_MAX_BACKLOG
         self._gameManager = gameManager
+        self._playerInfo = dict() # Connections and related info
 
     def _initListener (self):
         """
@@ -58,6 +60,7 @@ class NetworkHost ():
         self._isActive = True
         print ("[Host Started at %s]" % socket.gethostbyname(
                                             socket.gethostname()))
+
         self._gameManager.onHostInitialized()
 
     def _onListenerPoll(self, taskdata):
@@ -95,23 +98,19 @@ class NetworkHost ():
                 self._interpretDatagram(newDatagram)
         return Task.cont # Repeat this call on an interval
 
-    def sendToClient (self, conn, msgType, command, large=False):
+    def sendToClient (self, newMsg, conn, msgType):
         """
-            Writes and sends a new message to a client at the other end of conn.
+            Sends a new message to a client at the other end of conn.
         """
-        if large:
-            newMsg = createLargeMessage(msgType, command)
-        else:
-            newMsg = createMessage(msgType, command)
         print("[Server Sending %s message type %s]"%(str(conn), str(msgType)))
         self._connWriter.send(newMsg, conn)
 
-    def sendToAll (self, conn, msgType, command, large=False):
+    def sendToAll (self, newMsg, msgType):
         """
             Writes and sends a new message to all connected clients.
         """
         for conn in self._activeConns:
-            self.sendToClient(conn, msgType, command, large)
+            self.sendToClient(newMsg, conn, msgType)
 
     def _interpretDatagram (self, datagram):
         """
@@ -119,8 +118,12 @@ class NetworkHost ():
              values.
         """
         msg = PyDatagramIterator(datagram)
-        if msg.getUint8() == DEBUG_MESSAGE:
+        msgType = msg.getUint8()
+        if msgType == DEBUG_MESSAGE:
             print (msg.getString())
+        elif msgType == UPDATE_PLAYER_INFO:
+            data = msg.getString()
+            self._updatePlayerInfoHandler(datagram.getConnection().this, data)
 
     def isHosting (self):
         """
@@ -132,9 +135,46 @@ class NetworkHost ():
     def onClientConnected (self, clientConn):
         """
             If we have a map and/or any positional data, give it to this client.
+            Also signal to the GameManager and all remote clients that a new
+             player connected!
         """
+        connID = clientConn.this
         tileMap = self._gameManager.getTileMap()
         if tileMap != None:
             data = tileMap.getTileMapStr()
-            self.sendToClient(clientConn, MAP_MESSAGE, data, True)
+            msg = createMapMessage(data)
+            self.sendToClient(msg, clientConn, MAP_MESSAGE)
+        # Send player info to the new client:
+        for player in self._playerInfo:
+            # Don't send an info message about the player to the same player!
+            if player != connID:
+                newInfoMsg = createPlayerInfoMessage(self._playerInfo[player])
+                self.sendToClient(newInfoMsg, clientConn,
+                                  UPDATE_PLAYER_INFO)
+
+    def _updatePlayerInfoHandler (self, connID, data=None):
+        """
+            Adds data to self._playerInfo.
+            If info doesn't exist, creates a new one for clientConn.
+        """
+        if data != None:
+            newPlayerData = PlayerInfo(fromJson=data)
+        else:
+            newPlayerData = PlayerInfo(cID=connID)
+        # Update the playerInfo dict with the new data:
+        self._playerInfo[newPlayerData.cID] = newPlayerData
+        self._gameManager.updatePartyInfo(self._playerInfo, 'host')
+
+    def updateLocalPlayerInfo (self, info=None):
+        """
+            Updates info for this local player and sends it to all
+             connected clients.
+        """
+        if not info:
+            self._playerInfo['host'] = PlayerInfo(cID="host")
+        else: # If info == None, we are just initializing.
+            self._playerInfo['host'] = info
+            infoMsg = createPlayerInfoMessage(info)
+            self.sendToAll(infoMsg, UPDATE_PLAYER_INFO)
+
     # === ===

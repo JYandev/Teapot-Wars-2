@@ -1,5 +1,6 @@
 from objects.classSelectionMenu.ClassPicker import ClassPicker
 from objects.classSelectionMenu.NamePicker import NamePicker
+from objects.networking.PlayerInfo import PlayerInfo
 
 class ClassSelectionMenu ():
     """
@@ -8,8 +9,9 @@ class ClassSelectionMenu ():
         Other player names and data is also displayed, but in a different class!
     """
 
-    def __init__ (self, gameManager):
+    def __init__ (self, gameManager, cID):
         self._gameManager = gameManager
+        self._playerInfo = PlayerInfo(cID)
         # self._colorPicker
         self._classPicker = None
         self._namePicker = None
@@ -26,12 +28,24 @@ class ClassSelectionMenu ():
              chosen class.
             If there is no name or class, this will not spawn a player.
         """
+        #TODO Redo this to use the synced values (self._playerInfo)
         newClass = self._classPicker.getSelected()
         if newName == None or newClass == None:
             return
 
         # Create Player
         self._gameManager.createPlayer(newName, newClass)
+
+    def syncInfo (self, cName=None, cClass=None, cColor=None):
+        """ Syncs info with the server/client manager """
+        if cName != None:
+            self._playerInfo.cName = cName
+        if cClass != None:
+            self._playerInfo.cClass = cClass
+        if cColor != None:
+            self._playerInfo.cColor = cColor
+
+        self._gameManager.updateLocalInfoAndSync(self._playerInfo)
 
     def close (self):
         """ Close UI """

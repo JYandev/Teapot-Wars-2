@@ -7,6 +7,8 @@ from objects.networking.NetworkClient import NetworkClient
 from objects.networking.NetworkMessages import *
 from objects.tileMap.TileMapOrbiterCam import TileMapOrbiterCam
 from objects.classSelectionMenu.ClassSelectionMenu import ClassSelectionMenu
+from objects.gameUI.PartyListUI import PartyListUI
+from objects.networking.PlayerInfo import PlayerInfo
 
 class GameManager ():
     """
@@ -21,6 +23,7 @@ class GameManager ():
         self._tilemapOrbiterCam = None
         self._tileMap = None
         self._localPlayer = None
+        self._partyList = None
 
     def startMainMenu (self):
         """ Draws the main menu """
@@ -47,14 +50,34 @@ class GameManager ():
         self._networkClient = NetworkClient(self)
         self._networkClient.startClient(ipAddress)
 
-    # --- Networking Interface ---
-    def onClientJoinedParty (self):
+    def createPlayer (self, newName, newClass):
+        """
+            Called at the end of the class selection menu sequence.
+            Create a new player and remove the tileOrbiterCam and classSelection
+             UI.
+        """
+        self._tilemapOrbiterCam.destroy()
+        self._classSelectionMenu.close()
+        #TODO Tell other players to spawn an object with newName and newClass
+        newSpawnPosition = self._tileMap.getRandomFloor() #TODO Make this get the dungeon's spawn position
+        self._localPlayer = PlayerController(newSpawnPosition, self, newClass)
+
+    # === Networking Interface ===
+    def onLocalClientJoinedParty (self, myID):
         """ Start the Class Selection screen and sets up camera view """
-        self._networkClient.sendMessage(DEBUG_MESSAGE, "Yo, Server! Gimme Map!")
         self._mainMenu.close()
         # Draw the class selection screen:
-        self._classSelectionMenu = ClassSelectionMenu(self)
-        #TODO Create part of the player UI (PartyList)
+        self._classSelectionMenu = ClassSelectionMenu(self, myID)
+        self._partyList = PartyListUI()
+        self._networkClient.updateLocalPlayerInfo()
+
+    def updatePartyInfo (self, playersInfo, myID):
+        """
+            Called both on servers and clients when a new person connects.
+            Updates the partylistui element with the new info.
+        """
+        if self._partyList:
+            self._partyList.updateInfo(playersInfo, myID)
 
     def onClientFirstReceivedMap (self, dungeonString):
         """
@@ -76,17 +99,17 @@ class GameManager ():
         # Create camera controller for visual tour of generated dungeon:
         self._tilemapOrbiterCam = TileMapOrbiterCam(self._tileMap)
         # Draw the class selection screen:
-        self._classSelectionMenu = ClassSelectionMenu(self)
-        #TODO Create part of the player UI (PartyList)
+        self._classSelectionMenu = ClassSelectionMenu(self, 'host')
+        self._partyList = PartyListUI()
+        self._networkHost.updateLocalPlayerInfo()
 
-    def createPlayer (self, newName, newClass):
+    def updateLocalInfoAndSync (self, info):
         """
-            Called at the end of the class selection menu sequence.
-            Create a new player and remove the tileOrbiterCam and classSelection
-             UI.
+            Syncs the local player's info with the server and other
+             networkClients.
         """
-        self._tilemapOrbiterCam.destroy()
-        self._classSelectionMenu.close()
-        #TODO Tell other players to spawn an object with newName and newClass
-        newSpawnPosition = self._tileMap.getRandomFloor() #TODO Make this get the dungeon's spawn position
-        self._localPlayer = PlayerController(newSpawnPosition, self, newClass)
+        if self._networkHost:
+            self._networkHost.updateLocalPlayerInfo(info)
+        elif self._networkClient:
+            self._networkClient.updateLocalPlayerInfo(info)
+    # === ===
