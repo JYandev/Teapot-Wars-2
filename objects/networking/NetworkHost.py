@@ -24,7 +24,10 @@ class NetworkHost ():
         self._isActive = False
         self._backlog = HOST_MAX_BACKLOG
         self._gameManager = gameManager
-        self._playerInfo = dict() # Connections and related info
+        self._playerInfo = dict() # connections by connectionID (cID)
+        self._creatures = dict() # Creates by cID.
+
+        self._creatureIDCount = 0
 
     def _initListener (self):
         """
@@ -124,6 +127,10 @@ class NetworkHost ():
         elif msgType == UPDATE_PLAYER_INFO:
             data = msg.getString()
             self._updatePlayerInfoHandler(datagram.getConnection().this, data)
+        elif msgType == SPAWN_CHARACTER:
+            data = msg.getString()
+            dataDict = json.loads(data)
+            self._onSpawnHandler(dataDict)
 
     def isHosting (self):
         """
@@ -131,7 +138,23 @@ class NetworkHost ():
         """
         return self._isActive
 
-    # === [Gameplay specific] ===:
+    def registerNewCID (self):
+        newCID = "host" + str(self._creatureIDCount)
+        self._creatureIDCount += 1
+        return newCID
+
+    # === [Gameplay specific] ===
+    def spawnGameObject (self, gameObject, cID):
+        """
+            Tracks the given gameObject and sends it to all clients.
+        """
+        msg = createSpawnCharacterMessage(gameObject, cID)
+        pass #TODO Send by ID and have it be tracked by clients so that when we send actions by ID, they know which character to update
+
+    def _onSpawnHandler (self, dataDict):
+        """ Handles networking spawning characters """
+        pass #TODO Spawn the object on this host, track it, and send it to be spawned and tracked on other clients.
+
     def onClientConnected (self, clientConn):
         """
             If we have a map and/or any positional data, give it to this client.
