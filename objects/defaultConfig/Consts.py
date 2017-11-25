@@ -6,6 +6,11 @@ from objects.characterClass.Classes import *
 """
 
 # === [Game Balance] ===
+
+# --- (Default Creature) ---
+CREATURE_MAX_ENERGY = 100
+# --- ---
+
 PLAYER_MAX_ENERGY = 100
 PLAYER_ENERGY_RECOVERY_DELAY = 2
 PLAYER_ENERGY_RECOVERY_RATE = 5

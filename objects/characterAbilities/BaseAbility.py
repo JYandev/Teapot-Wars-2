@@ -42,11 +42,11 @@ def checkDrainEnergy (caster, energyDrainFunction):
          cancels the currentAction.
     """
     if not caster.drainEnergy(energyDrainFunction()):
-        caster.cancelCurrentAction()
+        caster.getParentController().cancelCurrentAction()
 
 def endAction (caster):
     """
         Place this at the end of an action sequence to signal to the caster that
          the action has ended.
     """
-    caster.endCurrentAction()
+    caster.getParentController().endCurrentAction()

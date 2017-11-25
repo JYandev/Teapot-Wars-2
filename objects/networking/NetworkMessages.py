@@ -1,11 +1,12 @@
 # This is a namespace containing all types of Network Messages.
 from direct.distributed.PyDatagram import PyDatagram
-import sys
+import sys, json
 from .PlayerInfo import PlayerInfo
 
 DEBUG_MESSAGE = 1
 MAP_MESSAGE = 2
 UPDATE_PLAYER_INFO = 3
+SPAWN_CHARACTER = 4
 
 def createMessage (msgType, command):
     """
@@ -27,5 +28,19 @@ def createMapMessage (command):
 
 def createPlayerInfoMessage (playerInfo):
     newData = playerInfo.toJson()
-    print("Yahaha", newData)
     return createMessage(UPDATE_PLAYER_INFO, newData)
+
+def createSpawnCharacterMessage (gameObject, objID):
+    """
+        Character Type is a string representing the type of character "teapot",
+         etc.; objID is a string representing the gameObject's ID - usually
+         linked to connectionID (unless its the AI own by 'host') ; initPos is
+         a tuple representing the row/col position of the object.
+    """
+    characterType = gameObject.getCharacterTypeEnum()
+    posToParse = gameObject.getGridPosition()
+    initPos = (posToParse.getX(), posToParse.getY())
+
+    newData = {'charType':characterType, 'objID':objID, 'pos':initPos}
+    newJson = json.dumps(newData)
+    return createMessage(SPAWN_CHARACTER, newJson)

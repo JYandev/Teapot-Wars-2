@@ -75,8 +75,11 @@ class TileMap ():
         """
             Finds the node at old location and moves it to newLocation.
         """
+        print("Attempting removal of", node)
         if node in self._tileMap[oldLocation][1]:
+            print("Before", self._tileMap[oldLocation][1])
             self._tileMap[oldLocation][1].remove(node)
+            print("AFTER", self._tileMap[oldLocation][1])
         self._tileMap[newLocation][1].append(node)
 
     def spawnObject (self, node, newLocation):

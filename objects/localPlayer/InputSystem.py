@@ -38,7 +38,8 @@ class InputSystem (DirectObject.DirectObject):
             targeter = self._currentAbility.targeterType
             # Show how much energy it will take updateEnergyRequirement()
             if targeter == Targeter.SelfPath:
-                params = {'origin':self._plyrCtrl.getGridPosition()}
+                params = {'origin':self._plyrCtrl.getCharacter()\
+                                                 .getGridPosition()}
                 self._pointerSystem.setHighightMode(targeter, params)
 
     def _onMouseButtonDown(self):
@@ -48,7 +49,7 @@ class InputSystem (DirectObject.DirectObject):
         if self._currentAbility:
             if self._currentAbility.targeterType == Targeter.SelfPath:
                 params = {'targetPos' : self._pointerSystem.getHovered(),
-                          'targetNode' : self._plyrCtrl,
+                          'targetNode' : self._plyrCtrl.getCharacter(),
                           'tileMap' : self._tileMap}
                 self._currentAbility.effect.doEffect(**params)
                 # We've succesfully initiated action, reset the active ability:

@@ -60,7 +60,19 @@ class GameManager ():
         self._classSelectionMenu.close()
         #TODO Tell other players to spawn an object with newName and newClass
         newSpawnPosition = self._tileMap.getRandomFloor() #TODO Make this get the dungeon's spawn position
-        self._localPlayer = PlayerController(newSpawnPosition, self, newClass)
+        if self._networkHost:
+            cID = self._networkHost.registerNewCID()
+        else:
+            cID = self._networkClient.getCID()
+
+        self._localPlayer = PlayerController(self, cID, newSpawnPosition,
+                                             newClass)
+        if self._networkHost:
+            self._networkHost.spawnGameObject(self._localPlayer\
+                                                  .getCharacter(), 'host')
+        else:
+            self._networkClient.spawnGameObject(self._localPlayer\
+                                                    .getCharacter())
 
     # === Networking Interface ===
     def onLocalClientJoinedParty (self, myID):

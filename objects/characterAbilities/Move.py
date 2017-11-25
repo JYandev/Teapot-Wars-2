@@ -62,18 +62,18 @@ def moveTargetToPosition (caster, position, tileMap):
         lastPos = initialPos if count == 0 else steps[count-1]
         newPos = coordToRealPosition(step)
         moveSequence.append(Func(checkDrainEnergy, caster, Move.getEnergyCost))
-        moveSequence.append(LerpPosInterval(caster.getCharacter(), 1.0, newPos)) #TODO make 1.0 a speed constant
+        moveSequence.append(LerpPosInterval(caster.getNodePath(), 1.0, newPos)) #TODO make 1.0 a speed constant
         moveSequence.append(Func(updateObjectLocation, caster,
                                  lastPos, step, tileMap))
         count += 1
     moveSequence.append(Func(endAction, caster)) # Apply end signal to action.
     # Finally, play the movement sequence:
-    caster.startAction(moveSequence)
+    caster.getParentController().startAction(moveSequence)
 
-def updateObjectLocation (node, oldPosition, position, tileMap):
+def updateObjectLocation (targetObj, oldPosition, position, tileMap):
     """
-        Puts the node at position in tileMap.
+        Puts the targetObj at position in tileMap.
         Removes the reference at the oldPosition.
     """
-    tileMap.updateObjectLocation(node, oldPosition, position)
-    node.updateGridPosition(position)
+    tileMap.updateObjectLocation(targetObj, oldPosition, position)
+    targetObj.updateGridPosition(position)
