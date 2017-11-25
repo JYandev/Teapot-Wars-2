@@ -8,7 +8,7 @@ class Creature (GameObject):
     """
     def __init__ (self, parentCtrlr, cID, **kwargs):
         # Initialize our model and set up our object:
-        GameObject.__init__(self, **kwargs)
+        GameObject.__init__(self, nodeName=str(cID), **kwargs)
 
         self._parentController = parentCtrlr
         self._cID = cID

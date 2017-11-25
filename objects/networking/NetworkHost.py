@@ -1,6 +1,6 @@
 from panda3d.core import QueuedConnectionManager, QueuedConnectionListener,\
                          QueuedConnectionReader, ConnectionWriter
-from panda3d.core import ConfigVariableInt
+from panda3d.core import ConfigVariableInt, Point2D
 from panda3d.core import PointerToConnection, NetAddress, NetDatagram
 from direct.distributed.PyDatagramIterator import PyDatagramIterator
 from objects.defaultConfig.DefaultConfig import *
@@ -9,6 +9,8 @@ from direct.task import Task
 from objects.networking.NetworkMessages import *
 import socket, json, sys
 from .PlayerInfo import PlayerInfo
+from objects.characters.CharacterNetworkingUtilities import \
+                                                         getCharacterTypeAsClass
 
 class NetworkHost ():
     """
@@ -149,11 +151,21 @@ class NetworkHost ():
             Tracks the given gameObject and sends it to all clients.
         """
         msg = createSpawnCharacterMessage(gameObject, cID)
-        pass #TODO Send by ID and have it be tracked by clients so that when we send actions by ID, they know which character to update
+        self.sendToAll(msg, SPAWN_CHARACTER)
 
     def _onSpawnHandler (self, dataDict):
         """ Handles networking spawning characters """
-        pass #TODO Spawn the object on this host, track it, and send it to be spawned and tracked on other clients.
+        # Spawn object locally if the object at cID doesn't already exist.
+        if not 'objID' in self._creatures.keys():
+            # Spawn object of charType at pos
+            objectType = getCharacterTypeAsClass(dataDict['charType'])
+            newPos = Point2D(dataDict['pos'][0], dataDict['pos'][0])
+            newChar = objectType(parentCtrlr=None, cID=dataDict['objID'],
+                                 coords=newPos)
+            dataDict['objID'] = newChar
+        else:
+            #TODO Overwrite the old object
+            pass
 
     def onClientConnected (self, clientConn):
         """

@@ -1,6 +1,6 @@
 from panda3d.core import QueuedConnectionManager, QueuedConnectionReader,\
                          ConnectionWriter
-from panda3d.core import ConfigVariableInt
+from panda3d.core import ConfigVariableInt, Point2D
 from panda3d.core import PointerToConnection, NetAddress, NetDatagram
 from direct.distributed.PyDatagramIterator import PyDatagramIterator
 from direct.task import Task
@@ -9,6 +9,8 @@ from objects.defaultConfig.Consts import *
 from objects.networking.NetworkMessages import *
 import sys
 from objects.networking.PlayerInfo import PlayerInfo
+from objects.characters.CharacterNetworkingUtilities import \
+                                                         getCharacterTypeAsClass
 
 class NetworkClient ():
     """
@@ -22,6 +24,7 @@ class NetworkClient ():
         self._loadConfig()
         self._gameManager = gameManager
         self._playerInfo = dict() # Party Member Info
+        self._creatures = dict() # Creates by cID.
         self._connection = None
 
     def _loadConfig (self):
@@ -86,6 +89,24 @@ class NetworkClient ():
         elif msgType == UPDATE_PLAYER_INFO:
             data = msg.getString()
             self._updatePlayerInfoHandler(data)
+        elif msgType == SPAWN_CHARACTER:
+            data = msg.getString()
+            dataDict = json.loads(data)
+            self._onSpawnHandler(dataDict)
+
+    def _onSpawnHandler (self, dataDict):
+        """ Handles networking spawning characters """
+        # Spawn object locally if the object at cID doesn't already exist.
+        if not 'objID' in self._creatures.keys():
+            # Spawn object of charType at pos
+            objectType = getCharacterTypeAsClass(dataDict['charType'])
+            newPos = Point2D(dataDict['pos'][0], dataDict['pos'][0])
+            newChar = objectType(parentCtrlr=None, cID=dataDict['objID'],
+                                 coords=newPos)
+            dataDict['objID'] = newChar
+        else:
+            #TODO Overwrite the old object
+            pass
 
     def _updatePlayerInfoHandler (self, data):
         """
@@ -108,3 +129,13 @@ class NetworkClient ():
         else:
             infoMsg = createPlayerInfoMessage(info)
             self.sendMessage(infoMsg, UPDATE_PLAYER_INFO)
+
+    def spawnGameObject (self, gameObject):
+        """
+            Tracks the given gameObject and sends it to the server
+        """
+        msg = createSpawnCharacterMessage(gameObject, self.getCID())
+        self.sendMessage(msg, SPAWN_CHARACTER)
+
+    def getCID(self):
+        return self._connection.this
