@@ -88,6 +88,7 @@ class TileMap ():
              2D list into a string of 0s and 1s.
         """
         newString = "".join(str(tile) for row in self._tileMap2D for tile in row)
+        print(newString)
         return newString
 
     def getRandomFloor (self):
@@ -117,6 +118,7 @@ def convertDungeonFromString (tileMap, size):
         Converts from a dungeon string to a 2D list.
         Used in network optimization.
     """
+    print(tileMap)
     new2DList = []
     for row in range(size):
         subList = []
