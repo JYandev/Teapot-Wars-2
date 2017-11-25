@@ -40,7 +40,6 @@ def createSpawnCharacterMessage (gameObject, objID):
     characterType = gameObject.getCharacterTypeEnum()
     posToParse = gameObject.getGridPosition()
     initPos = (posToParse.getX(), posToParse.getY())
-
     newData = {'charType':characterType, 'objID':objID, 'pos':initPos}
     newJson = json.dumps(newData)
     return createMessage(SPAWN_CHARACTER, newJson)

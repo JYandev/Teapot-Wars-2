@@ -159,7 +159,7 @@ class NetworkHost ():
         if not 'objID' in self._creatures.keys():
             # Spawn object of charType at pos
             objectType = getCharacterTypeAsClass(dataDict['charType'])
-            newPos = Point2D(dataDict['pos'][0], dataDict['pos'][0])
+            newPos = Point2D(dataDict['pos'][0], dataDict['pos'][1])
             newChar = objectType(parentCtrlr=None, cID=dataDict['objID'],
                                  coords=newPos)
             dataDict['objID'] = newChar
