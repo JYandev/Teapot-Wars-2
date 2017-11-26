@@ -78,12 +78,20 @@ def moveTargetToPosition (caster, position, tileMap):
 def moveSync (targetObject, **kwargs):
     """
         Given a target Object and coords, simply syncs this movement by playing
-         an interval. Called by a network message
+         an interval. Called by a network message.
+        Returns the moveSync interval action
     """
+    lastPos = targetObject.getGridPosition()
     coords = Point2D(kwargs['coords'][0], kwargs['coords'][1])
-    newAction = LerpPosInterval(targetObject.getNodePath(), 1.0,
-                                coordToRealPosition(coords))
-    newAction.start()
+    newSequence = Sequence()
+    newSequence.append(Func(updateObjectLocation, targetObject, lastPos, coords,
+                            kwargs['tileMap']))
+    newSequence.append(LerpPosInterval(targetObject.getNodePath(), 1.0,
+                                       coordToRealPosition(coords)))
+    print("MOVE SYNCING", lastPos, coords)
+    # Apply end signal to action:
+    newSequence.append(Func(endAction, targetObject))
+    return newSequence
 
 def updateObjectLocation (targetObj, oldPosition, position, tileMap):
     """

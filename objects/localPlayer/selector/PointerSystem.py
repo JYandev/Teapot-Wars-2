@@ -94,12 +94,13 @@ class PointerSystem ():
             if self._hoveredCoord != fromPos:
                 coordsList = findTilesFromTo(fromPos, self._hoveredCoord,
                                              self._tileMap)
-        count = 0
-        for coord in coordsList:
-            newHighlight = Selector("HighL %d" % count, HIGHLIGHTER_TINT)
-            newHighlight.showAt(coord)
-            self._highlightedTiles.append(newHighlight)
-            count += 1
+        if coordsList != None:
+            count = 0
+            for coord in coordsList:
+                newHighlight = Selector("HighL %d" % count, HIGHLIGHTER_TINT)
+                newHighlight.showAt(coord)
+                self._highlightedTiles.append(newHighlight)
+                count += 1
 
     def getHovered (self):
         return self._hoveredCoord

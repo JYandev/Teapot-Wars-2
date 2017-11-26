@@ -6,7 +6,7 @@ from panda3d.core import Point2D
 PATHFINDING_LEGAL_DIRECTIONS = [(-1, 0), (-1, 1), (0, 1), (1, 1),
                                 (1, 0), (1, -1), (0, -1), (-1, -1)]
 
-def findTilesFromTo (fromPos, toPos, tileMap):
+def findTilesFromTo (fromPos, toPos, tileMap, includeOcuppied=False):
     """
         Returns a list of grid coordinates to get from fromPos to toPos.
         All calculations are done and returned in grid space (row, col).
@@ -17,6 +17,7 @@ def findTilesFromTo (fromPos, toPos, tileMap):
     # Do two efficiency checks:
     if not tileMap.isFloor(toPos): return None
     if fromPos == toPos: return None
+    if not includeOcuppied and tileMap.isTileOccupied(toPos): return None
 
     visitedNodes = list()
     queue = [[fromPos]] # list of paths to check
@@ -37,7 +38,7 @@ def findTilesFromTo (fromPos, toPos, tileMap):
                     return newPath
     return None
 
-def getLegalTilesInDirections (originCoords, tileMap):
+def getLegalTilesInDirections (originCoords, tileMap, includeOcuppied=False):
     """
         Returns a list of legal tiles to check based on a current position
          and a tileMap. Takes Point2D inputs.
@@ -46,6 +47,8 @@ def getLegalTilesInDirections (originCoords, tileMap):
     for direction in PATHFINDING_LEGAL_DIRECTIONS:
         newTile = Point2D(originCoords.getX()+direction[0],
                           originCoords.getY()+direction[1])
-        if not tileMap.isTileOccupied(newTile):
+        if includeOcuppied and tileMap.isTileFloor(newTile):
+            newTiles.append(newTile)
+        elif not tileMap.isTileOccupied(newTile):
             newTiles.append(newTile)
     return newTiles

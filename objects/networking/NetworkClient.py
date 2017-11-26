@@ -128,11 +128,14 @@ class NetworkClient ():
             Attempts to queue an action for execution on a target denoted by
              dataDict['objID']
         """
-        print(self._creatures)
-        targetObj = self._creatures[dataDict['objID']]
         syncedAction = ACTION_NETWORKING_DICT[dataDict['actionID']]
-        newAction = Func(syncedAction, targetObj, **dataDict)
-        targetObj.startAction(newAction)
+        # Add a few local variables to dataDict:
+        targetObj = self._creatures[dataDict['objID']] # TODO Maybe make this part of dataDict!
+        dataDict['tileMap'] = self._gameManager.getTileMap()
+
+        # Create the newAction
+        newAction = syncedAction(targetObj, **dataDict)
+        targetObj.startAction(newAction) # queue or start the new action
 
     def updateLocalPlayerInfo (self, info=None):
         """

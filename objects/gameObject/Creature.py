@@ -17,32 +17,47 @@ class Creature (GameObject):
         self._maxEnergy = CREATURE_MAX_ENERGY
         self._energy = self._maxEnergy
 
+        self._actionQueue = []
         self._currentActionSequence = None
 
     def startAction (self, actionSequence):
         """ Assigns and starts the current action sequence """
-        #TODO Figure out what to do when action is already running! Put in queue!?!? Tell player he/she cannot do that?!?!?
-        self._currentActionSequence = actionSequence
-        self._currentActionSequence.start()
+        if self._currentActionSequence:
+            self._actionQueue.append(actionSequence)
+        else:
+            self._currentActionSequence = actionSequence
+            self._currentActionSequence.start()
 
     def cancelAction (self):
         """
             Aborts the current Action. Tells the parentController that something
              happened.
+            Also continues to the next queued action (if possible)
         """
         if self._currentActionSequence:
             self._currentActionSequence.pause()
             self._currentActionSequence = None
             self._parentController.onActionCanceled() #TODO: IF IT EXISTS
+        # Start next queued action
+        if len(self._actionQueue) > 0:
+            newAction = self._actionQueue.pop(0)
+            self.startAction(newAction)
 
     def endCurrentAction (self):
         """
             Similar to cancel, but doesn't warn the user because no stuns/energy
              limits were occured.
+            Also continues to the next queued action (if possible)
         """
         if self._currentActionSequence:
             self._currentActionSequence = None
-        self._parentController.onActionEnded()
+        # If we have a parent Controller, let them know we've ended:
+        if self._parentController:
+            self._parentController.onActionEnded()
+        # Start next queued action:
+        if len(self._actionQueue) > 0:
+            newAction = self._actionQueue.pop(0)
+            self.startAction(newAction)
 
     def syncAction (self, actionID, **kwargs):
         """ Tells the parentController to sync the action with the server """
