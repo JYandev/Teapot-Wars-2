@@ -11,6 +11,7 @@ import sys
 from objects.networking.PlayerInfo import PlayerInfo
 from objects.characters.CharacterNetworkingUtilities import \
                                                          getCharacterTypeAsClass
+from direct.interval.FunctionInterval import Func
 
 class NetworkClient ():
     """
@@ -93,6 +94,10 @@ class NetworkClient ():
             data = msg.getString()
             dataDict = json.loads(data)
             self._onSpawnHandler(dataDict)
+        elif msgType == SYNC_ACTION:
+            data = msg.getString()
+            dataDict = json.loads(data)
+            self._onActionSyncHandler(dataDict)
 
     def _onSpawnHandler (self, dataDict):
         """ Handles networking spawning characters """
@@ -103,7 +108,8 @@ class NetworkClient ():
             newPos = Point2D(dataDict['pos'][0], dataDict['pos'][1])
             newChar = objectType(parentCtrlr=None, cID=dataDict['objID'],
                                  coords=newPos)
-            dataDict['objID'] = newChar
+            self._creatures[dataDict['objID']] = newChar
+            print("[Client Spawned %s]" % dataDict['objID'])
         else:
             #TODO Overwrite the old object
             pass
@@ -117,6 +123,17 @@ class NetworkClient ():
         self._gameManager.updatePartyInfo(self._playerInfo,
                                           self._connection.this)
 
+    def _onActionSyncHandler (self, dataDict):
+        """
+            Attempts to queue an action for execution on a target denoted by
+             dataDict['objID']
+        """
+        print(self._creatures)
+        targetObj = self._creatures[dataDict['objID']]
+        syncedAction = ACTION_NETWORKING_DICT[dataDict['actionID']]
+        newAction = Func(syncedAction, targetObj, **dataDict)
+        targetObj.startAction(newAction)
+
     def updateLocalPlayerInfo (self, info=None):
         """
             Updates info for this local player and sends it to the server.
@@ -129,6 +146,15 @@ class NetworkClient ():
         else:
             infoMsg = createPlayerInfoMessage(info)
             self.sendMessage(infoMsg, UPDATE_PLAYER_INFO)
+
+    def syncAction (self, actionID, **kwargs):
+        """
+            The local player has performed an action that must be synced across
+             the network. Send a message to all clients telling them to perform
+             a related action on that character.
+        """
+        msg = createSyncActionMessage(self._connection.this, actionID, **kwargs)
+        self.sendMessage(msg, SYNC_ACTION)
 
     def spawnGameObject (self, gameObject):
         """

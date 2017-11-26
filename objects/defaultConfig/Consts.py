@@ -1,4 +1,5 @@
 from objects.characterClass.Classes import *
+from objects.characterAbilities import *
 """
     Python file containing static paths.
     Used by: "from objects/defaultConfig.StaticPaths import *
@@ -21,7 +22,7 @@ PLAYER_MAX_HEALTH = 100
 # === [Networking] ===
 HOST_MAX_BACKLOG = 1000
 CLIENT_TIMEOUT = 3000 # 3 Seconds
-
+ACTION_NETWORKING_DICT = {Move.actionID:moveSync}
 # === ===
 
 # === [User Interface] ===

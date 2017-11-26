@@ -11,6 +11,7 @@ import socket, json, sys
 from .PlayerInfo import PlayerInfo
 from objects.characters.CharacterNetworkingUtilities import \
                                                          getCharacterTypeAsClass
+from direct.interval.FunctionInterval import Func
 
 class NetworkHost ():
     """
@@ -133,6 +134,10 @@ class NetworkHost ():
             data = msg.getString()
             dataDict = json.loads(data)
             self._onSpawnHandler(dataDict)
+        elif msgType == SYNC_ACTION:
+            data = msg.getString()
+            dataDict = json.loads(data)
+            self._onActionSyncHandler(dataDict)
 
     def isHosting (self):
         """
@@ -146,11 +151,20 @@ class NetworkHost ():
         return newCID
 
     # === [Gameplay specific] ===
-    def spawnGameObject (self, gameObject, cID):
+    def syncAction (self, cID, actionID, **kwargs):
+        """
+            The local player has performed an action that must be synced across
+             the network. Send a message to all clients telling them to perform
+             a related action on that character.
+        """
+        msg = createSyncActionMessage(cID, actionID, **kwargs)
+        self.sendToAll(msg, SYNC_ACTION)
+
+    def spawnGameObject (self, gameObject):
         """
             Tracks the given gameObject and sends it to all clients.
         """
-        msg = createSpawnCharacterMessage(gameObject, cID)
+        msg = createSpawnCharacterMessage(gameObject, gameObject.getCID())
         self.sendToAll(msg, SPAWN_CHARACTER)
 
     def _onSpawnHandler (self, dataDict):
@@ -162,10 +176,20 @@ class NetworkHost ():
             newPos = Point2D(dataDict['pos'][0], dataDict['pos'][1])
             newChar = objectType(parentCtrlr=None, cID=dataDict['objID'],
                                  coords=newPos)
-            dataDict['objID'] = newChar
+            self._creatures[dataDict['objID']] = newChar
         else:
             #TODO Overwrite the old object
             pass
+
+    def _onActionSyncHandler (self, dataDict):
+        """
+            Attempts to queue an action for execution on a target denoted by
+             dataDict['objID']
+        """
+        targetObj = self._creatures[dataDict['objID']]
+        syncedAction = ACTION_NETWORKING_DICT[dataDict['actionID']]
+        newAction = Func(syncedAction, targetObj, **dataDict)
+        targetObj.startAction(newAction)
 
     def onClientConnected (self, clientConn):
         """

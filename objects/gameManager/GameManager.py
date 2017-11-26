@@ -68,13 +68,22 @@ class GameManager ():
         self._localPlayer = PlayerController(self, cID, newSpawnPosition,
                                              newClass)
         if self._networkHost:
-            self._networkHost.spawnGameObject(self._localPlayer\
-                                                  .getCharacter(), 'host')
+            self._networkHost.spawnGameObject(self._localPlayer.getCharacter())
         else:
             self._networkClient.spawnGameObject(self._localPlayer\
                                                     .getCharacter())
 
     # === Networking Interface ===
+    def onLocalPlayerAction (self, cID, actionID, **kwargs):
+        """
+            Tell our client/host to update the network with information on the
+             action.
+        """
+        if self._networkHost:
+            self._networkHost.syncAction(cID, actionID, **kwargs)
+        else:
+            self._networkClient.syncAction(actionID, **kwargs)
+
     def onLocalClientJoinedParty (self, myID):
         """ Start the Class Selection screen and sets up camera view """
         self._mainMenu.close()

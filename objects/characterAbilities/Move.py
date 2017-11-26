@@ -4,6 +4,8 @@ from direct.interval.LerpInterval import LerpPosInterval
 from direct.interval.FunctionInterval import Func
 from objects.pathfinding.BFS import findTilesFromTo
 from objects.tileMap.TileMap import coordToRealPosition
+from .ActionID import ActionID
+from panda3d.core import Point2D
 
 MOVEMENT_ENERGY_COST = 10
 
@@ -28,6 +30,7 @@ class Move (BaseAbility):
     targeterType = Targeter.SelfPath
     baseEnergyCost = MOVEMENT_ENERGY_COST
     effect = MoveEffect
+    actionID = ActionID.MOVE
 
     @staticmethod
     def getEnergyCost (**kwargs):
@@ -62,13 +65,25 @@ def moveTargetToPosition (caster, position, tileMap):
         lastPos = initialPos if count == 0 else steps[count-1]
         newPos = coordToRealPosition(step)
         moveSequence.append(Func(checkDrainEnergy, caster, Move.getEnergyCost))
+        moveSequence.append(Func(syncAction, caster, Move.actionID,
+                                 coords=(step[0], step[1])))
         moveSequence.append(LerpPosInterval(caster.getNodePath(), 1.0, newPos)) #TODO make 1.0 a speed constant
         moveSequence.append(Func(updateObjectLocation, caster,
                                  lastPos, step, tileMap))
         count += 1
     moveSequence.append(Func(endAction, caster)) # Apply end signal to action.
     # Finally, play the movement sequence:
-    caster.getParentController().startAction(moveSequence)
+    caster.startAction(moveSequence)
+
+def moveSync (targetObject, **kwargs):
+    """
+        Given a target Object and coords, simply syncs this movement by playing
+         an interval. Called by a network message
+    """
+    coords = Point2D(kwargs['coords'][0], kwargs['coords'][1])
+    newAction = LerpPosInterval(targetObject.getNodePath(), 1.0,
+                                coordToRealPosition(coords))
+    newAction.start()
 
 def updateObjectLocation (targetObj, oldPosition, position, tileMap):
     """

@@ -7,6 +7,7 @@ DEBUG_MESSAGE = 1
 MAP_MESSAGE = 2
 UPDATE_PLAYER_INFO = 3
 SPAWN_CHARACTER = 4
+SYNC_ACTION = 5
 
 def createMessage (msgType, command):
     """
@@ -43,3 +44,8 @@ def createSpawnCharacterMessage (gameObject, objID):
     newData = {'charType':characterType, 'objID':objID, 'pos':initPos}
     newJson = json.dumps(newData)
     return createMessage(SPAWN_CHARACTER, newJson)
+
+def createSyncActionMessage (cID, actionID, **kwargs):
+    newData = {'objID':cID, "actionID":actionID, **kwargs}
+    newJson = json.dumps(newData)
+    return createMessage(SYNC_ACTION, newJson)

@@ -17,8 +17,42 @@ class Creature (GameObject):
         self._maxEnergy = CREATURE_MAX_ENERGY
         self._energy = self._maxEnergy
 
+        self._currentActionSequence = None
+
+    def startAction (self, actionSequence):
+        """ Assigns and starts the current action sequence """
+        #TODO Figure out what to do when action is already running! Put in queue!?!? Tell player he/she cannot do that?!?!?
+        self._currentActionSequence = actionSequence
+        self._currentActionSequence.start()
+
+    def cancelAction (self):
+        """
+            Aborts the current Action. Tells the parentController that something
+             happened.
+        """
+        if self._currentActionSequence:
+            self._currentActionSequence.pause()
+            self._currentActionSequence = None
+            self._parentController.onActionCanceled() #TODO: IF IT EXISTS
+
+    def endCurrentAction (self):
+        """
+            Similar to cancel, but doesn't warn the user because no stuns/energy
+             limits were occured.
+        """
+        if self._currentActionSequence:
+            self._currentActionSequence = None
+        self._parentController.onActionEnded()
+
+    def syncAction (self, actionID, **kwargs):
+        """ Tells the parentController to sync the action with the server """
+        self._parentController.syncAction(self.getCID(), actionID, **kwargs)
+
     def getParentController(self):
         return self._parentController
+
+    def getCurrentActionSequence(self):
+        return self._currentActionSequence
 
     def getEnergy (self):
         return self._energy

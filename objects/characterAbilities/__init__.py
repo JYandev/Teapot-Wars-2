@@ -1,1 +1,1 @@
-from objects.characterAbilities.Move import Move
+from objects.characterAbilities.Move import Move, moveSync
