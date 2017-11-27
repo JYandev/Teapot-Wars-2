@@ -10,6 +10,7 @@ from objects.characterAbilities import *
 
 # --- (Default Creature) ---
 CREATURE_MAX_ENERGY = 100
+CREATURE_DEFAULT_REACH = 1
 # --- ---
 
 PLAYER_MAX_ENERGY = 100

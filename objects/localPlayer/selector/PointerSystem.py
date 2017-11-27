@@ -1,9 +1,10 @@
 from direct.showbase.ShowBase import Plane, Vec3, Point3, Point2D
 from .Selector import Selector
 from objects.characterAbilities.BaseAbility import Targeter
-from objects.pathfinding.BFS import findTilesFromTo
+from objects.pathfinding.BFS import findTilesFromTo, getAreaTiles
+from objects.tileMap.TileMapUtilities import tileWithinRange
 
-#SELECTOR_TINT = [0.5, 0.5, 1, 1]
+PREVIEWER_TINT = [0.5, 0.5, 1, 1]
 HIGHLIGHTER_TINT = [1, 0.5, 0.5, 1]
 #TODO Put the above in Consts
 
@@ -19,6 +20,7 @@ class PointerSystem ():
         self._highlightMode = None # Targeter reference
         self._highlightModeParams = None # Targeter params dict
         self._highlightedTiles = list() # List of tile highlighted by pointer.
+        self._previewTiles = list() # List of tiles highlighted by preview.
 
         # Perform mouse raycasting every frame:
         taskMgr.add(self._updateHovered, "mouseScanning")
@@ -62,6 +64,12 @@ class PointerSystem ():
         """
         self._highlightMode = mode
         self._highlightModeParams = params
+        # For special cases, show a preview highlight:
+        if self._highlightMode == Targeter.SelfReachPosition:
+            origin = self._highlightModeParams['origin']
+            reach = self._highlightModeParams['reach']
+            tiles = getAreaTiles(origin, self._tileMap, reach)
+            self._highlightPreviewTiles(tiles)
 
     def resetHighlightMode (self):
         """
@@ -73,6 +81,25 @@ class PointerSystem ():
         while len(self._highlightedTiles) > 0:
             selector = self._highlightedTiles.pop(0)
             selector.destroy()
+        while len(self._previewTiles) > 0:
+            selector = self._previewTiles.pop(0)
+            selector.destroy()
+
+    def _highlightPreviewTiles (self, coordsList):
+        """
+            Preview highlights the given positions. Assumes valid positions.
+        """
+        # Remove all previous highlights:
+        while len(self._previewTiles) > 0:
+            selector = self._previewTiles.pop(0)
+            selector.destroy()
+        # Create new previewers for each position:
+        count = 0
+        for coord in coordsList:
+            newHighlight = Selector("PreviewH %d" % count, PREVIEWER_TINT, True)
+            newHighlight.showAt(coord)
+            self._previewTiles.append(newHighlight)
+            count += 1
 
     def _highlightTiles (self):
         """
@@ -94,6 +121,14 @@ class PointerSystem ():
             if self._hoveredCoord != fromPos:
                 coordsList = findTilesFromTo(fromPos, self._hoveredCoord,
                                              self._tileMap)
+        elif self._highlightMode == Targeter.SelfReachPosition and\
+                                  self._hoveredCoord != None:
+            if tileWithinRange(self._highlightModeParams['origin'],
+                               self._highlightModeParams['reach'],
+                               self._hoveredCoord):
+                # Note, user is allowed to hit themselves!
+                coordsList.append(self._hoveredCoord)
+
         if coordsList != None:
             count = 0
             for coord in coordsList:

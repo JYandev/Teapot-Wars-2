@@ -1,22 +1,25 @@
 from panda3d.core import NodePath
 from ...gameObject.GameObject import GameObject
-from ...tileMap.TileMap import coordToRealPosition
+from ...tileMap.TileMapUtilities import coordToRealPosition
 
 MODEL_PATH = "objects/localPlayer/selector/TileSelector.egg"
 TEXTURE_PATH = "objects/localPlayer/selector/Selector-Diffuse.png"
 
 class Selector ():
-    def __init__ (self, nodeName, colorTint):
+    def __init__ (self, nodeName, colorTint, previewer=False):
         self.np = NodePath(nodeName)
-        self._initModel(colorTint) # Initialize our model and set up object.
+        self._initModel(colorTint, previewer)
         self.np.reparentTo(render) # Render our model
 
-    def _initModel (self, colorTint):
+    def _initModel (self, colorTint, previewer):
         self._model = base.loader.loadModel(MODEL_PATH)
         self._texture = base.loader.loadTexture(TEXTURE_PATH)
         self._model.setTexture(self._texture)
         self._model.setColorScale(*colorTint)
         self._model.reparentTo(self.np)
+        # Set our offset if we are not a previewer selector:
+        if previewer == False:
+            self._model.setPos(self.np, 0, 0, 0.01)
 
     def showAt (self, coords):
         """

@@ -16,6 +16,7 @@ class Creature (GameObject):
         # Apply default creature stats:
         self._maxEnergy = CREATURE_MAX_ENERGY
         self._energy = self._maxEnergy
+        self._reach = CREATURE_DEFAULT_REACH
 
         self._actionQueue = []
         self._currentActionSequence = None
@@ -71,6 +72,9 @@ class Creature (GameObject):
 
     def getEnergy (self):
         return self._energy
+
+    def getReach (self):
+        return self._reach
 
     def getMaxEnergy(self):
         return self._maxEnergy

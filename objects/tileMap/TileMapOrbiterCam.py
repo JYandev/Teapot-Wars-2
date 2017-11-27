@@ -1,7 +1,7 @@
 from direct.task import Task
 from objects.defaultConfig.Consts import *
 from objects.localPlayer.CameraSystem import calculateOrbit
-from objects.tileMap.TileMap import coordToRealPosition
+from objects.tileMap.TileMapUtilities import coordToRealPosition
 import random
 
 class TileMapOrbiterCam ():

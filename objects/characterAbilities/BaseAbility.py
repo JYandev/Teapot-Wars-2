@@ -25,6 +25,7 @@ class Targeter ():
     Area = 3
     Path = 4
     SelfPath = 5
+    SelfReachPosition = 6 # Pick a position within a certain range around self
 
 class Effect ():
     """

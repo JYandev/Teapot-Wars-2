@@ -38,6 +38,25 @@ def findTilesFromTo (fromPos, toPos, tileMap, includeOcuppied=False):
                     return newPath
     return None
 
+def getAreaTiles (originCoords, tileMap, areaRange):
+    """
+        Returns a list of positions centered around an originCoords that
+         stretches out until a given range.
+    """
+    tiles = list()
+    rangeCount = 0
+    while rangeCount < areaRange:
+        rangeCount += 1
+        # Get all tiles in all directions:
+        for direction in PATHFINDING_LEGAL_DIRECTIONS:
+            # Add a vector based on range and direction to the origin position
+            #  for every direction:
+            newVector = Point2D(direction[0], direction[1]) * rangeCount
+            newPosition = originCoords + newVector
+            if tileMap.isFloor(newPosition):
+                tiles.append(newPosition)
+    return tiles
+
 def getLegalTilesInDirections (originCoords, tileMap, includeOcuppied=False):
     """
         Returns a list of legal tiles to check based on a current position

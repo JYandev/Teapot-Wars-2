@@ -34,13 +34,21 @@ class InputSystem (DirectObject.DirectObject):
             Highlights tiles and tells the pointer system to indicate area or
              single-target based on the current ability's targeter.
         """
+        # Reset in case we already have a highlight mode active and we just
+        #  switched abilities:
+        self._pointerSystem.resetHighlightMode()
         if self._currentAbility:
             targeter = self._currentAbility.targeterType
             # Show how much energy it will take updateEnergyRequirement()
             if targeter == Targeter.SelfPath:
                 params = {'origin':self._plyrCtrl.getCharacter()\
                                                  .getGridPosition()}
-                self._pointerSystem.setHighightMode(targeter, params)
+            elif targeter == Targeter.SelfReachPosition:
+                params = {'origin':self._plyrCtrl.getCharacter()\
+                                                   .getGridPosition(),
+                          'reach':self._plyrCtrl.getCharacter()\
+                                                   .getReach()}
+            self._pointerSystem.setHighightMode(targeter, params)
 
     def _onMouseButtonDown(self):
         """
@@ -49,9 +57,11 @@ class InputSystem (DirectObject.DirectObject):
         if self._currentAbility:
             if self._currentAbility.targeterType == Targeter.SelfPath:
                 params = {'targetPos' : self._pointerSystem.getHovered(),
-                          'targetNode' : self._plyrCtrl.getCharacter(),
+                          'casterObj' : self._plyrCtrl.getCharacter(),
                           'tileMap' : self._tileMap}
                 self._currentAbility.effect.doEffect(**params)
-                # We've succesfully initiated action, reset the active ability:
-                self._currentAbility = None
-                self._pointerSystem.resetHighlightMode()
+            elif self._currentAbility.targeterType==Targeter.SelfReachPosition:
+                print("TODO _onMouseButtonDown Implement ability.doEffect!")
+            # We've succesfully initiated action, reset the active ability:
+            self._currentAbility = None
+            self._pointerSystem.resetHighlightMode()

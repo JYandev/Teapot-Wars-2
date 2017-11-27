@@ -17,4 +17,4 @@ class Barbarian (BaseClass):
 Also, the Barbarian's table manners are the worst."""
     classDescFontSize = (0.05, 0.05)
     classDescWrap = 27
-    classAbilities = [Move]
+    classAbilities = [Move, BasicAttack]

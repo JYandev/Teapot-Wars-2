@@ -3,7 +3,7 @@ from direct.interval.IntervalGlobal import Sequence, Parallel
 from direct.interval.LerpInterval import LerpPosInterval
 from direct.interval.FunctionInterval import Func
 from objects.pathfinding.BFS import findTilesFromTo
-from objects.tileMap.TileMap import coordToRealPosition
+from objects.tileMap.TileMapUtilities import coordToRealPosition
 from .ActionID import ActionID
 from panda3d.core import Point2D
 
@@ -18,14 +18,14 @@ class MoveEffect (Effect):
 
     @staticmethod
     def doEffect(**kwargs):
-        if 'targetNode' in kwargs and 'targetPos' in kwargs\
+        if 'casterObj' in kwargs and 'targetPos' in kwargs\
                                   and 'tileMap' in kwargs:
-            moveTargetToPosition(kwargs['targetNode'], kwargs['targetPos'],
+            moveTargetToPosition(kwargs['casterObj'], kwargs['targetPos'],
                                  kwargs['tileMap'])
 
 class Move (BaseAbility):
     """
-        Moves a target to a position.
+        Moves a target to a position using pathfinding.
     """
     targeterType = Targeter.SelfPath
     baseEnergyCost = MOVEMENT_ENERGY_COST

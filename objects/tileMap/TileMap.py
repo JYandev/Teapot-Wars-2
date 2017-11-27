@@ -1,4 +1,5 @@
 from external.PyBSP_Dungeon_Generator import pybsp
+from objects.gameObject.Creature import Creature
 from panda3d.core import Point2D, LVector3f
 from panda3d.core import NodePath
 import random
@@ -71,6 +72,18 @@ class TileMap ():
     def getTileMap (self):
         return self._tileMap
 
+    def getCreatureAtPos (self, coords):
+        """
+            Returns the first creature object found at coords, if there are any.
+            If there are no creatures at the specified coords, returns None.
+        """
+        if isFloor(coords) and isTileOccupied(coords):
+            creaturesList = self._tileMap[coords][1]
+            for obj in creaturesList:
+                if isinstance(obj, Creature):
+                    return obj
+        # Automatically returns None
+
     def updateObjectLocation (self, node, oldLocation, newLocation):
         """
             Finds the node at old location and moves it to newLocation.
@@ -104,17 +117,6 @@ class TileMap ():
             if self._tileMap[key][0] == 1:
                 validKeys.append(key)
         return validKeys[random.randint(0, len(validKeys)-1)] # Random inclusive
-
-def coordToRealPosition (coords):
-    """
-        Converts coordinate position (Point2D) to real space (LVector3f)
-        This gets the center of the tile.
-    """
-    newTileStart = coords
-    newTileEnd = Point2D(newTileStart.getX() + TILE_SIZE,
-                         newTileStart.getY() + TILE_SIZE)
-    tileCenter = (newTileStart + newTileEnd) / 2
-    return LVector3f(tileCenter.getX(), tileCenter.getY(), TILE_HEIGHT)
 
 def convertDungeonFromString (tileMap, size):
     """

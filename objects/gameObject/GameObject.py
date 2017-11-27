@@ -1,5 +1,5 @@
 from panda3d.core import NodePath
-from ..tileMap.TileMap import coordToRealPosition
+from ..tileMap.TileMapUtilities import coordToRealPosition
 from objects.defaultConfig.Consts import *
 
 class GameObject (object):
