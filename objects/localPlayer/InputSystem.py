@@ -3,6 +3,7 @@ from .selector.PointerSystem import PointerSystem
 import string
 from objects.characterAbilities.BaseAbility import Targeter
 from objects.characterAbilities import *
+from objects.tileMap.TileMapUtilities import tileWithinRange
 
 class InputSystem (DirectObject.DirectObject):
     """
@@ -61,7 +62,19 @@ class InputSystem (DirectObject.DirectObject):
                           'tileMap' : self._tileMap}
                 self._currentAbility.effect.doEffect(**params)
             elif self._currentAbility.targeterType==Targeter.SelfReachPosition:
-                print("TODO _onMouseButtonDown Implement ability.doEffect!")
+                # Check to make sure target is in range:
+                origin = self._plyrCtrl.getCharacter().getGridPosition()
+                reach = self._plyrCtrl.getCharacter().getReach()
+                selTile = self._pointerSystem.getHovered()
+                if tileWithinRange(origin, reach, selTile):
+                    char = self._plyrCtrl.getCharacter()
+                    params = {'targetPos' : selTile,
+                              'casterObj' : char,
+                              'tileMap' : self._tileMap,
+                              'damage' : char.getDamage(),
+                              'attackClass' : self._currentAbility}
+                    self._currentAbility.effect.doEffect(**params)
+                    print("TODO _onMouseButtonDown Implement ability.doEffect!")
             # We've succesfully initiated action, reset the active ability:
             self._currentAbility = None
             self._pointerSystem.resetHighlightMode()

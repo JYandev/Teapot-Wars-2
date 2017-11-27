@@ -13,10 +13,12 @@ class SingleTargetDamageEffect (Effect):
 
     @staticmethod
     def doEffect(**kwargs):
-        if 'casterObj' in kwargs and 'targetObj' in kwargs\
-            and 'damage' in kwargs and 'tileMap' in kwargs:
+        if 'casterObj' in kwargs and 'targetPos' in kwargs\
+            and 'damage' in kwargs and 'tileMap' in kwargs\
+            and 'attackClass' in kwargs:
             singleTargetAttack(kwargs['casterObj'], kwargs['targetPos'],
-                               kwargs['damage'], kwargs['tileMap'])
+                               kwargs['damage'], kwargs['tileMap'],
+                               kwargs['attackClass'])
 
 class BasicAttack (BaseAbility):
     """
@@ -29,7 +31,7 @@ class BasicAttack (BaseAbility):
 
     @staticmethod
     def getEnergyCost (**kwargs):
-        return baseEnergyCost
+        return BasicAttack.baseEnergyCost
 
 def inflictDamage (targets, damage):
     """
@@ -38,7 +40,7 @@ def inflictDamage (targets, damage):
     for target in targets:
         target.takeDamage(damage)
 
-def singleTargetAttack (caster, targetPos, damage, tileMap):
+def singleTargetAttack (caster, targetPos, damage, tileMap, attackClass):
     """
         Makes caster attack target, inflicting damage.
         Drains energy on activation.
@@ -53,7 +55,28 @@ def singleTargetAttack (caster, targetPos, damage, tileMap):
                                attackClass.getEnergyCost))
     # Deal damage server-side and sync:
     attackSequence.append(Func(syncAction, caster, BasicAttack.actionID,
-                               target=target, damage=damage))
+                               targetCID=target.getCID(), damage=damage))
     #TODO Attack animation
     attackSequence.append(Func(endAction, caster)) # Apply end signal to action.
     caster.startAction(attackSequence)
+
+def singleTargetAttackSync (targetObject, **kwargs):
+    """
+        Played clientside on a creature that makes an attack.
+        If this is run on the host machine, damage is dealt and health is synced
+        Returns the sequence described above.
+    """
+
+    # Create and Play animation sequence on targetObject:
+    newSequence = Sequence()
+    #TODO Create and Play animation sequence on targetObject
+    newSequence.append(Func(endAction, targetObject))
+
+    attackTarg = kwargs['target']
+    print("ATTACK SYNCING. Attacker:", targetObject.getCID(), " Defender: ",
+          attackTarg.getCID())
+    if kwargs['isServer'] == True: # Deal damage and sync!
+        print("AM SERVER. DEAL THE DAMAGE")
+        inflictDamage([attackTarg], kwargs['damage'])
+        # TODO: SYNC
+    return newSequence

@@ -14,12 +14,41 @@ class Creature (GameObject):
         self._cID = cID
 
         # Apply default creature stats:
-        self._maxEnergy = CREATURE_MAX_ENERGY
+        self._maxEnergy = CREATURE_DEFAULT_MAX_ENERGY
         self._energy = self._maxEnergy
         self._reach = CREATURE_DEFAULT_REACH
+        self._baseDamage = CREATURE_BASE_DAMAGE
+        self._maxHealth = CREATURE_DEFAULT_MAX_HEALTH
+        self._health = self._maxHealth
 
         self._actionQueue = []
         self._currentActionSequence = None
+
+    def takeDamage (self, damage):
+        """
+            Takes damage.
+            If this creature's HP drops to below 0, plays a death sequence and
+             syncs across the network.
+        """
+        self._health -= damage
+        if self._health <= 0:
+            print("CREATURE DIED: ", self.getCID())
+            #TODO: Death sequence
+
+    def onHPModified (self, newValue):
+        """
+            Changes HP to be the newValue and creates damage/heal floating text.
+            Called by the current network controller when the host attempts to
+             sync damage/healing.
+        """
+        pass # TODO Implement onHPModified
+
+    def getDamage (self):
+        """
+            Final base damage output is based on equipped weapons.
+            Actual damage dealt depends on the ability and its multiplier(s)
+        """
+        return self._baseDamage #TODO Make this depend on equipped weapon/class
 
     def startAction (self, actionSequence):
         """ Assigns and starts the current action sequence """

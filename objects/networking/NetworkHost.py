@@ -190,6 +190,10 @@ class NetworkHost ():
         # Add a few local variables to dataDict:
         targetObj = self._creatures[dataDict['objID']] # TODO Maybe make this part of dataDict!
         dataDict['tileMap'] = self._gameManager.getTileMap()
+        if 'targetCID' in dataDict: # If there is another target:
+            # Assign the target:
+            dataDict['target'] = self._creatures[dataDict['targetCID']]
+        dataDict['isServer'] = True # Let sync function know we are server
 
         # Create the newAction
         newAction = syncedAction(targetObj, **dataDict)

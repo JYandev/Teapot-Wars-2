@@ -77,7 +77,7 @@ class TileMap ():
             Returns the first creature object found at coords, if there are any.
             If there are no creatures at the specified coords, returns None.
         """
-        if isFloor(coords) and isTileOccupied(coords):
+        if self.isFloor(coords) and self.isTileOccupied(coords):
             creaturesList = self._tileMap[coords][1]
             for obj in creaturesList:
                 if isinstance(obj, Creature):

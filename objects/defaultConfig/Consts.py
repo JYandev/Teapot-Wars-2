@@ -9,8 +9,10 @@ from objects.characterAbilities import *
 # === [Game Balance] ===
 
 # --- (Default Creature) ---
-CREATURE_MAX_ENERGY = 100
+CREATURE_DEFAULT_MAX_ENERGY = 100
+CREATURE_DEFAULT_MAX_HEALTH = 100
 CREATURE_DEFAULT_REACH = 1
+CREATURE_BASE_DAMAGE = 10
 # --- ---
 
 PLAYER_MAX_ENERGY = 100
@@ -23,7 +25,8 @@ PLAYER_MAX_HEALTH = 100
 # === [Networking] ===
 HOST_MAX_BACKLOG = 1000
 CLIENT_TIMEOUT = 3000 # 3 Seconds
-ACTION_NETWORKING_DICT = {Move.actionID:moveSync}
+ACTION_NETWORKING_DICT = {Move.actionID:moveSync,
+                          BasicAttack.actionID:singleTargetAttackSync}
 # === ===
 
 # === [User Interface] ===
