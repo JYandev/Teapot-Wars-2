@@ -1,7 +1,7 @@
 from objects.characterAbilities.BaseAbility import *
 from direct.interval.IntervalGlobal import Sequence, Parallel
 from direct.interval.LerpInterval import LerpPosInterval
-from direct.interval.FunctionInterval import Func
+from direct.interval.FunctionInterval import Func, Wait
 from objects.pathfinding.BFS import findTilesFromTo
 from objects.tileMap.TileMapUtilities import coordToRealPosition
 from .ActionID import ActionID
@@ -65,6 +65,7 @@ def moveTargetToPosition (caster, position, tileMap):
         lastPos = initialPos if count == 0 else steps[count-1]
         newPos = coordToRealPosition(step)
         moveSequence.append(Func(checkDrainEnergy, caster, Move.getEnergyCost))
+        moveSequence.append(Wait(0.1))
         moveSequence.append(Func(syncAction, caster, Move.actionID,
                                  coords=(step[0], step[1])))
         moveSequence.append(LerpPosInterval(caster.getNodePath(), 1.0, newPos)) #TODO make 1.0 a speed constant

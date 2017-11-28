@@ -66,7 +66,7 @@ class InputSystem (DirectObject.DirectObject):
                 origin = self._plyrCtrl.getCharacter().getGridPosition()
                 reach = self._plyrCtrl.getCharacter().getReach()
                 selTile = self._pointerSystem.getHovered()
-                if tileWithinRange(origin, reach, selTile):
+                if selTile and tileWithinRange(origin, reach, selTile):
                     char = self._plyrCtrl.getCharacter()
                     params = {'targetPos' : selTile,
                               'casterObj' : char,

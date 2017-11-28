@@ -1,6 +1,6 @@
 from objects.characterAbilities.BaseAbility import *
 from direct.interval.IntervalGlobal import Sequence, Parallel
-from direct.interval.FunctionInterval import Func
+from direct.interval.FunctionInterval import Func, Wait
 from .ActionID import ActionID
 
 BASIC_ATTACK_ENERGY_COST = 40
@@ -54,6 +54,7 @@ def singleTargetAttack (caster, targetPos, damage, tileMap, attackClass,
     # Check for energy availability:
     attackSequence.append(Func(checkDrainEnergy, caster,
                                attackClass.getEnergyCost))
+    attackSequence.append(Wait(0.1)) # TODO Figure out a better way to delay until the above check completes
     # Deal damage server-side and sync:
     print("ISSERVER", isServer)
     if isServer:
