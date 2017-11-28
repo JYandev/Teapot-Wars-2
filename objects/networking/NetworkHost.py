@@ -164,6 +164,9 @@ class NetworkHost ():
         """
             Tracks the given gameObject and sends it to all clients.
         """
+        # First, track it locally:
+        self._creatures[gameObject.getCID()] = gameObject
+        # Send to all clients:
         msg = createSpawnCharacterMessage(gameObject, gameObject.getCID())
         self.sendToAll(msg, SPAWN_CHARACTER)
 
