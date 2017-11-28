@@ -173,16 +173,21 @@ class NetworkHost ():
     def _onSpawnHandler (self, dataDict):
         """ Handles networking spawning characters """
         # Spawn object locally if the object at cID doesn't already exist.
-        if not 'objID' in self._creatures.keys():
+        if not dataDict['objID'] in self._creatures.keys():
             # Spawn object of charType at pos
             objectType = getCharacterTypeAsClass(dataDict['charType'])
             newPos = Point2D(dataDict['pos'][0], dataDict['pos'][1])
             newChar = objectType(parentCtrlr=None, cID=dataDict['objID'],
                                  gameManager=self._gameManager, coords=newPos)
             self._creatures[dataDict['objID']] = newChar
+            print("[Server Spawned %s]" % dataDict['objID'])
         else:
-            #TODO Overwrite the old object
+            # Ignore Overwrite
             pass
+        # Tell all other clients to spawn objects:
+        newMsg = createSpawnCharacterMessage(self._creatures[dataDict['objID']],
+                                             dataDict['objID'])
+        self.sendToAll(newMsg, SPAWN_CHARACTER)
 
     def _onActionSyncHandler (self, dataDict):
         """
@@ -201,6 +206,8 @@ class NetworkHost ():
         # Create the newAction
         newAction = syncedAction(targetObj, **dataDict)
         targetObj.startAction(newAction) # queue or start the new action
+        # Send action to all clients except the one that sent the action:
+        #TODO Send action to all clients except the one that sent the action:
 
     def onClientConnected (self, clientConn):
         """
@@ -221,6 +228,11 @@ class NetworkHost ():
                 newInfoMsg = createPlayerInfoMessage(self._playerInfo[player])
                 self.sendToClient(newInfoMsg, clientConn,
                                   UPDATE_PLAYER_INFO)
+        # Send all creatures to the new client:
+        for creatureID in self._creatures:
+            newMsg = createSpawnCharacterMessage(self._creatures[creatureID],
+                                                 creatureID)
+            self.sendToClient(newMsg, clientConn, SPAWN_CHARACTER)
 
     def _updatePlayerInfoHandler (self, connID, data=None):
         """
@@ -236,8 +248,8 @@ class NetworkHost ():
         self._gameManager.updatePartyInfo(self._playerInfo, 'host')
         # Send player info to every client:
         for player in self._playerInfo:
-            # Don't send an info message about the player to the same player!
             newInfoMsg = createPlayerInfoMessage(self._playerInfo[player])
+            #Send every player to every client:
             self.sendToAll(newInfoMsg, UPDATE_PLAYER_INFO)
 
     def updateLocalPlayerInfo (self, info=None):

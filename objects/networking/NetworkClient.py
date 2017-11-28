@@ -114,7 +114,7 @@ class NetworkClient ():
     def _onSpawnHandler (self, dataDict):
         """ Handles networking spawning characters """
         # Spawn object locally if the object at cID doesn't already exist.
-        if not 'objID' in self._creatures.keys():
+        if not dataDict['objID'] in self._creatures.keys():
             # Spawn object of charType at pos
             objectType = getCharacterTypeAsClass(dataDict['charType'])
             newPos = Point2D(dataDict['pos'][0], dataDict['pos'][1])
@@ -123,7 +123,7 @@ class NetworkClient ():
             self._creatures[dataDict['objID']] = newChar
             print("[Client Spawned %s]" % dataDict['objID'])
         else:
-            #TODO Overwrite the old object
+            # Ignore Overwrite
             pass
 
     def _updatePlayerInfoHandler (self, data):
