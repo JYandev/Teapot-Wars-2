@@ -33,6 +33,10 @@ class GameManager ():
     def getTileMap (self):
         return self._tileMap
 
+    def isHost (self):
+        """ Returns whether we are hosting or remote """
+        return self._networkHost != None
+
     def startHostGame (self):
         """
             Initializes the NetworkHost and begins the game process.

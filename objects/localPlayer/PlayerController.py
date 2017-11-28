@@ -63,6 +63,10 @@ class PlayerController ():
             self.updateEnergyBar()
         return task.cont
 
+    def isHostPlayer (self):
+        """ Returns whether we are a host player. """
+        return self._gameManager.isHost()
+
     def getClass (self):
         return self._charClass
 

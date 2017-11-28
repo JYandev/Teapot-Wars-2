@@ -7,8 +7,8 @@ from objects.gameManager.GameManager import GameManager
 class App(ShowBase):
     def __init__(self):
         ShowBase.__init__(self) # Call init on super
-        gameManager = GameManager()
-        gameManager.startMainMenu()
+        gameManager = GameManager() # Start Game State Manager
+        gameManager.startMainMenu() # Start the main menu
 
 if __name__ == "__main__":
     app = App()

@@ -1,6 +1,7 @@
 from ..gameObject.GameObject import GameObject
 from panda3d.core import LPoint3f
 from objects.defaultConfig.Consts import *
+from objects.gameUI.DamageText import DamageText
 
 class Creature (GameObject):
     """
@@ -30,7 +31,9 @@ class Creature (GameObject):
             If this creature's HP drops to below 0, plays a death sequence and
              syncs across the network.
         """
+        print("OUCH ", damage)
         self._health -= damage
+        DamageText(self.getNodePath(), damage) # Spawn damage text
         if self._health <= 0:
             print("CREATURE DIED: ", self.getCID())
             #TODO: Death sequence

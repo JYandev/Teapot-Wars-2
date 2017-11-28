@@ -72,7 +72,8 @@ class InputSystem (DirectObject.DirectObject):
                               'casterObj' : char,
                               'tileMap' : self._tileMap,
                               'damage' : char.getDamage(),
-                              'attackClass' : self._currentAbility}
+                              'attackClass' : self._currentAbility,
+                              'isServer' : self._plyrCtrl.isHostPlayer()}
                     self._currentAbility.effect.doEffect(**params)
                     print("TODO _onMouseButtonDown Implement ability.doEffect!")
             # We've succesfully initiated action, reset the active ability:

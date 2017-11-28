@@ -15,10 +15,10 @@ class SingleTargetDamageEffect (Effect):
     def doEffect(**kwargs):
         if 'casterObj' in kwargs and 'targetPos' in kwargs\
             and 'damage' in kwargs and 'tileMap' in kwargs\
-            and 'attackClass' in kwargs:
+            and 'attackClass' in kwargs and 'isServer' in kwargs:
             singleTargetAttack(kwargs['casterObj'], kwargs['targetPos'],
                                kwargs['damage'], kwargs['tileMap'],
-                               kwargs['attackClass'])
+                               kwargs['attackClass'], kwargs['isServer'])
 
 class BasicAttack (BaseAbility):
     """
@@ -40,7 +40,8 @@ def inflictDamage (targets, damage):
     for target in targets:
         target.takeDamage(damage)
 
-def singleTargetAttack (caster, targetPos, damage, tileMap, attackClass):
+def singleTargetAttack (caster, targetPos, damage, tileMap, attackClass,
+                        isServer):
     """
         Makes caster attack target, inflicting damage.
         Drains energy on activation.
@@ -54,6 +55,10 @@ def singleTargetAttack (caster, targetPos, damage, tileMap, attackClass):
     attackSequence.append(Func(checkDrainEnergy, caster,
                                attackClass.getEnergyCost))
     # Deal damage server-side and sync:
+    print("ISSERVER", isServer)
+    if isServer:
+        # If initiated on the server, deal damage:
+        attackSequence.append(Func(inflictDamage, [target], damage))
     attackSequence.append(Func(syncAction, caster, BasicAttack.actionID,
                                targetCID=target.getCID(), damage=damage))
     #TODO Attack animation

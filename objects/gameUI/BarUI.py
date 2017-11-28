@@ -12,7 +12,7 @@ class BarUI (NodePath):
     def __init__(self, parent, offset=(0, 0, 0), value=1, fgColor=(1,1,1,1),
                  bgColor=(0,0,0,1)):
             self.scale = UI_BAR_SCALE
-            NodePath.__init__(self, 'healthbar')
+            NodePath.__init__(self, 'bar')
             # Create the foreground rect:
             cmfg = CardMaker('fg')
             cmfg.setFrame(-self.scale,  self.scale,
