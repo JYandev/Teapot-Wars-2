@@ -98,6 +98,18 @@ class NetworkClient ():
             data = msg.getString()
             dataDict = json.loads(data)
             self._onActionSyncHandler(dataDict)
+        elif msgType == SYNC_HEALTH:
+            data = msg.getString()
+            dataDict = json.loads(data)
+            self._onHealthSyncHandler(dataDict)
+
+    def _onHealthSyncHandler (self, dataDict):
+        """ Handles syncing of health values for creatures """
+        print ("_onHealthSyncHandler")
+        newHealth = dataDict['newHealth']
+        affectedCreature = self._creatures[dataDict['objID']]
+
+        affectedCreature.onHPModified(newHealth)
 
     def _onSpawnHandler (self, dataDict):
         """ Handles networking spawning characters """
@@ -107,7 +119,7 @@ class NetworkClient ():
             objectType = getCharacterTypeAsClass(dataDict['charType'])
             newPos = Point2D(dataDict['pos'][0], dataDict['pos'][1])
             newChar = objectType(parentCtrlr=None, cID=dataDict['objID'],
-                                 coords=newPos)
+                                 gameManager=self._gameManager, coords=newPos)
             self._creatures[dataDict['objID']] = newChar
             print("[Client Spawned %s]" % dataDict['objID'])
         else:
@@ -167,6 +179,9 @@ class NetworkClient ():
         """
             Tracks the given gameObject and sends it to the server
         """
+        # First, track it locally:
+        self._creatures[self.getCID()] = gameObject
+        # Tell server to spawn it for them and everyone else:
         msg = createSpawnCharacterMessage(gameObject, self.getCID())
         self.sendMessage(msg, SPAWN_CHARACTER)
 

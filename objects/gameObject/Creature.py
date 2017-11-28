@@ -8,11 +8,12 @@ class Creature (GameObject):
     """
         All living, optionally controllable creatures in the game.
     """
-    def __init__ (self, parentCtrlr, cID, **kwargs):
+    def __init__ (self, parentCtrlr, gameManager, cID, **kwargs):
         # Initialize our model and set up our object:
         GameObject.__init__(self, nodeName=str(cID), **kwargs)
 
         self._parentController = parentCtrlr
+        self._gameManager = gameManager
         self._cID = cID
 
         # Apply default creature stats:
@@ -37,8 +38,7 @@ class Creature (GameObject):
         """
         print("OUCH ", damage)
         newHealth = self._health - damage
-        self.onHPModified(newHealth)
-        self._health = newHealth
+        self.onHPModified(newHealth) # This will update health
         if self._health <= 0:
             print("CREATURE DIED: ", self.getCID())
             #TODO: Death sequence
@@ -49,10 +49,14 @@ class Creature (GameObject):
             Called by the current network controller when the host attempts to
              sync damage/healing.
         """
+        print("SYNCING HP, ", newValue)
         change = newValue - self._health
+        self._health = newValue
         DamageText(self.getNodePath(), -change) # Spawn damage text
-        percentage = newValue / self.getMaxHealth()
+        percentage = self._health / self.getMaxHealth()
         self._healthBar.setValue(percentage)
+        if self._gameManager: # Sync that we took damage
+            self._gameManager.onCreatureHealthChanged(self)
 
     def getDamage (self):
         """
@@ -109,6 +113,9 @@ class Creature (GameObject):
 
     def getCurrentActionSequence(self):
         return self._currentActionSequence
+
+    def getHealth (self):
+        return self._health
 
     def getMaxHealth (self):
         return self._maxHealth

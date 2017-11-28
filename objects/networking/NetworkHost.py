@@ -175,7 +175,7 @@ class NetworkHost ():
             objectType = getCharacterTypeAsClass(dataDict['charType'])
             newPos = Point2D(dataDict['pos'][0], dataDict['pos'][1])
             newChar = objectType(parentCtrlr=None, cID=dataDict['objID'],
-                                 coords=newPos)
+                                 gameManager=self._gameManager, coords=newPos)
             self._creatures[dataDict['objID']] = newChar
         else:
             #TODO Overwrite the old object
@@ -249,4 +249,11 @@ class NetworkHost ():
             infoMsg = createPlayerInfoMessage(info)
             self.sendToAll(infoMsg, UPDATE_PLAYER_INFO)
 
+    def syncHealthChange (self, creatureID, newHealth):
+        """
+            Called after the host runs a damage/healing action on a creature.
+            Lets all clients know to update to a new value.
+        """
+        data = createSyncHealthMessage(creatureID, newHealth)
+        self.sendToAll(data, SYNC_HEALTH)
     # === ===

@@ -137,4 +137,13 @@ class GameManager ():
             self._networkHost.updateLocalPlayerInfo(info)
         elif self._networkClient:
             self._networkClient.updateLocalPlayerInfo(info)
+
+    def onCreatureHealthChanged (self, creature):
+        """
+            Called after the host player updates damage on a creature.
+            Sync the health change to all other clients!
+        """
+        if self.isHost():
+            self._networkHost.syncHealthChange(creature.getCID(),
+                                               creature.getHealth())
     # === ===

@@ -8,6 +8,7 @@ MAP_MESSAGE = 2
 UPDATE_PLAYER_INFO = 3
 SPAWN_CHARACTER = 4
 SYNC_ACTION = 5
+SYNC_HEALTH = 6
 
 def createMessage (msgType, command):
     """
@@ -49,3 +50,8 @@ def createSyncActionMessage (cID, actionID, **kwargs):
     newData = {'objID':cID, "actionID":actionID, **kwargs}
     newJson = json.dumps(newData)
     return createMessage(SYNC_ACTION, newJson)
+
+def createSyncHealthMessage (cID, newHealth):
+    newData = {'objID':cID, "newHealth":newHealth}
+    newJson = json.dumps(newData)
+    return createMessage(SYNC_HEALTH, newJson)

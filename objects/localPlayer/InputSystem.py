@@ -75,7 +75,6 @@ class InputSystem (DirectObject.DirectObject):
                               'attackClass' : self._currentAbility,
                               'isServer' : self._plyrCtrl.isHostPlayer()}
                     self._currentAbility.effect.doEffect(**params)
-                    print("TODO _onMouseButtonDown Implement ability.doEffect!")
             # We've succesfully initiated action, reset the active ability:
             self._currentAbility = None
             self._pointerSystem.resetHighlightMode()
