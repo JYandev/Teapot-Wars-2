@@ -2,6 +2,7 @@ from ..gameObject.GameObject import GameObject
 from panda3d.core import LPoint3f
 from objects.defaultConfig.Consts import *
 from objects.gameUI.DamageText import DamageText
+from objects.gameUI.BarUI import BarUI
 
 class Creature (GameObject):
     """
@@ -22,6 +23,9 @@ class Creature (GameObject):
         self._maxHealth = CREATURE_DEFAULT_MAX_HEALTH
         self._health = self._maxHealth
 
+        self._healthBar = BarUI(self.getNodePath(), HEALTH_BAR_OFFSET, 1,
+                                HEALTH_BAR_FG_COLOR, HEALTH_BAR_BG_COLOR)
+
         self._actionQueue = []
         self._currentActionSequence = None
 
@@ -32,8 +36,9 @@ class Creature (GameObject):
              syncs across the network.
         """
         print("OUCH ", damage)
-        self._health -= damage
-        DamageText(self.getNodePath(), damage) # Spawn damage text
+        newHealth = self._health - damage
+        self.onHPModified(newHealth)
+        self._health = newHealth
         if self._health <= 0:
             print("CREATURE DIED: ", self.getCID())
             #TODO: Death sequence
@@ -44,7 +49,10 @@ class Creature (GameObject):
             Called by the current network controller when the host attempts to
              sync damage/healing.
         """
-        pass # TODO Implement onHPModified
+        change = newValue - self._health
+        DamageText(self.getNodePath(), -change) # Spawn damage text
+        percentage = newValue / self.getMaxHealth()
+        self._healthBar.setValue(percentage)
 
     def getDamage (self):
         """
@@ -101,6 +109,9 @@ class Creature (GameObject):
 
     def getCurrentActionSequence(self):
         return self._currentActionSequence
+
+    def getMaxHealth (self):
+        return self._maxHealth
 
     def getEnergy (self):
         return self._energy

@@ -82,7 +82,10 @@ NPKR_ENTRY_FONT_OFFSET = (0, -0.03)
 # --- (Health and Energy Bars) ---
 ENERGY_BAR_FG_COLOR = (1, 0.843137, 0, 1)
 ENERGY_BAR_BG_COLOR = (0, 0, 0, 1)
-ENERGY_BAR_OFFSET = (0,0,2)
+ENERGY_BAR_OFFSET = (0,0,1.5)
+HEALTH_BAR_OFFSET = (0,0,2)
+HEALTH_BAR_FG_COLOR = (0, 1, 0, 1)
+HEALTH_BAR_BG_COLOR = (1, 0, 0, 1)
 # --- ---
 
 # --- (Party UI) ---
