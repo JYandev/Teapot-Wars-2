@@ -137,7 +137,7 @@ class NetworkHost ():
         elif msgType == SYNC_ACTION:
             data = msg.getString()
             dataDict = json.loads(data)
-            self._onActionSyncHandler(dataDict)
+            self._onActionSyncHandler(dataDict, datagram.getConnection())
 
     def isHosting (self):
         """
@@ -189,11 +189,13 @@ class NetworkHost ():
                                              dataDict['objID'])
         self.sendToAll(newMsg, SPAWN_CHARACTER)
 
-    def _onActionSyncHandler (self, dataDict):
+    def _onActionSyncHandler (self, dataDict, msgConn):
         """
             Attempts to queue an action for execution on a target denoted by
              dataDict['objID']
         """
+        copyMsg = createSyncActionMessage(**dataDict)
+
         syncedAction = ACTION_NETWORKING_DICT[dataDict['actionID']]
         # Add a few local variables to dataDict:
         targetObj = self._creatures[dataDict['objID']] # TODO Maybe make this part of dataDict!
@@ -206,8 +208,17 @@ class NetworkHost ():
         # Create the newAction
         newAction = syncedAction(targetObj, **dataDict)
         targetObj.startAction(newAction) # queue or start the new action
-        # Send action to all clients except the one that sent the action:
-        #TODO Send action to all clients except the one that sent the action:
+        # Send action to all clients except the client that sent the sync msg:
+        for client in self.getAllClientsExcept(msgConn):
+            self.sendToClient(copyMsg, client, SYNC_ACTION)
+
+    def getAllClientsExcept (self, exceptConn):
+        clientList = list()
+        for conn in self._activeConns:
+            print(conn, exceptConn)
+            if conn != exceptConn:
+                clientList.append(conn)
+        return clientList
 
     def onClientConnected (self, clientConn):
         """

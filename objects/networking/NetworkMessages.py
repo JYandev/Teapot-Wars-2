@@ -46,8 +46,8 @@ def createSpawnCharacterMessage (gameObject, objID):
     newJson = json.dumps(newData)
     return createMessage(SPAWN_CHARACTER, newJson)
 
-def createSyncActionMessage (cID, actionID, **kwargs):
-    newData = {'objID':cID, "actionID":actionID, **kwargs}
+def createSyncActionMessage (objID, actionID, **kwargs):
+    newData = {'objID':objID, "actionID":actionID, **kwargs}
     newJson = json.dumps(newData)
     return createMessage(SYNC_ACTION, newJson)
 
