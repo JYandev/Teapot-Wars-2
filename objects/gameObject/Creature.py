@@ -12,6 +12,7 @@ class Creature (GameObject):
         # Initialize our model and set up our object:
         GameObject.__init__(self, nodeName=str(cID), **kwargs)
 
+        # Initialize creature specific:
         self._parentController = parentCtrlr
         self._gameManager = gameManager
         self._cID = cID
@@ -135,6 +136,18 @@ class Creature (GameObject):
 
     def setMaxEnergy (self, amount):
         self._maxEnergy = amount
+
+    def loopAnim (self, animName):
+        """ Attempts to loop an anim if this object is an actor """
+        print(self.getActor().getPos())
+        actor = self.getActor()
+        if actor != None:
+            actor.loop(animName)
+
+    def stopAnim (self):
+        actor = self.getActor()
+        if actor != None:
+            actor.stop()
 
     def drainEnergy (self, energyCost):
         """

@@ -7,6 +7,7 @@ from objects.gameManager.GameManager import GameManager
 class App(ShowBase):
     def __init__(self):
         ShowBase.__init__(self) # Call init on super
+        base.disableMouse() # Disable default Panda3D camera controls.
         gameManager = GameManager() # Start Game State Manager
         gameManager.startMainMenu() # Start the main menu
 

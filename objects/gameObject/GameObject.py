@@ -1,4 +1,5 @@
 from panda3d.core import NodePath
+from direct.actor.Actor import Actor
 from ..tileMap.TileMapUtilities import coordToRealPosition
 from objects.defaultConfig.Consts import *
 
@@ -9,10 +10,19 @@ class GameObject (object):
 
     def __init__ (self, **kwargs):
         self._np = NodePath(kwargs['nodeName']) # Initializes our nodePath()
-        self.model = None
         self._gridPos = kwargs['coords']
-        self._loadModel(kwargs['modelPath'], self._gridPos,
-                        kwargs['modelScale'])
+        self._model = None # Will only be populated if static
+        self._actor = None # Will only be populated if not static
+        if 'animDict' in kwargs: # Non static
+            # Load a dynamic actor and attach it to our Node Path:
+            print(len([kwargs['modelPath'], self._gridPos,
+                            kwargs['modelScale'], kwargs['animDict']]))
+            self._initActor(kwargs['modelPath'], self._gridPos,
+                            kwargs['modelScale'], kwargs['animDict'])
+        else: # Static
+            # Load and attach a static model:
+            self._loadModel(kwargs['modelPath'], self._gridPos,
+                            kwargs['modelScale'])
 
     def _loadModel(self, modelPath, coords, modelScale):
         """
@@ -21,15 +31,45 @@ class GameObject (object):
             Sets the initial position of this model to coords.
         """
         # Load model
-        self.model = base.loader.loadModel(modelPath)
+        self._model = base.loader.loadModel(modelPath)
         # First, reparent to our nodePath, then reparent nodePath to render:
         # This ensures that when this object is selected, we can access our
         #  class:
-        self.model.reparentTo(self._np)
+        self._model.reparentTo(self._np)
         self._np.reparentTo(base.render)
         self._np.setPos(coordToRealPosition(coords))
         # Scale our model properly:
         self.model.setScale(modelScale)
+
+    def _initActor(self, modelPath, coords, modelScale, animDict):
+        """
+            Loads an actor and enable rendering.
+            Sets the initial position.
+        """
+        # Load actor and animations:
+        self._actor = Actor(modelPath, animDict)
+        # First, reparent to our nodePath, then reparent nodePath to render:
+        # This ensures that when this object is selected, we can access our
+        #  class:
+        self._actor.reparentTo(self._np)
+        self._np.reparentTo(base.render)
+        self._np.setPos(coordToRealPosition(coords))
+        # Scale our model properly:
+        self._actor.setPos(self._np, 0, 0 , 0)
+        self._actor.setScale(modelScale)
+
+    def facePointIgnoreXY (self, point):
+        """ Makes this object face a given point """
+        self.getNodePath().lookAt(coordToRealPosition(point))
+        # Override x and y rotation:
+        self.getNodePath().setP(0)
+        self.getNodePath().setR(0)
+
+    def getModel (self):
+        return self._model
+
+    def getActor (self):
+        return self._actor
 
     def getNodePath (self):
         return self._np

@@ -12,7 +12,6 @@ class TileMapOrbiterCam ():
     """
 
     def __init__ (self, tileMap):
-        base.disableMouse() # Disable default Panda3D camera controls.
         self._tileMap = tileMap
         self._currentPoint = None
         self._camInstance = base.cam

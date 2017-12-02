@@ -70,11 +70,21 @@ def moveTargetToPosition (caster, position, tileMap):
                                  coords=(step[0], step[1])))
         moveSequence.append(Func(updateObjectLocation, caster,
                                  lastPos, step, tileMap))
+        moveSequence.append(Func(playMoveAnim, caster, step))
         moveSequence.append(LerpPosInterval(caster.getNodePath(), 1.0, newPos)) #TODO make 1.0 a speed constant
+        moveSequence.append(Func(stopMoveAnim, caster))
         count += 1
     moveSequence.append(Func(endAction, caster)) # Apply end signal to action.
     # Finally, play the movement sequence:
     caster.startAction(moveSequence)
+
+def playMoveAnim (caster, point):
+    """ Play move anim and face correct direction """
+    caster.facePointIgnoreXY(point)
+    caster.loopAnim('walkcycle')
+
+def stopMoveAnim (caster):
+    caster.stopAnim()
 
 def moveSync (targetObject, **kwargs):
     """
@@ -87,8 +97,10 @@ def moveSync (targetObject, **kwargs):
     newSequence = Sequence()
     newSequence.append(Func(updateObjectLocation, targetObject, lastPos, coords,
                             kwargs['tileMap']))
+    newSequence.append(Func(playMoveAnim, caster, coords))
     newSequence.append(LerpPosInterval(targetObject.getNodePath(), 1.0,
                                        coordToRealPosition(coords)))
+    newSequence.append(Func(stopMoveAnim, caster))
     print("MOVE SYNCING", lastPos, coords)
     # Apply end signal to action:
     newSequence.append(Func(endAction, targetObject))

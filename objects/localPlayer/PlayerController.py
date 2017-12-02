@@ -14,7 +14,6 @@ class PlayerController ():
     """
     def __init__ (self, gameManager, cID, initialPos, charClass):
         self._gameManager = gameManager # Reference to gameManager for callbacks
-        base.disableMouse() # Disables default Panda3D camera control
         # Initialize this clients gameObject:
         self._character = Teapot(self, gameManager, cID, coords=initialPos)
         # Initialize Camera Input:
