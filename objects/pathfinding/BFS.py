@@ -38,7 +38,7 @@ def findTilesFromTo (fromPos, toPos, tileMap, includeOcuppied=False):
                     return newPath
     return None
 
-def getAreaTiles (originCoords, tileMap, areaRange):
+def getAreaTiles (originCoords, tileMap, areaRange, includeCenter=False):
     """
         Returns a list of positions centered around an originCoords that
          stretches out until a given range.
@@ -55,6 +55,8 @@ def getAreaTiles (originCoords, tileMap, areaRange):
             newPosition = originCoords + newVector
             if tileMap.isFloor(newPosition):
                 tiles.append(newPosition)
+    if includeCenter:
+        tiles.append(originCoords)
     return tiles
 
 def getLegalTilesInDirections (originCoords, tileMap, includeOcuppied=False):

@@ -29,3 +29,10 @@ def tileWithinRange (origin, reach, target):
     if xDist <= reach and yDist <= reach:
         return True
     return False
+
+def getDistance (origin, point):
+    """
+        Returns the distance between two points.
+    """
+    dist = ((origin[0]-point[0])**2 + (origin[1]-point[1])**2)**0.5
+    return dist

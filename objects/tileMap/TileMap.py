@@ -3,6 +3,7 @@ from objects.gameObject.Creature import Creature
 from panda3d.core import Point2D, LVector3f
 from panda3d.core import NodePath
 import random
+from objects.pathfinding.BFS import getAreaTiles
 
 # --- Tile Const ---
 TILE_SIZE = 1
@@ -98,6 +99,30 @@ class TileMap ():
 
     def spawnObject (self, node, newLocation):
         self._tileMap[newLocation][1].append(node)
+
+    def getCharactersAroundPoint (self, point, reach):
+        """
+            Returns any creatures around point within range.
+        """
+        creatureList = list()
+        tilesToSearch = getAreaTiles(point, self, reach)
+        for tile in tilesToSearch:
+            creature = self.getCreatureAtPos(tile)
+            if creature:
+                creatureList.append(creature)
+        return creatureList
+
+    def findAdjacentOpenSpaces (self, point):
+        """
+            Returns points around point that are empty floors.
+        """
+        openSpaces = list()
+        tilesToSearch = getAreaTiles(point, self, 1)
+        for tile in tilesToSearch:
+            creature = self.getCreatureAtPos(tile)
+            if not creature:
+                openSpaces.append(tile)
+        return openSpaces
 
     def getTileMapStr (self):
         """

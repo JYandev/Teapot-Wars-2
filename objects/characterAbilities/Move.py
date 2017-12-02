@@ -68,9 +68,9 @@ def moveTargetToPosition (caster, position, tileMap):
         moveSequence.append(Wait(0.1))
         moveSequence.append(Func(syncAction, caster, Move.actionID,
                                  coords=(step[0], step[1])))
-        moveSequence.append(LerpPosInterval(caster.getNodePath(), 1.0, newPos)) #TODO make 1.0 a speed constant
         moveSequence.append(Func(updateObjectLocation, caster,
                                  lastPos, step, tileMap))
+        moveSequence.append(LerpPosInterval(caster.getNodePath(), 1.0, newPos)) #TODO make 1.0 a speed constant
         count += 1
     moveSequence.append(Func(endAction, caster)) # Apply end signal to action.
     # Finally, play the movement sequence:

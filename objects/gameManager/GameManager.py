@@ -9,6 +9,7 @@ from objects.tileMap.TileMapOrbiterCam import TileMapOrbiterCam
 from objects.classSelectionMenu.ClassSelectionMenu import ClassSelectionMenu
 from objects.gameUI.PartyListUI import PartyListUI
 from objects.networking.PlayerInfo import PlayerInfo
+from objects.enemy.EnemyController import EnemyController
 
 class GameManager ():
     """
@@ -63,7 +64,7 @@ class GameManager ():
         self._tilemapOrbiterCam.destroy()
         self._classSelectionMenu.close()
         #TODO Tell other players to spawn an object with newName and newClass
-        newSpawnPosition = self._tileMap.getRandomFloor() #TODO Make this get the dungeon's spawn position
+        newSpawnPosition = self._tileMap.getRandomFloor()
         if self._networkHost:
             cID = self._networkHost.registerNewCID()
         else:
@@ -127,6 +128,18 @@ class GameManager ():
         self._classSelectionMenu = ClassSelectionMenu(self, 'host')
         self._partyList = PartyListUI()
         self._networkHost.updateLocalPlayerInfo()
+        # Create the enemies:
+        self._createGameEnemies()
+
+    def _createGameEnemies (self):
+        """
+            Creates a bunch of enemies and assigns one to be the key holder.
+        """
+        for i in range(10):
+            newSpawnPosition = self._tileMap.getRandomFloor()
+            cID = self._networkHost.registerNewCID()
+            newEnemy = EnemyController(self, cID, newSpawnPosition)
+            self._networkHost.spawnGameObject(newEnemy.getCharacter())
 
     def updateLocalInfoAndSync (self, info):
         """

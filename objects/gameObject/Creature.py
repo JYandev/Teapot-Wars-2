@@ -67,6 +67,7 @@ class Creature (GameObject):
 
     def startAction (self, actionSequence):
         """ Assigns and starts the current action sequence """
+        print(self._actionQueue)
         if self._currentActionSequence:
             self._actionQueue.append(actionSequence)
         else:
@@ -154,6 +155,9 @@ class Creature (GameObject):
 
     def getCID (self):
         return self._cID
+
+    def __hash__ (self):
+        return hash(self._cID)
 
     def __eq__ (self, other):
         if not isinstance(other, Creature):
