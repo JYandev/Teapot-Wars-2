@@ -60,11 +60,16 @@ def singleTargetAttack (caster, targetPos, damage, tileMap, attackClass,
     if isServer:
         # If initiated on the server, deal damage:
         attackSequence.append(Func(inflictDamage, [target], damage))
+
+    attackSequence.append(Func(playAttackAnim, caster, targetPos))
     attackSequence.append(Func(syncAction, caster, BasicAttack.actionID,
                                targetCID=target.getCID(), damage=damage))
-    #TODO Attack animation
     attackSequence.append(Func(endAction, caster)) # Apply end signal to action.
     caster.startAction(attackSequence)
+
+def playAttackAnim (caster, point):
+    caster.facePointIgnoreXY(point)
+    caster.playAnim('heavyAttack')
 
 def singleTargetAttackSync (targetObject, **kwargs):
     """
@@ -72,13 +77,13 @@ def singleTargetAttackSync (targetObject, **kwargs):
         If this is run on the host machine, damage is dealt and health is synced
         Returns the sequence described above.
     """
-
+    attackTarg = kwargs['target']
     # Create and Play animation sequence on targetObject:
     newSequence = Sequence()
-    #TODO Create and Play animation sequence on targetObject
+    newSequence.append(Func(playAttackAnim, targetObject,
+                            attackTarg.getGridPosition()))
     newSequence.append(Func(endAction, targetObject))
 
-    attackTarg = kwargs['target']
     print("ATTACK SYNCING. Attacker:", targetObject.getCID(), " Defender: ",
           attackTarg.getCID())
     if kwargs['isServer'] == True: # Deal damage and sync!

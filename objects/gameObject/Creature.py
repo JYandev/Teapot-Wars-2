@@ -137,9 +137,13 @@ class Creature (GameObject):
     def setMaxEnergy (self, amount):
         self._maxEnergy = amount
 
+    def playAnim (self, animName):
+        actor = self.getActor()
+        if actor != None:
+            actor.play(animName)
+
     def loopAnim (self, animName):
         """ Attempts to loop an anim if this object is an actor """
-        print(self.getActor().getPos())
         actor = self.getActor()
         if actor != None:
             actor.loop(animName)

@@ -97,10 +97,10 @@ def moveSync (targetObject, **kwargs):
     newSequence = Sequence()
     newSequence.append(Func(updateObjectLocation, targetObject, lastPos, coords,
                             kwargs['tileMap']))
-    newSequence.append(Func(playMoveAnim, caster, coords))
+    newSequence.append(Func(playMoveAnim, targetObject, coords))
     newSequence.append(LerpPosInterval(targetObject.getNodePath(), 1.0,
                                        coordToRealPosition(coords)))
-    newSequence.append(Func(stopMoveAnim, caster))
+    newSequence.append(Func(stopMoveAnim, targetObject))
     print("MOVE SYNCING", lastPos, coords)
     # Apply end signal to action:
     newSequence.append(Func(endAction, targetObject))
