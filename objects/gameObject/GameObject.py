@@ -13,47 +13,51 @@ class GameObject (object):
         self._gridPos = kwargs['coords']
         self._model = None # Will only be populated if static
         self._actor = None # Will only be populated if not static
+
+        self._initNodePath(self._gridPos)
+
         if 'animDict' in kwargs: # Non static
             # Load a dynamic actor and attach it to our Node Path:
-            print(len([kwargs['modelPath'], self._gridPos,
-                            kwargs['modelScale'], kwargs['animDict']]))
-            self._initActor(kwargs['modelPath'], self._gridPos,
-                            kwargs['modelScale'], kwargs['animDict'])
+            self.initActor(kwargs['modelPath'], kwargs['modelScale'],
+                            kwargs['animDict'])
         else: # Static
             # Load and attach a static model:
-            self._loadModel(kwargs['modelPath'], self._gridPos,
-                            kwargs['modelScale'])
+            self.loadModel(kwargs['modelPath'], kwargs['modelScale'])
 
-    def _loadModel(self, modelPath, coords, modelScale):
+    def _initNodePath (self, coords):
+        """ Initializes this object's node path and position """
+        self._np.reparentTo(base.render)
+        self._np.setPos(coordToRealPosition(coords))
+
+    def loadModel(self, modelPath, modelScale):
         """
             Given a loader and renderer instance, will load and enable
              rendering of this object.
             Sets the initial position of this model to coords.
+            Will override any current model.
         """
-        # Load model
-        self._model = base.loader.loadModel(modelPath)
+        self.removeModel() # Remove old
+        self._model = base.loader.loadModel(modelPath) # Load model
         # First, reparent to our nodePath, then reparent nodePath to render:
         # This ensures that when this object is selected, we can access our
         #  class:
         self._model.reparentTo(self._np)
-        self._np.reparentTo(base.render)
-        self._np.setPos(coordToRealPosition(coords))
         # Scale our model properly:
-        self.model.setScale(modelScale)
+        self._model.setScale(modelScale)
 
-    def _initActor(self, modelPath, coords, modelScale, animDict):
+    def initActor(self, modelPath, modelScale, animDict):
         """
             Loads an actor and enable rendering.
             Sets the initial position.
+            Will override any current Actor.
         """
+        self.removeActor() # Remove Old:
         # Load actor and animations:
         self._actor = Actor(modelPath, animDict)
         # First, reparent to our nodePath, then reparent nodePath to render:
         # This ensures that when this object is selected, we can access our
         #  class:
         self._actor.reparentTo(self._np)
-        self._np.reparentTo(base.render)
-        self._np.setPos(coordToRealPosition(coords))
         # Scale our model properly:
         self._actor.setPos(self._np, 0, 0 , 0)
         self._actor.setScale(modelScale)
@@ -70,6 +74,16 @@ class GameObject (object):
 
     def getActor (self):
         return self._actor
+
+    def removeActor (self):
+        if self._actor:
+            self._actor.removeNode()
+            self._actor = None
+
+    def removeModel (self):
+        if self._model:
+            self._model.removeNode()
+            self._model = None
 
     def getNodePath (self):
         return self._np

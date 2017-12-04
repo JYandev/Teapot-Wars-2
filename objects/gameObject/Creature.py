@@ -3,6 +3,7 @@ from panda3d.core import LPoint3f
 from objects.defaultConfig.Consts import *
 from objects.gameUI.DamageText import DamageText
 from objects.gameUI.BarUI import BarUI
+from direct.actor.Actor import Actor
 
 class Creature (GameObject):
     """
@@ -11,12 +12,10 @@ class Creature (GameObject):
     def __init__ (self, parentCtrlr, gameManager, cID, **kwargs):
         # Initialize our model and set up our object:
         GameObject.__init__(self, nodeName=str(cID), **kwargs)
-
         # Initialize creature specific:
         self._parentController = parentCtrlr
         self._gameManager = gameManager
         self._cID = cID
-
         # Apply default creature stats:
         self._maxEnergy = CREATURE_DEFAULT_MAX_ENERGY
         self._energy = self._maxEnergy
@@ -24,10 +23,10 @@ class Creature (GameObject):
         self._baseDamage = CREATURE_BASE_DAMAGE
         self._maxHealth = CREATURE_DEFAULT_MAX_HEALTH
         self._health = self._maxHealth
-
+        # UI:
         self._healthBar = BarUI(self.getNodePath(), HEALTH_BAR_OFFSET, 1,
                                 HEALTH_BAR_FG_COLOR, HEALTH_BAR_BG_COLOR)
-
+        # Runtime-Local vars:
         self._actionQueue = []
         self._currentActionSequence = None
 
@@ -37,12 +36,16 @@ class Creature (GameObject):
             If this creature's HP drops to below 0, plays a death sequence and
              syncs across the network.
         """
+        # Ignore damage taken if we are already dead:
+        if self._health <= 0:
+            return
         print("OUCH ", damage)
+        # Calculate new health value:
         newHealth = self._health - damage
         self.onHPModified(newHealth) # This will update health
         if self._health <= 0:
             print("CREATURE DIED: ", self.getCID())
-            #TODO: Death sequence
+            self.deathSequence()
 
     def onHPModified (self, newValue):
         """
@@ -169,6 +172,22 @@ class Creature (GameObject):
             if self._parentController:
                 self._parentController.updateEnergyBar()
             return True
+
+    def deathSequence (self, amClient=False):
+        """
+            Handles death state of a character.
+        """
+        # Tell the parent controller (if any) that we died:
+        parentController = self.getParentController()
+        if parentController:
+            parentController.onDeath()
+        # Play death animation:
+        self.playAnim('death')
+        # Remove floating health bar:
+        self._healthBar.removeNode()
+        self._healthBar = None
+        # Remove ourselves from the tileMap and sync death:
+        self._gameManager.onCreatureDeath(self, amClient)
 
     def getCID (self):
         return self._cID

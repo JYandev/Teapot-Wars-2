@@ -102,6 +102,16 @@ class NetworkClient ():
             data = msg.getString()
             dataDict = json.loads(data)
             self._onHealthSyncHandler(dataDict)
+        elif msgType == SYNC_DEATH:
+            data = msg.getString()
+            dataDict = json.loads(data)
+            self._onDeathSyncHandler(dataDict)
+
+    def _onDeathSyncHandler(dataDict):
+        """ Handles syncing of death for the given creature """
+        deadCreature = self._creatures[dataDict['objID']]
+        # Play death sequence on this character:
+        deadCreature.deathSequence(amClient=True)
 
     def _onHealthSyncHandler (self, dataDict):
         """ Handles syncing of health values for creatures """

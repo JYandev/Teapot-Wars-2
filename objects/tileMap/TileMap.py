@@ -100,6 +100,10 @@ class TileMap ():
     def spawnObject (self, node, newLocation):
         self._tileMap[newLocation][1].append(node)
 
+    def despawnCreature(self, creature):
+        """ Removes the creature from this tileMap """
+        self._tileMap[creature.getGridPosition()][1].remove(creature)
+
     def getCharactersAroundPoint (self, point, reach):
         """
             Returns any creatures around point within range.

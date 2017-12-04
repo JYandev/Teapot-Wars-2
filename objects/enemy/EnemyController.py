@@ -227,6 +227,12 @@ class EnemyController ():
         """
         pass
 
+    def onDeath (self):
+        """
+            If this NPC died, we stop its AI tick so that it stops acting.
+        """
+        taskMgr.remove(self._aiTickTask)
+
     def syncAction (self, cID, actionID, **kwargs):
         """ Tells gameManager to sync action to the server """
         print("SYNCING ACTION", cID, actionID, kwargs)

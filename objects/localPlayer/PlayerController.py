@@ -75,6 +75,13 @@ class PlayerController ():
     def getCharacter (self):
         return self._character
 
+    def onDeath (self):
+        """
+            Notify the player that they cannot act until a respawn timer is set.
+            Start that respawn timer
+        """
+        pass #TODO onDeath player IMPORTANT!
+
     def syncAction (self, cID, actionID, **kwargs):
         """ Tells gameManager to sync action to the server """
         print("SYNCING ACTION", cID, actionID, kwargs)

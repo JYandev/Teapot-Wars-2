@@ -151,6 +151,18 @@ class GameManager ():
         elif self._networkClient:
             self._networkClient.updateLocalPlayerInfo(info)
 
+    def onCreatureDeath (self, creature, amClient):
+        """
+            Called on the host when a creature's HP drops to or below zero.
+            Called on the client when a creature dies on the host and a message
+             is received.
+            Removes the creature from the tileMap, and, in the hosts case,
+             notifies all clients.
+        """
+        self._tileMap.despawnCreature(creature)
+        if not amClient:
+            self._networkHost.onCreatureDeath(creature)
+
     def onCreatureHealthChanged (self, creature):
         """
             Called after the host player updates damage on a creature.

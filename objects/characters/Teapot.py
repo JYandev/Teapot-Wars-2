@@ -6,7 +6,9 @@ MODEL_FILE_PATH = "objects/characters/models/Teapot.egg"
 MODEL_SCALE = LPoint3f(0.15, 0.15, 0.15)
 ANIM_DICT = {
         "walkcycle":"objects/characters/animations/Teapot-walkcycle.egg",
-        "heavyAttack":"objects/characters/animations/Teapot-heavyAttack.egg"}
+        "heavyAttack":"objects/characters/animations/Teapot-heavyAttack.egg",
+        "death":"objects/characters/animations/Teapot-death.egg"}
+    # TODO include respawn animation?
 
 class Teapot (Creature):
     def __init__ (self, parentCtrlr, gameManager, cID, **kwargs):

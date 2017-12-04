@@ -170,6 +170,13 @@ class NetworkHost ():
         msg = createSpawnCharacterMessage(gameObject, gameObject.getCID())
         self.sendToAll(msg, SPAWN_CHARACTER)
 
+    def onCreatureDeath (self, creature):
+        """
+            Sends a creature death message to all connected clients.
+        """
+        msg = createSyncDeathMessage(creature.getCID())
+        self.sendToAll(msg, SYNC_DEATH)
+
     def _onSpawnHandler (self, dataDict):
         """ Handles networking spawning characters """
         # Spawn object locally if the object at cID doesn't already exist.
