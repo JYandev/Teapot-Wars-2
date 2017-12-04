@@ -3,6 +3,7 @@ from .CameraSystem import CameraSystem
 from objects.characters.Teapot import Teapot
 from .InputSystem import InputSystem
 from objects.gameUI.BarUI import BarUI
+from objects.gameUI.RespawnScreen import RespawnScreen
 from objects.defaultConfig.Consts import *
 from direct.task import Task
 import time
@@ -23,6 +24,7 @@ class PlayerController ():
         self._energyBar = BarUI(self._character.getNodePath(),
                                 ENERGY_BAR_OFFSET, 1,
                                 ENERGY_BAR_FG_COLOR, ENERGY_BAR_BG_COLOR)
+        self._respawnScreen = None
         # Register object in the tileMap
         self._gameManager.getTileMap().spawnObject(self._character, initialPos)
         # Assign class and stats:
@@ -80,7 +82,24 @@ class PlayerController ():
             Notify the player that they cannot act until a respawn timer is set.
             Start that respawn timer
         """
-        pass #TODO onDeath player IMPORTANT!
+        self._character.stopAnim()
+        self._character.playAnim("death")
+        taskMgr.remove(self._energyRecharger)
+        self._energyRecharger = None
+        self._energyBar.removeNode()
+        self._energyBar = None
+        self._respawnScreen = RespawnScreen(self)
+
+
+    def respawn (self):
+        """
+            Respawns this character at full health.
+            Notifies the server that this object is back from the dead!
+        """
+        # Pick a random spawn location:
+        # Tell gameManager to spawn there (and sync):
+        # Play respawn creature effect:
+        pass #TODO Implement respawn
 
     def syncAction (self, cID, actionID, **kwargs):
         """ Tells gameManager to sync action to the server """
