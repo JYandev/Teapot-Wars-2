@@ -143,6 +143,32 @@ PARTY_NAME_FONT_SIZE = (0.05, 0.05)
 PARTY_NAME_FONT_OFFSET = (0, -0.075)
 # --- ---
 
+# --- (Game Guide) ---
+GAMEGUIDE_TEXT = \
+"""Welcome to Teapot Wars 2.
+To start a game, press the 'Host Game' button in the Main Menu.
+Other players that wish to join must press the 'Join Party' button
+and fill out the correct IP Address.
+To get the IP Address, have host check their command prompt:
+[Host Started at ???.???.??.???]
+Once you begin and pick a class and name,
+use your abilities (bound to hotkeys) to take down foes!
+
+Cooperate or compete to find and defeat the enemy
+and recover the Legendary Bag of Tea +3
+
+Good luck, hunters!
+"""
+GAMEGUIDE_CONTENT_WIDTH_PERCENTAGE = 0.75
+GAMEGUIDE_CONTENT_HEIGHT_PERCENTAGE = 1
+GAMEGUIDE_FONT_SIZE = (0.075, 0.075)
+GAMEGUIDE_TEXT_OFFSET = (0, 0.8)
+GAMEGUIDE_CLOSE_BUTTON_OFFSET = (0, -0.7)
+GAMEGUIDE_CLOSE_BUTTON_SIZE_X = 0.6
+GAMEGUIDE_CLOSE_BUTTON_SIZE_Y = 0.1
+GAMEGUIDE_CLOSE_BUTTON_TEXT_OFFSET = (0, -0.02)
+# --- ---
+
 #=== ===
 
 # === [Camera] ===

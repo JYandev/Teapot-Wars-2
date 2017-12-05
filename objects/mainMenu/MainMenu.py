@@ -4,6 +4,7 @@ from objects.defaultConfig.DefaultConfig import *
 from objects.defaultConfig.Consts import *
 import sys
 from objects.mainMenu.JoinGameDialogue import JoinGameDialogue
+from .GameGuide import GameGuide
 
 TITLE_SCREEN_BACKGROUND_PATH = "objects/mainMenu/TitleScreen.png"
 TITLE_SCREEN_CONTAINER_PATH = "objects/mainMenu/TitleScreenContainer.png"
@@ -43,7 +44,7 @@ class MainMenu ():
         buttons = [
             ("Host Game", self._onButtonHostGame),
             ("Join Party", self._onButtonJoinGame),
-            ("Options", self._onButtonOptions),
+            ("Guide", self._onButtonGuide),
             ("Exit", self._onButtonExit)
         ]
         textColor = (1, 1, 1, 1)
@@ -100,6 +101,13 @@ class MainMenu ():
             Starts the gameManager's NetworkClient with the chosen parameters.
         """
         self._gameManager.startJoinGame(ipAddress)
+
+    def _onButtonGuide (self):
+        """
+            Called when the Guide button is pressed.
+            Shows the guide.
+        """
+        self._guide = GameGuide()
 
     def _onButtonOptions (self):
         """
