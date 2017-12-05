@@ -88,6 +88,11 @@ class GameObject (object):
     def getNodePath (self):
         return self._np
 
+    def setPos (self, newPos):
+        """ Sets position visually and updates gridPosition """
+        self._np.setPos(coordToRealPosition(newPos))
+        self.updateGridPosition(newPos)
+
     def getGridPosition (self):
         return self._gridPos
 

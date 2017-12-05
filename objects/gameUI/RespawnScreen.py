@@ -36,7 +36,8 @@ class RespawnScreen ():
         contentWidth = RESPAWN_SCREEN_CONTENT_WIDTH_PERCENTAGE * winWidth
         # Draw Timer Text:
         tCY = contentSpacing + contentHeight/2
-        self._timerText = DirectLabel(pos=(0, 0, tCY),
+        self._timerText = DirectLabel(parent=self._fadeFrame,
+                                pos=(0, 0, tCY),
                                 frameSize=(-contentWidth, contentWidth,
                                            -contentHeight, contentHeight),
                                 text="",
@@ -49,7 +50,8 @@ class RespawnScreen ():
         self._timerText.setTransparency(TransparencyAttrib.MAlpha)
         # Draw Respawn Button:
         rCY = -tCY
-        self._respawnButton = DirectButton(pos=(0, 0, rCY),
+        self._respawnButton = DirectButton(parent=self._fadeFrame,
+                                pos=(0, 0, rCY),
                                 frameSize=(-contentWidth, contentWidth,
                                            -contentHeight, contentHeight),
                                 command=self._onRespawnClicked,
@@ -87,4 +89,8 @@ class RespawnScreen ():
         """
             Tells the player controller to respawn.
         """
-        self._parentController.respawn()
+        self._parentController.respawnRequest()
+
+    def close(self):
+        self._fadeFrame.destroy()
+        del self

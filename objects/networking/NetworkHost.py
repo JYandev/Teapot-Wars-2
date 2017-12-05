@@ -138,6 +138,10 @@ class NetworkHost ():
             data = msg.getString()
             dataDict = json.loads(data)
             self._onActionSyncHandler(dataDict, datagram.getConnection())
+        elif msgType == SYNC_RESPAWN:
+            data = msg.getString()
+            dataDict = json.loads(data)
+            self._onRespawnRequestReceived(dataDict)
 
     def isHosting (self):
         """
@@ -149,6 +153,27 @@ class NetworkHost ():
         newCID = "host" + str(self._creatureIDCount)
         self._creatureIDCount += 1
         return newCID
+
+    # === [Local Client to Network] ===
+    def onCreatureDeath (self, creature):
+        """
+            Sends a creature death message to all connected clients.
+        """
+        msg = createSyncDeathMessage(creature.getCID())
+        self.sendToAll(msg, SYNC_DEATH)
+
+    def onLocalPlayerRespawn (self, creature, newLocation):
+        """
+            Respawns the local player and sends a sync message to all remotes.
+        """
+        # Fulfill local player request to respawn:
+        creature.respawn(newLocation)
+        # Refill the creature's HP (Automatically syncs!):
+        creature.takeDamage(-1*creature.getMaxHealth())
+        # Spawn on all connected clients:
+        msg = createRespawnMessage(creature.getCID(), newLocation)
+        self.sendToAll(msg, SYNC_RESPAWN)
+    # === ===
 
     # === [Gameplay specific] ===
     def syncAction (self, cID, actionID, **kwargs):
@@ -170,13 +195,6 @@ class NetworkHost ():
         msg = createSpawnCharacterMessage(gameObject, gameObject.getCID())
         self.sendToAll(msg, SPAWN_CHARACTER)
 
-    def onCreatureDeath (self, creature):
-        """
-            Sends a creature death message to all connected clients.
-        """
-        msg = createSyncDeathMessage(creature.getCID())
-        self.sendToAll(msg, SYNC_DEATH)
-
     def _onSpawnHandler (self, dataDict):
         """ Handles networking spawning characters """
         # Spawn object locally if the object at cID doesn't already exist.
@@ -187,6 +205,7 @@ class NetworkHost ():
             newChar = objectType(parentCtrlr=None, cID=dataDict['objID'],
                                  gameManager=self._gameManager, coords=newPos)
             self._creatures[dataDict['objID']] = newChar
+            self._gameManager.getTileMap().spawnObject(newChar, newPos)
             print("[Server Spawned %s]" % dataDict['objID'])
         else:
             # Ignore Overwrite
@@ -218,6 +237,20 @@ class NetworkHost ():
         # Send action to all clients except the client that sent the sync msg:
         for client in self.getAllClientsExcept(msgConn):
             self.sendToClient(copyMsg, client, SYNC_ACTION)
+
+    def _onRespawnRequestReceived (self, dataDict):
+        """
+            Respawns the remote clients character in a new position and then
+             syncs to all clients (including the one who requested).
+        """
+        newPos = self._gameManager.getTileMap().getRandomEmptyFloor()
+        targetObj = self._creatures[dataDict['objID']]
+        # Set the target's HP to full and sync that:
+        targetObj.takeDamage(-1*targetObj.getMaxHealth())
+        targetObj.respawn(newPos)
+        # Sync the respawn to all clients:
+        newMsg = createRespawnMessage(targetObj.getCID(), newPos)
+        self.sendToAll(newMsg, SYNC_RESPAWN)
 
     def getAllClientsExcept (self, exceptConn):
         clientList = list()

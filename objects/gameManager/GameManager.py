@@ -171,4 +171,19 @@ class GameManager ():
         if self.isHost():
             self._networkHost.syncHealthChange(creature.getCID(),
                                                creature.getHealth())
+
+    def respawnLocalPlayer (self, creature):
+        """
+            Called when the host or client respawn's their character.
+            Tell the rest of the connected players that we've respawned and
+             update the tilemap accordingly if we are the host.
+            Just updates the tilemap if we are only clients.
+        """
+        if self._networkHost:
+            # Pick a random spawn location:
+            newLocation = self._tileMap.getRandomEmptyFloor()
+            # Tell host to sync spawn there:
+            self._networkHost.onLocalPlayerRespawn(creature, newLocation)
+        else:
+            self._networkClient.sendPlayerRespawnRequest()
     # === ===

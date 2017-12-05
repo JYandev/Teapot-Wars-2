@@ -13,6 +13,7 @@ class InputSystem (DirectObject.DirectObject):
         self._plyrCtrl = playerController
         self._tileMap = tileMap
         self._pointerSystem = PointerSystem(tileMap)
+        self._controllable = True
         self._currentAbility = None # The current activated ability
         self.accept("mouse1", self._onMouseButtonDown)
         for key in range(0, 10):
@@ -20,6 +21,8 @@ class InputSystem (DirectObject.DirectObject):
 
     def _handleAbilityKey (self, key):
         """ Handles ability selection input from the player. """
+        if not self._controllable:
+            return
         key = key[0]
         # If user presses any numerical keys, activate the selector for the
         #  ability:
@@ -51,10 +54,19 @@ class InputSystem (DirectObject.DirectObject):
                                                    .getReach()}
             self._pointerSystem.setHighightMode(targeter, params)
 
+    def clearAbility (self):
+        """
+            Clears the currently set ability and targeter.
+        """
+        self._currentAbility = None
+        self._pointerSystem.resetHighlightMode()
+
     def _onMouseButtonDown(self):
         """
             Handler for mouse presses.
         """
+        if not self._controllable:
+            return
         if self._currentAbility:
             if self._currentAbility.targeterType == Targeter.SelfPath:
                 params = {'targetPos' : self._pointerSystem.getHovered(),
@@ -76,5 +88,7 @@ class InputSystem (DirectObject.DirectObject):
                               'isServer' : self._plyrCtrl.isHostPlayer()}
                     self._currentAbility.effect.doEffect(**params)
             # We've succesfully initiated action, reset the active ability:
-            self._currentAbility = None
-            self._pointerSystem.resetHighlightMode()
+            self.clearAbility()
+
+    def setControllable (self, value):
+        self._controllable = value

@@ -106,8 +106,12 @@ class NetworkClient ():
             data = msg.getString()
             dataDict = json.loads(data)
             self._onDeathSyncHandler(dataDict)
+        elif msgType == SYNC_RESPAWN:
+            data = msg.getString()
+            dataDict = json.loads(data)
+            self._onRespawnPermissionGranted(dataDict)
 
-    def _onDeathSyncHandler(dataDict):
+    def _onDeathSyncHandler(self, dataDict):
         """ Handles syncing of death for the given creature """
         deadCreature = self._creatures[dataDict['objID']]
         # Play death sequence on this character:
@@ -131,6 +135,7 @@ class NetworkClient ():
             newChar = objectType(parentCtrlr=None, cID=dataDict['objID'],
                                  gameManager=self._gameManager, coords=newPos)
             self._creatures[dataDict['objID']] = newChar
+            self._gameManager.getTileMap().spawnObject(newChar, newPos)
             print("[Client Spawned %s]" % dataDict['objID'])
         else:
             # Ignore Overwrite
@@ -144,6 +149,14 @@ class NetworkClient ():
         self._playerInfo[newPlayerData.cID] = newPlayerData
         self._gameManager.updatePartyInfo(self._playerInfo,
                                           self._connection.this)
+
+    def _onRespawnPermissionGranted (self, dataDict):
+        """
+            Respawn the given character at the given location.
+        """
+        targetObj = self._creatures[dataDict['objID']]
+        newPos = Point2D(dataDict['pos'][0], dataDict['pos'][1])
+        targetObj.respawn(newPos)
 
     def _onActionSyncHandler (self, dataDict):
         """
@@ -184,6 +197,10 @@ class NetworkClient ():
         """
         msg = createSyncActionMessage(self._connection.this, actionID, **kwargs)
         self.sendMessage(msg, SYNC_ACTION)
+
+    def sendPlayerRespawnRequest (self):
+        msg = createRespawnRequest(self._connection.this)
+        self.sendMessage(msg, SYNC_RESPAWN)
 
     def spawnGameObject (self, gameObject):
         """

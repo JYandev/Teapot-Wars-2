@@ -82,24 +82,37 @@ class PlayerController ():
             Notify the player that they cannot act until a respawn timer is set.
             Start that respawn timer
         """
-        self._character.stopAnim()
-        self._character.playAnim("death")
+        # Prevent players from acting:
+        self.inputSystem.clearAbility()
+        self.inputSystem.setControllable(False)
         taskMgr.remove(self._energyRecharger)
         self._energyRecharger = None
         self._energyBar.removeNode()
         self._energyBar = None
         self._respawnScreen = RespawnScreen(self)
 
+    def respawnRequest (self):
+        """
+            Sends a respawn request to the server.
+        """
+        self._gameManager.respawnLocalPlayer(self.getCharacter())
 
-    def respawn (self):
+    def onRespawned (self):
         """
-            Respawns this character at full health.
-            Notifies the server that this object is back from the dead!
+            Clientside function called when the controlled creature respawns.
+            Reinitializes UI and controls.
         """
-        # Pick a random spawn location:
-        # Tell gameManager to spawn there (and sync):
-        # Play respawn creature effect:
-        pass #TODO Implement respawn
+        # Remove blocking respawn screen
+        self._respawnScreen.close()
+        self._respawnScreen = None
+        # Enable energy regen and GUIs:
+        self._energyBar = BarUI(self._character.getNodePath(),
+                                ENERGY_BAR_OFFSET, 1,
+                                ENERGY_BAR_FG_COLOR, ENERGY_BAR_BG_COLOR)
+        self._energyRecharger = taskMgr.add(self._rechargeEnergyTask,
+                                            "Player Energy Recharger")
+        # Allow the player to control again:
+        self.inputSystem.setControllable(True)
 
     def syncAction (self, cID, actionID, **kwargs):
         """ Tells gameManager to sync action to the server """

@@ -147,6 +147,17 @@ class TileMap ():
                 validKeys.append(key)
         return validKeys[random.randint(0, len(validKeys)-1)] # Random inclusive
 
+    def getRandomEmptyFloor (self):
+        """
+            Picks a random empty floor from the dict.
+            Assumes the dungeon has been initialized.
+        """
+        validKeys = []
+        for key in self._tileMap.keys():
+            if self._tileMap[key][0] == 1 and len(self._tileMap[key][1]) == 0:
+                validKeys.append(key)
+        return validKeys[random.randint(0, len(validKeys)-1)] # Random inclusive
+
 def convertDungeonFromString (tileMap, size):
     """
         Converts from a dungeon string to a 2D list.

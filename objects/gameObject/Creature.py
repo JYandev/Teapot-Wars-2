@@ -36,12 +36,13 @@ class Creature (GameObject):
             If this creature's HP drops to below 0, plays a death sequence and
              syncs across the network.
         """
-        # Ignore damage taken if we are already dead:
-        if self._health <= 0:
-            return
         print("OUCH ", damage)
+        if self._health < 0:
+            self._health = 0 # Clamp health to 0 before applying healing/damage
         # Calculate new health value:
         newHealth = self._health - damage
+        if newHealth >= self.getMaxHealth(): # Be sure to clamp if healing!
+            newHealth = self.getMaxHealth()
         self.onHPModified(newHealth) # This will update health
         if self._health <= 0:
             print("CREATURE DIED: ", self.getCID())
@@ -58,7 +59,8 @@ class Creature (GameObject):
         self._health = newValue
         DamageText(self.getNodePath(), -change) # Spawn damage text
         percentage = self._health / self.getMaxHealth()
-        self._healthBar.setValue(percentage)
+        if self._healthBar:
+            self._healthBar.setValue(percentage)
         if self._gameManager: # Sync that we took damage
             self._gameManager.onCreatureHealthChanged(self)
 
@@ -172,6 +174,25 @@ class Creature (GameObject):
             if self._parentController:
                 self._parentController.updateEnergyBar()
             return True
+
+    def respawn (self, location):
+        """
+            Called directly by the network host/client upon receiving the
+             permission to respawn.
+            Respawns this character and reinitializes game-space UI.
+        """
+        parentController = self.getParentController()
+        if parentController:
+            parentController.onRespawned()
+        # Make sure to update local tilemap with new location:
+        self.setPos(location)
+        self._gameManager.getTileMap().spawnObject(self, location)
+        # Play respawn creature effect:
+        self.playAnim('respawn')
+        # Re-init HP and energy (Energy is clientside and can be set here):
+        self.setEnergy(self.getMaxEnergy())
+        self._healthBar = BarUI(self.getNodePath(), HEALTH_BAR_OFFSET, 1,
+                                HEALTH_BAR_FG_COLOR, HEALTH_BAR_BG_COLOR)
 
     def deathSequence (self, amClient=False):
         """

@@ -10,6 +10,7 @@ SPAWN_CHARACTER = 4
 SYNC_ACTION = 5
 SYNC_HEALTH = 6
 SYNC_DEATH = 7
+SYNC_RESPAWN = 8
 
 def createMessage (msgType, command):
     """
@@ -61,3 +62,15 @@ def createSyncDeathMessage (cID):
     newData = {'objID':cID}
     newJson = json.dumps(newData)
     return createMessage(SYNC_DEATH, newJson)
+
+def createRespawnMessage (cID, newLocation):
+    # Convert to generic tuple because network datagram doesn't support complex:
+    simplifiedPos = (newLocation.getX(), newLocation.getY())
+    newData = {'objID':cID, 'pos':simplifiedPos}
+    newJson = json.dumps(newData)
+    return createMessage(SYNC_RESPAWN, newJson)
+
+def createRespawnRequest (cID):
+    newData = {'objID':cID}
+    newJson = json.dumps(newData)
+    return createMessage(SYNC_RESPAWN, newJson)
