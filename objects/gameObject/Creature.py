@@ -30,6 +30,9 @@ class Creature (GameObject):
         self._actionQueue = []
         self._currentActionSequence = None
 
+        # Held to drop on death:
+        self._item = None
+
     def takeDamage (self, damage):
         """
             Takes damage.
