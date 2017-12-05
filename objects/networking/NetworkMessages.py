@@ -36,7 +36,7 @@ def createPlayerInfoMessage (playerInfo):
     newData = playerInfo.toJson()
     return createMessage(UPDATE_PLAYER_INFO, newData)
 
-def createSpawnCharacterMessage (gameObject, objID):
+def createSpawnCharacterMessage (gameObject, objID, cName=None):
     """
         Character Type is a string representing the type of character "teapot",
          etc.; objID is a string representing the gameObject's ID - usually

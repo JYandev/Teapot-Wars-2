@@ -124,7 +124,7 @@ HEALTH_BAR_BG_COLOR = (1, 0, 0, 1)
 # --- ---
 
 # --- (Name Displays) ---
-NAME_DISPLAY_OFFSET = (0, 0, 1.5)
+NAME_DISPLAY_OFFSET = (0, 0, 1)
 NAME_DISPLAY_SCALE = 0.7
 NAME_DISPLAY_COLOR = (1, 1, 1, 1)
 # --- ---

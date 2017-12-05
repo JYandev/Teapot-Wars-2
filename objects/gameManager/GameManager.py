@@ -31,6 +31,7 @@ class GameManager ():
         self._localPlayer = None
         self._partyList = None
         self._winScreen = None
+        self._hostPlayerCID = None
 
     def startMainMenu (self):
         """ Draws the main menu """
@@ -74,7 +75,7 @@ class GameManager ():
         newSpawnPosition = self._tileMap.getRandomEmptyFloor()
         # Get an ID for this new character:
         if self._networkHost:
-            cID = self._networkHost.registerNewCID()
+            cID = self._networkHost.getMyCID()
         else:
             cID = self._networkClient.getCID()
 
@@ -133,8 +134,10 @@ class GameManager ():
         self._tileMap = TileMap() # Generate dungeon
         # Create camera controller for visual tour of generated dungeon:
         self._tilemapOrbiterCam = TileMapOrbiterCam(self._tileMap)
+        self._networkHost.registerLocalCID()
+        self._hostPlayerCID = self._networkHost.getMyCID()
         # Draw the class selection screen:
-        self._classSelectionMenu = ClassSelectionMenu(self, 'host')
+        self._classSelectionMenu = ClassSelectionMenu(self, self._hostPlayerCID)
         self._partyList = PartyListUI()
         self._networkHost.updateLocalPlayerInfo()
         # Create the enemies:

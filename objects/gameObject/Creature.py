@@ -3,7 +3,7 @@ from panda3d.core import LPoint3f
 from objects.defaultConfig.Consts import *
 from objects.gameUI.DamageText import DamageText
 from objects.gameUI.BarUI import BarUI
-from objects
+from objects.gameUI.NameDisplay import NameDisplay
 from direct.actor.Actor import Actor
 
 class Creature (GameObject):

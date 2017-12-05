@@ -8,8 +8,8 @@ class NameDisplay ():
     def __init__(self, originObj, offset, name):
             self._root = NodePath('nameDisplay')
             # Offset this text node (most likely to above the origin)
+            self._root.reparentTo(originObj)
             self._root.setPos(originObj, *offset)
-            self._root.reparentTo(base.render)
             # Configure text and assign color:
             font = loader.loadFont(PIERCEROMAN_FONT)
             self._textNode = TextNode('NameDisplayText')

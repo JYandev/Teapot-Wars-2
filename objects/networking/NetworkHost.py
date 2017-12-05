@@ -29,7 +29,7 @@ class NetworkHost ():
         self._gameManager = gameManager
         self._playerInfo = dict() # connections by connectionID (cID)
         self._creatures = dict() # Creatures by cID.
-
+        self._localPlayerCID = None
         self._creatureIDCount = 0
 
     def _initListener (self):
@@ -133,7 +133,7 @@ class NetworkHost ():
         elif msgType == SPAWN_CHARACTER:
             data = msg.getString()
             dataDict = json.loads(data)
-            self._onSpawnHandler(dataDict, datagram.getConnection())
+            self._onSpawnHandler(dataDict)
         elif msgType == SYNC_ACTION:
             data = msg.getString()
             dataDict = json.loads(data)
@@ -152,10 +152,17 @@ class NetworkHost ():
         """
         return self._isActive
 
+    def getMyCID (self):
+        return self._localPlayerCID
+
     def registerNewCID (self):
         newCID = "host" + str(self._creatureIDCount)
         self._creatureIDCount += 1
         return newCID
+
+    def registerLocalCID (self):
+        newCID = self.registerNewCID()
+        self._localPlayerCID = newCID
 
     # === [Local Client to Network] ===
     def onCreatureDeath (self, creature):
@@ -182,8 +189,8 @@ class NetworkHost ():
             End the game display the
              win screen.
         """
-        self._gameManager.onWinStateAchieved(self._playerInfo['host'])
-        msg = createWinMessage(self._playerInfo['host'])
+        self._gameManager.onWinStateAchieved(self._playerInfo[self.getMyCID()])
+        msg = createWinMessage(self._playerInfo[self.getMyCID()])
         self.sendToAll(msg, WIN_STATE)
 
     def updateLocalPlayerInfo (self, info=None):
@@ -192,9 +199,9 @@ class NetworkHost ():
              connected clients.
         """
         if not info:
-            self._playerInfo['host'] = PlayerInfo(cID="host")
+            self._playerInfo[self.getMyCID()] = PlayerInfo(cID=self.getMyCID())
         else: # If info == None, we are just initializing.
-            self._playerInfo['host'] = info
+            self._playerInfo[self.getMyCID()] = info
             infoMsg = createPlayerInfoMessage(info)
             self.sendToAll(infoMsg, UPDATE_PLAYER_INFO)
     # === ===
@@ -243,7 +250,7 @@ class NetworkHost ():
         msg = createSpawnItemMessage(newItem)
         self.sendToAll(msg, SPAWN_ITEM)
 
-    def _onSpawnHandler (self, dataDict, connID):
+    def _onSpawnHandler (self, dataDict):
         """ Handles networking spawning characters """
         # Spawn object locally if the object at cID doesn't already exist.
         if not dataDict['objID'] in self._creatures.keys():
@@ -257,14 +264,15 @@ class NetworkHost ():
             print("[Server Spawned %s]" % dataDict['objID'])
             # If we have a player info for this player, use their name for the
             #  displayName:
-            if connID in self._playerInfo:
-                newChar.setNameDisplay(cName)
+            if dataDict['objID'] in self._playerInfo:
+                newName = self._playerInfo[dataDict['objID']].cName
+                newChar.setNameDisplay(newName)
         else:
             # Ignore Overwrite
             pass
         # Tell all other clients to spawn objects:
         newMsg = createSpawnCharacterMessage(self._creatures[dataDict['objID']],
-                                             dataDict['objID'], cName)
+                                             dataDict['objID'])
         self.sendToAll(newMsg, SPAWN_CHARACTER)
 
     def _onActionSyncHandler (self, dataDict, msgConn):
@@ -347,12 +355,16 @@ class NetworkHost ():
             newPlayerData = PlayerInfo(cID=connID)
         # Update the playerInfo dict with the new data:
         self._playerInfo[newPlayerData.cID] = newPlayerData
-        self._gameManager.updatePartyInfo(self._playerInfo, 'host')
+        self._gameManager.updatePartyInfo(self._playerInfo, self.getMyCID())
         # Send player info to every client:
         for player in self._playerInfo:
             newInfoMsg = createPlayerInfoMessage(self._playerInfo[player])
             #Send every player to every client:
             self.sendToAll(newInfoMsg, UPDATE_PLAYER_INFO)
+        # Update the creature's floating display name locally:
+        if newPlayerData.cID in self._creatures:
+            self._creatures[newPlayerData.cID]\
+                .setNameDisplay(newPlayerData.cName)
 
     def syncHealthChange (self, creatureID, newHealth):
         """

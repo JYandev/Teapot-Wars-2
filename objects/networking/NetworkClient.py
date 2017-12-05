@@ -163,7 +163,12 @@ class NetworkClient ():
             self._creatures[dataDict['objID']] = newChar
             self._gameManager.getTileMap().spawnObject(newChar, newPos)
             print("[Client Spawned %s]" % dataDict['objID'])
-            #TODO If we have a player info for this player, use their name for the displayName
+            # If we have a player info for this player, use their name for the
+            #  displayName:
+            print (dataDict['objID'], self._playerInfo)
+            if dataDict['objID'] in self._playerInfo:
+                newName = self._playerInfo[dataDict['objID']].cName
+                newChar.setNameDisplay(newName)
         else:
             # Ignore Overwrite
             pass
@@ -176,6 +181,15 @@ class NetworkClient ():
         self._playerInfo[newPlayerData.cID] = newPlayerData
         self._gameManager.updatePartyInfo(self._playerInfo,
                                           self._connection.this)
+        # Update the creature's floating display name (unless it is ours):
+        ignoreThisUpdate = False
+        if self._gameManager._localPlayer:
+            if newPlayerData.cID == self._gameManager._localPlayer\
+                            .getCharacter().getCID():
+                ignoreThisUpdate = True
+        if not ignoreThisUpdate and newPlayerData.cID in self._creatures:
+            self._creatures[newPlayerData.cID]\
+                .setNameDisplay(newPlayerData.cName)
 
     def _onRespawnPermissionGranted (self, dataDict):
         """
