@@ -1,4 +1,4 @@
-from gameObject.GameObject import GameObject
+from objects.gameObject.GameObject import GameObject
 
 class Item (GameObject):
     """
@@ -11,6 +11,15 @@ class Item (GameObject):
     def __init__ (self, gameManager, cID, **kwargs):
         GameObject.__init__(self, nodeName=str(cID), **kwargs)
         self._gameManager = gameManager
+        self._cID = cID
 
     def activateItem (self, pickupChar):
-        pass # This method should be overridden in subclasses of items.
+        """ All item activations are done client side and then synced """
+        self._gameManager.getTileMap().pickupItem(self)
+        # This method should be overridden in subclasses of items.
+
+    def getItemTypeEnum (self):
+        pass # This method should also be overridden in subclasses of items.
+
+    def getCID (self):
+        return self._cID

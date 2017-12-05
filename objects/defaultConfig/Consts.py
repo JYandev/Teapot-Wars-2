@@ -1,5 +1,7 @@
 from objects.characterClass.Classes import *
 from objects.characterAbilities import *
+from objects.item.ItemType import *
+from objects.item.BagOfTeaPlusThree import BagOfTeaPlusThree
 """
     Python file containing static paths.
     Used by: "from objects/defaultConfig.StaticPaths import *
@@ -39,6 +41,7 @@ HOST_MAX_BACKLOG = 1000
 CLIENT_TIMEOUT = 3000 # 3 Seconds
 ACTION_NETWORKING_DICT = {Move.actionID:moveSync,
                           BasicAttack.actionID:singleTargetAttackSync}
+ITEM_ID_DICT = {ItemType.BagOfTeaPlusThree:BagOfTeaPlusThree}
 # === ===
 
 # === [User Interface] ===
@@ -46,6 +49,14 @@ UI_WINDOW = "objects/mainMenu/UIContainer.png"
 IMG_GRADIENT_1 = "objects/gameUI/source/UIGradient1.png"
 PIERCEROMAN_FONT = "objects/mainMenu/PierceRoman.otf"
 PIERCEROMAN_OFFSET_MC = (0, -0.03)
+
+# --- (Win Screen) ---
+WINSCREEN_CONTENT_HEIGHT_PERCENTAGE = 0.1
+WINSCREEN_CONTENT_WIDTH_PERCENTAGE = 0.8
+WINSCREEN_WINTEXT_Y_OFFSET = 0.1
+WINSCREEN_FONT_SIZE = (0.075, 0.075)
+WINSCREEN_WINTEXT_TEXT_OFFSET = (0, -0.025)
+# --- ---
 
 # --- (Respawn Screen) ---
 RESPAWN_SCREEN_CONTENT_SPACING = 0.2

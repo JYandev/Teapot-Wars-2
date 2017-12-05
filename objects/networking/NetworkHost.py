@@ -28,7 +28,7 @@ class NetworkHost ():
         self._backlog = HOST_MAX_BACKLOG
         self._gameManager = gameManager
         self._playerInfo = dict() # connections by connectionID (cID)
-        self._creatures = dict() # Creates by cID.
+        self._creatures = dict() # Creatures by cID.
 
         self._creatureIDCount = 0
 
@@ -142,6 +142,9 @@ class NetworkHost ():
             data = msg.getString()
             dataDict = json.loads(data)
             self._onRespawnRequestReceived(dataDict)
+        elif msgType == WIN_STATE:
+            data = msg.getString()
+            self._onGameWon(data)
 
     def isHosting (self):
         """
@@ -173,9 +176,41 @@ class NetworkHost ():
         # Spawn on all connected clients:
         msg = createRespawnMessage(creature.getCID(), newLocation)
         self.sendToAll(msg, SYNC_RESPAWN)
+
+    def localPlayerWins (self):
+        """
+            End the game display the
+             win screen.
+        """
+        self._gameManager.onWinStateAchieved(self._playerInfo['host'])
+        msg = createWinMessage(self._playerInfo['host'])
+        self.sendToAll(msg, WIN_STATE)
+
+    def updateLocalPlayerInfo (self, info=None):
+        """
+            Updates info for this local player and sends it to all
+             connected clients.
+        """
+        if not info:
+            self._playerInfo['host'] = PlayerInfo(cID="host")
+        else: # If info == None, we are just initializing.
+            self._playerInfo['host'] = info
+            infoMsg = createPlayerInfoMessage(info)
+            self.sendToAll(infoMsg, UPDATE_PLAYER_INFO)
     # === ===
 
     # === [Gameplay specific] ===
+    def _onGameWon (self, data):
+        """
+            Boo. A remote client won.
+            Oh well. Still have to sync that win across all other clients.
+        """
+        # Show winner locally:
+        winnerData = PlayerInfo(fromJson=data)
+        self._gameManager.onWinStateAchieved(winnerData)
+        msg = createWinMessage(winnerData)
+        self.sendToAll(msg, WIN_STATE)
+
     def syncAction (self, cID, actionID, **kwargs):
         """
             The local player has performed an action that must be synced across
@@ -194,6 +229,19 @@ class NetworkHost ():
         # Send to all clients:
         msg = createSpawnCharacterMessage(gameObject, gameObject.getCID())
         self.sendToAll(msg, SPAWN_CHARACTER)
+
+    def dropItem (self, itemEnum, pos):
+        """
+            Spawn a new item locally and sync!
+        """
+        itemID = self.registerNewCID()
+        # Create item locally:
+        newItem = ITEM_ID_DICT[itemEnum](self._gameManager, itemID, coords=pos)
+        self._gameManager.getTileMap().spawnItem(newItem, pos)
+        # Track new item:
+        self._creatures[itemID] = newItem
+        msg = createSpawnItemMessage(newItem)
+        self.sendToAll(msg, SPAWN_ITEM)
 
     def _onSpawnHandler (self, dataDict):
         """ Handles networking spawning characters """
@@ -255,7 +303,6 @@ class NetworkHost ():
     def getAllClientsExcept (self, exceptConn):
         clientList = list()
         for conn in self._activeConns:
-            print(conn, exceptConn)
             if conn != exceptConn:
                 clientList.append(conn)
         return clientList
@@ -302,18 +349,6 @@ class NetworkHost ():
             newInfoMsg = createPlayerInfoMessage(self._playerInfo[player])
             #Send every player to every client:
             self.sendToAll(newInfoMsg, UPDATE_PLAYER_INFO)
-
-    def updateLocalPlayerInfo (self, info=None):
-        """
-            Updates info for this local player and sends it to all
-             connected clients.
-        """
-        if not info:
-            self._playerInfo['host'] = PlayerInfo(cID="host")
-        else: # If info == None, we are just initializing.
-            self._playerInfo['host'] = info
-            infoMsg = createPlayerInfoMessage(info)
-            self.sendToAll(infoMsg, UPDATE_PLAYER_INFO)
 
     def syncHealthChange (self, creatureID, newHealth):
         """

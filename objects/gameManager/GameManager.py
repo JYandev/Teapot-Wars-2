@@ -8,8 +8,12 @@ from objects.networking.NetworkMessages import *
 from objects.tileMap.TileMapOrbiterCam import TileMapOrbiterCam
 from objects.classSelectionMenu.ClassSelectionMenu import ClassSelectionMenu
 from objects.gameUI.PartyListUI import PartyListUI
+from objects.gameUI.WinScreen import WinScreen
 from objects.networking.PlayerInfo import PlayerInfo
 from objects.enemy.EnemyController import EnemyController
+from objects.item.BagOfTeaPlusThree import BagOfTeaPlusThree
+from objects.item.ItemType import ItemType
+import random
 
 class GameManager ():
     """
@@ -25,6 +29,7 @@ class GameManager ():
         self._tileMap = None
         self._localPlayer = None
         self._partyList = None
+        self._winScreen = None
 
     def startMainMenu (self):
         """ Draws the main menu """
@@ -135,11 +140,17 @@ class GameManager ():
         """
             Creates a bunch of enemies and assigns one to be the key holder.
         """
+        enemies = []
         for i in range(10):
             newSpawnPosition = self._tileMap.getRandomFloor()
             cID = self._networkHost.registerNewCID()
             newEnemy = EnemyController(self, cID, newSpawnPosition)
+            enemies.append(newEnemy.getCharacter())
             self._networkHost.spawnGameObject(newEnemy.getCharacter())
+        # One random enemy holds the legendary bag of tea plus three:
+        #chosenEnemy = enemies[random.randint(0, len(enemies)-1)]
+        for chosenEnemy in enemies:
+            chosenEnemy.assignItem(ItemType.BagOfTeaPlusThree)
 
     def updateLocalInfoAndSync (self, info):
         """
@@ -161,6 +172,10 @@ class GameManager ():
         """
         self._tileMap.despawnCreature(creature)
         if not amClient:
+            if creature.getItem() != None:
+                # Drop item and sync!
+                self._networkHost.dropItem(creature.getItem(),
+                                           creature.getGridPosition())
             self._networkHost.onCreatureDeath(creature)
 
     def onCreatureHealthChanged (self, creature):
@@ -171,6 +186,21 @@ class GameManager ():
         if self.isHost():
             self._networkHost.syncHealthChange(creature.getCID(),
                                                creature.getHealth())
+
+    def localPlayerWinStateAchieved (self):
+        print ("LOCAL PLAYER HAS WON!")
+        if self.isHost():
+            self._networkHost.localPlayerWins()
+        else:
+            self._networkClient.localPlayerWins()
+
+    def onWinStateAchieved (self, winnerData):
+        """
+            Displays the game over GUI and displays a winner.
+            Also performs cleanup of the game elements.
+        """
+        self._winScreen = WinScreen(self, winnerData)
+        # TODO: Stop game from functioning, perhaps start the dungeon tour cam again.
 
     def respawnLocalPlayer (self, creature):
         """

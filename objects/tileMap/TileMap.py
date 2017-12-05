@@ -41,7 +41,10 @@ class TileMap ():
         # Use the output to fill our tileMap dict.
         for row in range(len(newDungeon)):
             for col in range(len(newDungeon[row])):
-                self._tileMap[Point2D(row, col)] = [newDungeon[row][col], []]
+                # Values hold whether the tile is a floor or not,
+                #  what creatures or blocking objects it holds
+                #  and what items occupy the space.
+                self._tileMap[Point2D(row, col)] = [newDungeon[row][col],[],[]]
                 if newDungeon[row][col] == 1: # Create tile models along the way
                     placeholder = self.np.attachNewNode("Tile(%s,%s)"\
                         %(row, col))
@@ -89,16 +92,22 @@ class TileMap ():
         """
             Finds the node at old location and moves it to newLocation.
         """
-        print("OldLocation:", oldLocation, "NewLocation:", newLocation)
-        print("Attempting removal of", node)
         if node in self._tileMap[oldLocation][1]:
-            print("Before", oldLocation, self._tileMap[oldLocation][1])
             self._tileMap[oldLocation][1].remove(node)
-            print("AFTER", oldLocation, self._tileMap[oldLocation][1])
         self._tileMap[newLocation][1].append(node)
 
     def spawnObject (self, node, newLocation):
         self._tileMap[newLocation][1].append(node)
+
+    def spawnItem (self, item, newLocation):
+        self._tileMap[newLocation][2].append(item)
+
+    def pickupItem (self, item):
+        self._tileMap[item.getGridPosition()][2].remove(item)
+
+    def getItemsAtPosition (self, position):
+        """ Returns the list of items at a given position """
+        return self._tileMap[position][2]
 
     def despawnCreature(self, creature):
         """ Removes the creature from this tileMap """

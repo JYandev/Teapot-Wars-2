@@ -110,6 +110,32 @@ class NetworkClient ():
             data = msg.getString()
             dataDict = json.loads(data)
             self._onRespawnPermissionGranted(dataDict)
+        elif msgType == SPAWN_ITEM:
+            data = msg.getString()
+            dataDict = json.loads(data)
+            self._onItemSpawned(dataDict)
+        elif msgType == WIN_STATE:
+            data = msg.getString()
+            self._onGameWon(data)
+
+    def _onGameWon (self, data):
+        """
+            Show the win state achieved screen with the specified playerinfo as
+             the winner details.
+        """
+        newPlayerData = PlayerInfo(fromJson=data)
+        self._gameManager.onWinStateAchieved(newPlayerData)
+
+    def _onItemSpawned(self, dataDict):
+        """ The server spawned an item, handle spawning on this client """
+        itemType = ITEM_ID_DICT[dataDict['itemType']]
+        itemID = dataDict['objID']
+        newPos = Point2D(dataDict['pos'][0], dataDict['pos'][1])
+        # Create item locally:
+        newItem = itemType(self._gameManager, itemID, coords=newPos)
+        self._gameManager.getTileMap().spawnItem(newItem, newPos)
+        # Track new item:
+        self._creatures[itemID] = newItem
 
     def _onDeathSyncHandler(self, dataDict):
         """ Handles syncing of death for the given creature """
@@ -201,6 +227,13 @@ class NetworkClient ():
     def sendPlayerRespawnRequest (self):
         msg = createRespawnRequest(self._connection.this)
         self.sendMessage(msg, SYNC_RESPAWN)
+
+    def localPlayerWins (self):
+        """
+            Tell host we won. Then wait for a response.
+        """
+        msg = createWinMessage(self._playerInfo[self._connection.this])
+        self.sendMessage(msg, WIN_STATE)
 
     def spawnGameObject (self, gameObject):
         """

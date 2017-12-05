@@ -116,7 +116,6 @@ class PlayerController ():
 
     def syncAction (self, cID, actionID, **kwargs):
         """ Tells gameManager to sync action to the server """
-        print("SYNCING ACTION", cID, actionID, kwargs)
         self._gameManager.onLocalPlayerAction(cID, actionID, **kwargs)
 
     def onActionStarted (self):

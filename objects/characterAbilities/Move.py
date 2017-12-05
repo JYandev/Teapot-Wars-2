@@ -72,6 +72,7 @@ def moveTargetToPosition (caster, position, tileMap):
                                  lastPos, step, tileMap))
         moveSequence.append(Func(playMoveAnim, caster, step))
         moveSequence.append(LerpPosInterval(caster.getNodePath(), 1.0, newPos)) #TODO make 1.0 a speed constant
+        moveSequence.append(Func(pickupAnyItems, caster, tileMap))
         moveSequence.append(Func(stopMoveAnim, caster))
         count += 1
     moveSequence.append(Func(endAction, caster)) # Apply end signal to action.
@@ -101,10 +102,18 @@ def moveSync (targetObject, **kwargs):
     newSequence.append(LerpPosInterval(targetObject.getNodePath(), 1.0,
                                        coordToRealPosition(coords)))
     newSequence.append(Func(stopMoveAnim, targetObject))
-    print("MOVE SYNCING", lastPos, coords)
     # Apply end signal to action:
     newSequence.append(Func(endAction, targetObject))
     return newSequence
+
+def pickupAnyItems (targetObject, tileMap):
+    """
+        Should be called right after a local client move is complete.
+        Activates any pickups in the targetObject's current space.
+    """
+    items = tileMap.getItemsAtPosition(targetObject.getGridPosition())
+    for item in items:
+        item.activateItem(targetObject)
 
 def updateObjectLocation (targetObj, oldPosition, position, tileMap):
     """

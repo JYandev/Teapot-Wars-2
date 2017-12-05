@@ -1,7 +1,7 @@
 from panda3d.core import NodePath
 from direct.actor.Actor import Actor
 from ..tileMap.TileMapUtilities import coordToRealPosition
-from objects.defaultConfig.Consts import *
+#from objects.defaultConfig.Consts import *
 
 class GameObject (object):
     """

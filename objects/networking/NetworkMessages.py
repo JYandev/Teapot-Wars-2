@@ -11,6 +11,8 @@ SYNC_ACTION = 5
 SYNC_HEALTH = 6
 SYNC_DEATH = 7
 SYNC_RESPAWN = 8
+SPAWN_ITEM = 9
+WIN_STATE = 10
 
 def createMessage (msgType, command):
     """
@@ -74,3 +76,15 @@ def createRespawnRequest (cID):
     newData = {'objID':cID}
     newJson = json.dumps(newData)
     return createMessage(SYNC_RESPAWN, newJson)
+
+def createSpawnItemMessage (item):
+    newLocation = item.getGridPosition()
+    simplifiedPos = (newLocation.getX(), newLocation.getY())
+    newData = {'objID':item.getCID(), "itemType":item.getItemTypeEnum(),
+               'pos':simplifiedPos}
+    newJson = json.dumps(newData)
+    return createMessage(SPAWN_ITEM, newJson)
+
+def createWinMessage (winnerPlayerInfo):
+    newData = winnerPlayerInfo.toJson()
+    return createMessage(WIN_STATE, newData)

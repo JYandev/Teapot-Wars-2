@@ -56,7 +56,6 @@ def singleTargetAttack (caster, targetPos, damage, tileMap, attackClass,
                                attackClass.getEnergyCost))
     attackSequence.append(Wait(0.1)) # TODO Figure out a better way to delay until the above check completes
     # Deal damage server-side and sync:
-    print("ISSERVER", isServer)
     if isServer:
         # If initiated on the server, deal damage:
         attackSequence.append(Func(inflictDamage, [target], damage))
@@ -83,11 +82,7 @@ def singleTargetAttackSync (targetObject, **kwargs):
     newSequence.append(Func(playAttackAnim, targetObject,
                             attackTarg.getGridPosition()))
     newSequence.append(Func(endAction, targetObject))
-
-    print("ATTACK SYNCING. Attacker:", targetObject.getCID(), " Defender: ",
-          attackTarg.getCID())
     if kwargs['isServer'] == True: # Deal damage and sync!
-        print("AM SERVER. DEAL THE DAMAGE")
         inflictDamage([attackTarg], kwargs['damage'])
         # TODO: SYNC
     return newSequence

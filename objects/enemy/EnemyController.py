@@ -52,7 +52,6 @@ class EnemyController ():
         if self._character._currentActionSequence != None:
             task.delayTime = self.getRandomTickDelay()
             return task.again
-        print(self._knownTargets, self._currentTarget)
         if self._currentTarget != None:
             myPos = self._character.getGridPosition()
             targetPos = self._currentTarget.getGridPosition()
@@ -150,7 +149,6 @@ class EnemyController ():
         foundCharacters = self._tileMap.getCharactersAroundPoint(
                             self.getCharacter().getGridPosition(),
                             ENEMY_AI_SIGHT_RANGE)
-        print("foundCharacters: ", foundCharacters)
         foundPlayers = self._findPlayersFromList(foundCharacters)
         # Add any players within range to the set of known players:
         for player in foundPlayers:
@@ -235,7 +233,6 @@ class EnemyController ():
 
     def syncAction (self, cID, actionID, **kwargs):
         """ Tells gameManager to sync action to the server """
-        print("SYNCING ACTION", cID, actionID, kwargs)
         self._gameManager.onLocalPlayerAction(cID, actionID, **kwargs)
 
     def onActionStarted (self):

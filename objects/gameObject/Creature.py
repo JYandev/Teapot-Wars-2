@@ -31,7 +31,7 @@ class Creature (GameObject):
         self._currentActionSequence = None
 
         # Held to drop on death:
-        self._item = None
+        self._item = None # This is a integer enum (ItemType.???)
 
     def takeDamage (self, damage):
         """
@@ -39,7 +39,6 @@ class Creature (GameObject):
             If this creature's HP drops to below 0, plays a death sequence and
              syncs across the network.
         """
-        print("OUCH ", damage)
         if self._health < 0:
             self._health = 0 # Clamp health to 0 before applying healing/damage
         # Calculate new health value:
@@ -48,7 +47,6 @@ class Creature (GameObject):
             newHealth = self.getMaxHealth()
         self.onHPModified(newHealth) # This will update health
         if self._health <= 0:
-            print("CREATURE DIED: ", self.getCID())
             self.deathSequence()
 
     def onHPModified (self, newValue):
@@ -57,7 +55,6 @@ class Creature (GameObject):
             Called by the current network controller when the host attempts to
              sync damage/healing.
         """
-        print("SYNCING HP, ", newValue)
         change = newValue - self._health
         self._health = newValue
         DamageText(self.getNodePath(), -change) # Spawn damage text
@@ -76,7 +73,6 @@ class Creature (GameObject):
 
     def startAction (self, actionSequence):
         """ Assigns and starts the current action sequence """
-        print(self._actionQueue)
         if self._currentActionSequence:
             self._actionQueue.append(actionSequence)
         else:
@@ -144,6 +140,12 @@ class Creature (GameObject):
 
     def setMaxEnergy (self, amount):
         self._maxEnergy = amount
+
+    def assignItem (self, itemEnum):
+        self._item = itemEnum
+
+    def getItem (self):
+        return self._item
 
     def playAnim (self, animName):
         actor = self.getActor()
