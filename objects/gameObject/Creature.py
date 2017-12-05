@@ -206,7 +206,8 @@ class Creature (GameObject):
         self.setEnergy(self.getMaxEnergy())
         self._healthBar = BarUI(self.getNodePath(), HEALTH_BAR_OFFSET, 1,
                                 HEALTH_BAR_FG_COLOR, HEALTH_BAR_BG_COLOR)
-        self.setNameDisplay(self._name)
+        if self._name:
+            self.setNameDisplay(self._name)
 
     def deathSequence (self, amClient=False):
         """
