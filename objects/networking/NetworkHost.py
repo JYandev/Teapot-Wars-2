@@ -133,7 +133,7 @@ class NetworkHost ():
         elif msgType == SPAWN_CHARACTER:
             data = msg.getString()
             dataDict = json.loads(data)
-            self._onSpawnHandler(dataDict)
+            self._onSpawnHandler(dataDict, datagram.getConnection())
         elif msgType == SYNC_ACTION:
             data = msg.getString()
             dataDict = json.loads(data)
@@ -243,7 +243,7 @@ class NetworkHost ():
         msg = createSpawnItemMessage(newItem)
         self.sendToAll(msg, SPAWN_ITEM)
 
-    def _onSpawnHandler (self, dataDict):
+    def _onSpawnHandler (self, dataDict, connID):
         """ Handles networking spawning characters """
         # Spawn object locally if the object at cID doesn't already exist.
         if not dataDict['objID'] in self._creatures.keys():
@@ -255,13 +255,16 @@ class NetworkHost ():
             self._creatures[dataDict['objID']] = newChar
             self._gameManager.getTileMap().spawnObject(newChar, newPos)
             print("[Server Spawned %s]" % dataDict['objID'])
-            #TODO If we have a player info for this player, use their name for the displayName
+            # If we have a player info for this player, use their name for the
+            #  displayName:
+            if connID in self._playerInfo:
+                newChar.setNameDisplay(cName)
         else:
             # Ignore Overwrite
             pass
         # Tell all other clients to spawn objects:
         newMsg = createSpawnCharacterMessage(self._creatures[dataDict['objID']],
-                                             dataDict['objID'])
+                                             dataDict['objID'], cName)
         self.sendToAll(newMsg, SPAWN_CHARACTER)
 
     def _onActionSyncHandler (self, dataDict, msgConn):
