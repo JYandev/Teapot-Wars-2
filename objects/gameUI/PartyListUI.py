@@ -103,7 +103,7 @@ class PartyIcon ():
             else:
                 self._nameText['text'] = info.cName
         if info.cClass != None:
-            #TODO self._icon.setImage...
+            self._icon['frameTexture'] = CLASSES_DICT[info.cClass].classIcon
             pass
         if info.cColor != None:
             #TODO set icon color.

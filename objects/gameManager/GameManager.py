@@ -14,6 +14,7 @@ from objects.enemy.EnemyController import EnemyController
 from objects.item.BagOfTeaPlusThree import BagOfTeaPlusThree
 from objects.item.ItemType import ItemType
 import random
+from objects.defaultConfig.Consts import *
 
 class GameManager ():
     """
@@ -60,21 +61,24 @@ class GameManager ():
         self._networkClient = NetworkClient(self)
         self._networkClient.startClient(ipAddress)
 
-    def createPlayer (self, newName, newClass):
+    def createPlayer (self, playerInfo):
         """
             Called at the end of the class selection menu sequence.
             Create a new player and remove the tileOrbiterCam and classSelection
              UI.
         """
+        # Destroy menu stuff and tour camera:
         self._tilemapOrbiterCam.destroy()
         self._classSelectionMenu.close()
-        #TODO Tell other players to spawn an object with newName and newClass
-        newSpawnPosition = self._tileMap.getRandomFloor()
+        # Pick a random spawn point:
+        newSpawnPosition = self._tileMap.getRandomEmptyFloor()
+        # Get an ID for this new character:
         if self._networkHost:
             cID = self._networkHost.registerNewCID()
         else:
             cID = self._networkClient.getCID()
 
+        newClass = CLASSES_DICT[playerInfo.cClass]
         self._localPlayer = PlayerController(self, cID, newSpawnPosition,
                                              newClass)
         if self._networkHost:

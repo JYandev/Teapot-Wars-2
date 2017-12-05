@@ -1,6 +1,7 @@
 from objects.classSelectionMenu.ClassPicker import ClassPicker
 from objects.classSelectionMenu.NamePicker import NamePicker
 from objects.networking.PlayerInfo import PlayerInfo
+from objects.defaultConfig.Consts import *
 
 class ClassSelectionMenu ():
     """
@@ -19,22 +20,27 @@ class ClassSelectionMenu ():
 
     def _draw (self):
         """ Draws the sub-elements. """
-        self._classPicker = ClassPicker()
+        self._classPicker = ClassPicker(self)
         self._namePicker = NamePicker(self)
 
-    def createCharacter (self, newName):
+    def createCharacter (self):
         """
             Creates a new localPlayer and spawns it with the given name and
              chosen class.
             If there is no name or class, this will not spawn a player.
         """
-        #TODO Redo this to use the synced values (self._playerInfo)
-        newClass = self._classPicker.getSelected()
-        if newName == None or newClass == None:
+        self.syncInfo(cName=self._namePicker.getName(),
+                      cClass=self._classPicker.getSelected())
+        if self._playerInfo.cClass == None:
+            #TODO Warn the user that they must pick a class!
+            return
+        if self._playerInfo.cName == None\
+            or self._playerInfo.cName == NPKR_ENTRY_INITIAL_TEXT:
+            #TODO Warn the user that they must pick a name!
             return
 
         # Create Player
-        self._gameManager.createPlayer(newName, newClass)
+        self._gameManager.createPlayer(self._playerInfo)
 
     def syncInfo (self, cName=None, cClass=None, cColor=None):
         """ Syncs info with the server/client manager """

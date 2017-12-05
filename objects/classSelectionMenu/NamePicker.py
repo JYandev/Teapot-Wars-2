@@ -41,6 +41,7 @@ class NamePicker ():
                                       initialText=NPKR_ENTRY_INITIAL_TEXT,
                                       numLines=1,
                                       focusOutCommand=self._syncName,
+                                      focusInCommand=self._checkPlaceholderText,
                                       command=self._syncName)
         # Draw Confirm Button:
         confirmWidth = self._rootFrame.getWidth()\
@@ -58,7 +59,17 @@ class NamePicker ():
 
     def _onConfirmPressed (self):
         """ Reroutes this input to the parent ClassSelectionMenu """
-        self._classSelectionMenu.createCharacter(self.getName())
+        self._classSelectionMenu.createCharacter()
+
+    def _checkPlaceholderText (self):
+        """
+            Makes the nameEntry behave more like a real name entry by removing
+             the placeholder text when the player begins to interact.
+        """
+        # If the text entered is the placeholder text, simply remove it:
+        if self._nameEntry.get() == NPKR_ENTRY_INITIAL_TEXT:
+            self._nameEntry.set("")
+
 
     def _syncName (self, extraArgs=None):
         """ Syncs name with this game's host/client manager """

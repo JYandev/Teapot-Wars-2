@@ -9,7 +9,8 @@ class ClassPicker ():
         4 Classes are drawn and only one at a time can be toggled/selected
     """
 
-    def __init__ (self):
+    def __init__ (self, classSelectionMenu):
+        self._classSelectionMenu = classSelectionMenu
         self._font = loader.loadFont(PIERCEROMAN_FONT)
         self._selectedClass = None
         self._containFrame = None
@@ -73,23 +74,27 @@ class ClassPicker ():
                         / len(CPKR_CLASSES_LIST[0])
         for row in range(len(CPKR_CLASSES_LIST)):
             for col in range(len(CPKR_CLASSES_LIST[row])):
+                buttonClass = CPKR_CLASSES_LIST[row][col]
+                buttonImage = buttonClass.classIcon
+                buttonID = buttonClass.classID
                 verticalPos = -CPKR_BUTTONCONTAINER_MARGIN - bSizeY * col
                 horizontalPos = -CPKR_BUTTONCONTAINER_MARGIN*2 + bSizeX * row
-                buttonImage = CPKR_CLASSES_LIST[row][col][1]
                 newButton = DirectButton(parent=buttonFrame,
                                     pos=(horizontalPos, 0, verticalPos),
                                     frameSize=(-bSizeX/2, bSizeX/2, -bSizeY, 0),
                                     frameTexture=buttonImage,
                                     relief=DGG.FLAT,
                                     command=self._selectClass,
-                                    extraArgs=[CPKR_CLASSES_LIST[row][col][0]])
+                                    extraArgs=[buttonID])
 
     def _selectClass (self, chosenClass):
         """ Selects the given class and updates the info text """
-        self._selectedClass = chosenClass
-        self._infoText['text'] = self._selectedClass.classDesc
-        self._infoText['text_scale'] = self._selectedClass.classDescFontSize
-        self._infoText['text_wordwrap'] = self._selectedClass.classDescWrap
+        self._selectedClass = chosenClass # Just the ID
+        actualClass = CLASSES_DICT[self._selectedClass]
+        self._infoText['text'] = actualClass.classDesc
+        self._infoText['text_scale'] = actualClass.classDescFontSize
+        self._infoText['text_wordwrap'] = actualClass.classDescWrap
+        self._classSelectionMenu.syncInfo(cClass=self._selectedClass)
 
     def getSelected (self):
         return self._selectedClass

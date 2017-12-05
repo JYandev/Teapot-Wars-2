@@ -42,6 +42,8 @@ CLIENT_TIMEOUT = 3000 # 3 Seconds
 ACTION_NETWORKING_DICT = {Move.actionID:moveSync,
                           BasicAttack.actionID:singleTargetAttackSync}
 ITEM_ID_DICT = {ItemType.BagOfTeaPlusThree:BagOfTeaPlusThree}
+CLASSES_DICT = {Barbarian.classID:Barbarian,
+                BaseClass.classID:BaseClass}
 # === ===
 
 # === [User Interface] ===
@@ -52,7 +54,7 @@ PIERCEROMAN_OFFSET_MC = (0, -0.03)
 
 # --- (Win Screen) ---
 WINSCREEN_CONTENT_HEIGHT_PERCENTAGE = 0.1
-WINSCREEN_CONTENT_WIDTH_PERCENTAGE = 0.8
+WINSCREEN_CONTENT_WIDTH_PERCENTAGE = 1
 WINSCREEN_WINTEXT_Y_OFFSET = 0.1
 WINSCREEN_FONT_SIZE = (0.075, 0.075)
 WINSCREEN_WINTEXT_TEXT_OFFSET = (0, -0.025)
@@ -96,10 +98,9 @@ CPKR_INFO_WRAP_DEFAULT = 19
 CPKR_INFO_FONT_SIZE_DEFAULT = (0.075, 0.075)
 # Represented in a grid:
 CPKR_CLASSES_LIST = [
-[(Barbarian, "objects/characterClass/icons/BarbarianIcon.png"),
- (BaseClass, "objects/characterClass/icons/WizardIcon.png")],
-[(Barbarian, "objects/characterClass/icons/BarbarianIcon.png")]
-                    ]
+    [Barbarian, BaseClass],
+    [Barbarian],
+]
 CPKR_BUTTONCONTAINER_MARGIN = 0.1
 CPKR_BUTTONCONTAINER_WIDTH_PERCENTAGE = 0.7
 # --- ---
