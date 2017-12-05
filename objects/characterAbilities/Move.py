@@ -31,6 +31,7 @@ class Move (BaseAbility):
     baseEnergyCost = MOVEMENT_ENERGY_COST
     effect = MoveEffect
     actionID = ActionID.MOVE
+    actionIcon = "objects/characterAbilities/icons/MoveIcon.png"
 
     @staticmethod
     def getEnergyCost (**kwargs):

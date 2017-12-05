@@ -143,6 +143,14 @@ PARTY_NAME_FONT_SIZE = (0.05, 0.05)
 PARTY_NAME_FONT_OFFSET = (0, -0.075)
 # --- ---
 
+# --- (Ability Bar) ---
+ABILITYBAR_WIDTH_PERCENTAGE = 0.8
+ABILITYBAR_HEIGHT_PERCENTAGE = 0.25
+ABILITYBAR_ALPHA = 0.5
+ABILITYBAR_HOTKEY_SIZE = 0.25
+
+# --- ---
+
 # --- (Game Guide) ---
 GAMEGUIDE_TEXT = \
 """Welcome to Teapot Wars 2.

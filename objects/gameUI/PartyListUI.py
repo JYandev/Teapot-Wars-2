@@ -25,7 +25,8 @@ class PartyListUI ():
         self._frame = DirectFrame(pos=(cX, 0, cY),
                                 frameSize=(-containerWidth/2, containerWidth/2,
                                            -containerHeight, 0),
-                                frameColor=cColor)
+                                frameColor=cColor,
+                                suppressMouse=0)
 
     def updateInfo (self, info, myID):
         """
@@ -80,12 +81,14 @@ class PartyIcon ():
                            text_font=self._font,
                            text_scale=PARTY_NAME_FONT_SIZE,
                            text_pos=PARTY_NAME_FONT_OFFSET,
-                           text_align=TextNode.ACenter)
+                           text_align=TextNode.ACenter,
+                           suppressMouse=0)
         # Draw Icon:
         iconY = -nameSizeY
         iconSizeY = sizeY * PARTY_LIST_ICON_PARTITION
         self._icon = DirectFrame(parent=self._root, pos=(0, 0, iconY),
-                                 frameSize=(-sizeX/2, sizeX/2, -iconSizeY, 0))
+                                 frameSize=(-sizeX/2, sizeX/2, -iconSizeY, 0),
+                                 suppressMouse=0)
         # Draw HP Bar:
         healthY = -nameSizeY-iconSizeY
         healthSizeY = sizeY * PARTY_LIST_HEALTH_PARTITION
@@ -93,7 +96,7 @@ class PartyIcon ():
                              frameSize=(-sizeX/2, sizeX/2, -healthSizeY, 0),
                              frameColor=PARTY_LIST_HEALTH_BG_COLOR,
                              barColor=PARTY_LIST_HEALTH_FG_COLOR,
-                             range=1, value=0)
+                             range=1, value=0, suppressMouse=0)
 
     def _updateValues(self, info):
         """ Updates text or values depending on the info passed to this """

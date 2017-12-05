@@ -28,6 +28,7 @@ class BasicAttack (BaseAbility):
     baseEnergyCost = BASIC_ATTACK_ENERGY_COST
     effect = SingleTargetDamageEffect
     actionID = ActionID.BASIC_ATTACK
+    actionIcon = "objects/characterAbilities/icons/AttackIcon.png"
 
     @staticmethod
     def getEnergyCost (**kwargs):

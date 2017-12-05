@@ -4,6 +4,7 @@ from objects.characters.Teapot import Teapot
 from .InputSystem import InputSystem
 from objects.gameUI.BarUI import BarUI
 from objects.gameUI.RespawnScreen import RespawnScreen
+from objects.gameUI.AbilityBar import AbilityBar
 from objects.defaultConfig.Consts import *
 from direct.task import Task
 import time
@@ -17,6 +18,9 @@ class PlayerController ():
         self._gameManager = gameManager # Reference to gameManager for callbacks
         # Initialize this clients gameObject:
         self._character = Teapot(self, gameManager, cID, coords=initialPos)
+        # Assign class and stats:
+        self._charClass = charClass
+        self._character.setMaxEnergy(PLAYER_MAX_ENERGY)
         # Initialize Camera Input:
         self.cameraSystem = CameraSystem(target=self._character.getNodePath())
         # Initialize the player's Input and UI:
@@ -24,12 +28,10 @@ class PlayerController ():
         self._energyBar = BarUI(self._character.getNodePath(),
                                 ENERGY_BAR_OFFSET, 1,
                                 ENERGY_BAR_FG_COLOR, ENERGY_BAR_BG_COLOR)
+        self._abilityBar = AbilityBar(self._charClass)
         self._respawnScreen = None
         # Register object in the tileMap
         self._gameManager.getTileMap().spawnObject(self._character, initialPos)
-        # Assign class and stats:
-        self._charClass = charClass
-        self._character.setMaxEnergy(PLAYER_MAX_ENERGY)
 
         self._lastActionEndTime = 0 # Used for energy recharge delay
         self._energyRecharger = taskMgr.add(self._rechargeEnergyTask,
