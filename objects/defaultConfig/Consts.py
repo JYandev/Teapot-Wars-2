@@ -123,6 +123,12 @@ HEALTH_BAR_FG_COLOR = (0, 1, 0, 1)
 HEALTH_BAR_BG_COLOR = (1, 0, 0, 1)
 # --- ---
 
+# --- (Name Displays) ---
+NAME_DISPLAY_OFFSET = (0, 0, 1.5)
+NAME_DISPLAY_SCALE = 0.7
+NAME_DISPLAY_COLOR = (1, 1, 1, 1)
+# --- ---
+
 # --- (Party UI) ---
 PARTY_NAME_MAX = 15
 PARTY_LIST_WIDTH_PERCENTAGE = 0.25

@@ -3,6 +3,7 @@ from panda3d.core import LPoint3f
 from objects.defaultConfig.Consts import *
 from objects.gameUI.DamageText import DamageText
 from objects.gameUI.BarUI import BarUI
+from objects
 from direct.actor.Actor import Actor
 
 class Creature (GameObject):
@@ -26,12 +27,19 @@ class Creature (GameObject):
         # UI:
         self._healthBar = BarUI(self.getNodePath(), HEALTH_BAR_OFFSET, 1,
                                 HEALTH_BAR_FG_COLOR, HEALTH_BAR_BG_COLOR)
+        self._nameDisplay = None
         # Runtime-Local vars:
         self._actionQueue = []
         self._currentActionSequence = None
+        self._name = None
 
         # Held to drop on death:
         self._item = None # This is a integer enum (ItemType.???)
+
+    def setNameDisplay (self, name):
+        self._name = name # Store this incase we respawn!
+        self._nameDisplay = NameDisplay(self.getNodePath(), NAME_DISPLAY_OFFSET,
+                                        self._name)
 
     def takeDamage (self, damage):
         """
@@ -198,6 +206,7 @@ class Creature (GameObject):
         self.setEnergy(self.getMaxEnergy())
         self._healthBar = BarUI(self.getNodePath(), HEALTH_BAR_OFFSET, 1,
                                 HEALTH_BAR_FG_COLOR, HEALTH_BAR_BG_COLOR)
+        self.setNameDisplay(self._name)
 
     def deathSequence (self, amClient=False):
         """
@@ -212,6 +221,10 @@ class Creature (GameObject):
         # Remove floating health bar:
         self._healthBar.removeNode()
         self._healthBar = None
+        # Remove player name Text (if there is any)
+        if self._nameDisplay:
+            self._nameDisplay.destroy()
+            self._nameDisplay = None
         # Remove ourselves from the tileMap and sync death:
         self._gameManager.onCreatureDeath(self, amClient)
 

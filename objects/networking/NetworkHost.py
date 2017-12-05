@@ -255,6 +255,7 @@ class NetworkHost ():
             self._creatures[dataDict['objID']] = newChar
             self._gameManager.getTileMap().spawnObject(newChar, newPos)
             print("[Server Spawned %s]" % dataDict['objID'])
+            #TODO If we have a player info for this player, use their name for the displayName
         else:
             # Ignore Overwrite
             pass
