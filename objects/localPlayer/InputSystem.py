@@ -30,8 +30,17 @@ class InputSystem (DirectObject.DirectObject):
             activatedHotkey = 9 if key == '0' else int(key)-1
             classAbilities = self._plyrCtrl.getClassAbilities()
             if 0 <= activatedHotkey < len(classAbilities):
-                self._currentAbility = classAbilities[activatedHotkey]
-                self._activateTargeter()
+                self.activateAbility(activatedHotkey)
+
+    def activateAbility (self, abilityIndex):
+        """
+            Activates the targeter and sets the current ability to be used on
+             the next click!
+        """
+        classAbilities = self._plyrCtrl.getClassAbilities()
+        self._currentAbility = classAbilities[abilityIndex]
+        self._activateTargeter()
+        self._plyrCtrl.onAbilityActivated(abilityIndex)
 
     def _activateTargeter (self):
         """
@@ -65,8 +74,11 @@ class InputSystem (DirectObject.DirectObject):
         """
             Handler for mouse presses.
         """
+        # Do not do anything if we don't have control:
         if not self._controllable:
             return
+        # Make sure to deactivate any hotbar highlighted icons:
+        self._plyrCtrl.onAbilityUsed()
         if self._currentAbility:
             if self._currentAbility.targeterType == Targeter.SelfPath:
                 params = {'targetPos' : self._pointerSystem.getHovered(),

@@ -28,7 +28,7 @@ class PlayerController ():
         self._energyBar = BarUI(self._character.getNodePath(),
                                 ENERGY_BAR_OFFSET, 1,
                                 ENERGY_BAR_FG_COLOR, ENERGY_BAR_BG_COLOR)
-        self._abilityBar = AbilityBar(self._charClass)
+        self._abilityBar = AbilityBar(self)
         self._respawnScreen = None
         # Register object in the tileMap
         self._gameManager.getTileMap().spawnObject(self._character, initialPos)
@@ -36,6 +36,18 @@ class PlayerController ():
         self._lastActionEndTime = 0 # Used for energy recharge delay
         self._energyRecharger = taskMgr.add(self._rechargeEnergyTask,
                                             "Player Energy Recharger")
+
+    def activateAbility (self, abilityIndex):
+        """ Called by the AbilityBar on click. Tell the inputSystem to update"""
+        self.inputSystem.activateAbility(abilityIndex)
+
+    def onAbilityActivated (self, abilityIndex):
+        """ Highlight the activate ability in the AbilityBar """
+        self._abilityBar.onAbilityActivated(abilityIndex)
+
+    def onAbilityUsed (self):
+        """ Deselects the abilities in the AbilityBar """
+        self._abilityBar.deactivateAbilities()
 
     def updateEnergyBar (self):
         """

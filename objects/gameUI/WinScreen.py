@@ -26,8 +26,7 @@ class WinScreen ():
 
         contentHeight = WINSCREEN_CONTENT_HEIGHT_PERCENTAGE * winHeight
         contentWidth = WINSCREEN_CONTENT_WIDTH_PERCENTAGE * winWidth
-        winnerText = ("%s Has Obtained the Legendary Bag of Tea - Plus Three."\
-                "\nSubmit Now to Your New Ruler, Mortals!") % winnerData.cName
+        winnerText = WINSCREEN_MESSAGE % winnerData.cName
         self._winnerText = DirectLabel(parent=self._fadeFrame,
                                 pos=(0, 0, WINSCREEN_WINTEXT_Y_OFFSET),
                                 frameSize=(-contentWidth, contentWidth,
