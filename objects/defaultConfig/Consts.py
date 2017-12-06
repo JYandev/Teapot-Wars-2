@@ -125,6 +125,9 @@ NPKR_ENTRY_WIDTH_PERCENTAGE = 0.6 # How long compared to confirm button.
 NPKR_ENTRY_FONT_SIZE = (0.075, 0.075)
 NPKR_ENTRY_INITIAL_TEXT = "Enter Name"
 NPKR_ENTRY_FONT_OFFSET = (0, -0.03)
+NPKR_BUTTON_BORDER_WIDTH = (0.03, 0.03)
+NPKR_BUTTON_FONT_SIZE = (0.075, 0.075)
+NPKR_BUTTON_FONT_OFFSET = (0, -0.02)
 # --- ---
 
 # --- (Health and Energy Bars) ---

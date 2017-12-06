@@ -39,7 +39,8 @@ class ClassPicker ():
                             text_font=self._font,
                             text_scale=titleFontSize,
                             text_pos=CPKR_PIERCEROMAN_OFFSET_TC,
-                            text="Choose a Class!")
+                            text="Choose a Class!",
+                            frameTexture=IMG_GRADIENT_1)
 
         # Information Box:
         infoHeight = cFSizeY*CPKR_INFO_HEIGHT_RATIO
@@ -56,7 +57,8 @@ class ClassPicker ():
                            text_scale=CPKR_INFO_FONT_SIZE_DEFAULT,
                            text_pos=CPKR_PIERCEROMAN_OFFSET_TL,
                            text_wordwrap=CPKR_INFO_WRAP_DEFAULT,
-                           text="...adf asdf asd fasd fasd ...adf asdf asd fasd fasd...adf asdf asd fasd fasd...adf asdf asd fasd fasd...adf asdf asd fasd fasd")
+                           frameColor=(1,1,1,0.8),
+                           text="Please select a class above")
 
         # Class Radio Button Frame:
         bFColor = (0.25,0.25,0.25,0.5)

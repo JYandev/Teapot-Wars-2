@@ -24,7 +24,9 @@ class NamePicker ():
         cFCenterY = -winHeight/2 + frameHeight/2
         self._rootFrame = DirectFrame(pos=(0, 0, cFCenterY),
                                    frameSize=(-frameWidth/2, frameWidth/2,
-                                              -frameHeight/2, frameHeight/2))
+                                              -frameHeight/2, frameHeight/2),
+                                   frameTexture=IMG_GRADIENT_1)
+        self._rootFrame.setTransparency(TransparencyAttrib.MAlpha)
         # Draw Name Entry:
         entryWidth = self._rootFrame.getWidth() * NPKR_ENTRY_WIDTH_PERCENTAGE
         entryHeight = self._rootFrame.getHeight()
@@ -42,7 +44,8 @@ class NamePicker ():
                                       numLines=1,
                                       focusOutCommand=self._syncName,
                                       focusInCommand=self._checkPlaceholderText,
-                                      command=self._syncName)
+                                      command=self._syncName,
+                                      frameTexture=UI_WINDOW)
         # Draw Confirm Button:
         confirmWidth = self._rootFrame.getWidth()\
                             * (1-NPKR_ENTRY_WIDTH_PERCENTAGE)
@@ -52,7 +55,12 @@ class NamePicker ():
                                 pos=(confirmCX, 0, 0),
                                 frameSize=(-confirmWidth/2, confirmWidth/2,
                                            -confirmHeight/2, confirmHeight/2),
-                                command=self._onConfirmPressed)
+                                command=self._onConfirmPressed,
+                                text_font=self._font,
+                                text_scale=NPKR_BUTTON_FONT_SIZE,
+                                text_pos=NPKR_BUTTON_FONT_OFFSET,
+                                text="Create Character",
+                                borderWidth=NPKR_BUTTON_BORDER_WIDTH)
 
     def getName (self):
         return str(self._nameEntry.get())
