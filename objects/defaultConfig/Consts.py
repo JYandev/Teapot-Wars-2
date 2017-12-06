@@ -42,8 +42,8 @@ CLIENT_TIMEOUT = 3000 # 3 Seconds
 ACTION_NETWORKING_DICT = {Move.actionID:moveSync,
                           BasicAttack.actionID:singleTargetAttackSync}
 ITEM_ID_DICT = {ItemType.BagOfTeaPlusThree:BagOfTeaPlusThree}
-CLASSES_DICT = {Barbarian.classID:Barbarian,
-                BaseClass.classID:BaseClass}
+CLASSES_DICT = {Barbarian.classID:Barbarian, Thief.classID:Thief,
+                Wizard.classID:Wizard, BaseClass.classID:BaseClass}
 # === ===
 
 # === [User Interface] ===
@@ -104,8 +104,8 @@ CPKR_INFO_WRAP_DEFAULT = 19
 CPKR_INFO_FONT_SIZE_DEFAULT = (0.075, 0.075)
 # Represented in a grid:
 CPKR_CLASSES_LIST = [
-    [Barbarian, BaseClass],
-    [Barbarian],
+    [Barbarian, Thief],
+    [Wizard],
 ]
 CPKR_BUTTONCONTAINER_MARGIN = 0.1
 CPKR_BUTTONCONTAINER_WIDTH_PERCENTAGE = 0.7
