@@ -164,8 +164,8 @@ class JoinGameDialogue ():
             Read the user's inputs and tell the gameManager to create a client.
         """
         targetIP = str(self._ipAddressEntry.get())
-        userName = self._userNameEntry.get()
-        self._confirmHandler(targetIP, userName)
+        #userName = self._userNameEntry.get()
+        self._confirmHandler(targetIP)
 
     def close(self):
         """

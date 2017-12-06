@@ -100,7 +100,7 @@ class MainMenu ():
         """
         self._joinDialogue = JoinGameDialogue(self._onJoinGameDialogueConfirmed)
 
-    def _onJoinGameDialogueConfirmed (self, ipAddress, userName):
+    def _onJoinGameDialogueConfirmed (self, ipAddress):
         """
             Called when the join game dialogue is finished with confirm.
             Starts the gameManager's NetworkClient with the chosen parameters.
