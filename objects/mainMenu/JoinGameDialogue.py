@@ -52,6 +52,7 @@ class JoinGameDialogue ():
                                                titleWidth/2,
                                                -titleHeight/2,
                                                titleHeight/2),
+                                    frameTexture=IMG_GRADIENT_1,
                                     text_align=TextNode.ACenter,
                                     text_font=self._font,
                                     text_scale=titleFontSize,
@@ -73,7 +74,12 @@ class JoinGameDialogue ():
                                              buttonWidth/2,
                                              -buttonHeight/2,
                                              buttonHeight/2),
-                                  command=self.close)
+                                  command=self.close,
+                                  text="Back",
+                                  text_font=self._font,
+                                  text_scale=JOPTS_BUTON_FONT_SIZE,
+                                  text_pos=JOPTS_BUTON_FONT_OFFSET,
+                                  borderWidth=JOPTS_BUTTON_BORDER_WIDTH)
         # Draw Connect Button:
         connButton = DirectButton(parent=dialogueFrame,
                                   pos=(dFSizeX/2 + buttonWidth/2, 0,
@@ -82,7 +88,12 @@ class JoinGameDialogue ():
                                              buttonWidth/2,
                                              -buttonHeight/2,
                                              buttonHeight/2),
-                                  command=self._onConnectButton)
+                                  command=self._onConnectButton,
+                                  text_font=self._font,
+                                  text="Connect",
+                                  text_scale=JOPTS_BUTON_FONT_SIZE,
+                                  text_pos=JOPTS_BUTON_FONT_OFFSET,
+                                  borderWidth=JOPTS_BUTTON_BORDER_WIDTH)
         # Add parent elements to be deleted in self.close()
         self._elements.extend([blockingFrame, dialogueFrame])
 
@@ -96,17 +107,19 @@ class JoinGameDialogue ():
         ipFrame = DirectFrame(parent=dialogueFrame,
                               pos=(width/2, 0, -iTopMrgn - spacing),
                               frameSize=(-width/2, width/2, -height/2,
-                                         height/2))
-        nameFrame = DirectFrame(parent=dialogueFrame,
-                                pos=(width/2, 0, -iTopMrgn - spacing * 2),
-                                frameSize=(-width/2, width/2, -height/2,
-                                           height/2))
+                                         height/2),
+                              frameTexture=UI_WINDOW)
+        #nameFrame = DirectFrame(parent=dialogueFrame,
+        #                        pos=(width/2, 0, -iTopMrgn - spacing * 2),
+        #                        frameSize=(-width/2, width/2, -height/2,
+        #                                   height/2))
         # Create the UI:
         ctrlWidth = ipFrame.getWidth()*(1/3)
         ctrlFontSize = (0.15, 0.15)
         self._ipAddressEntry = DirectEntry(parent=ipFrame,
                                pos=(ctrlWidth/2-ctrlWidth*1, 0, 0),
                                frameSize=(0, ctrlWidth*2, -height/2, height/2),
+                               frameColor=(0,0,0,0),
                                text_font=self._font,
                                text_scale=ctrlFontSize,
                                text_pos=PIERCEROMAN_OFFSET_MC,
@@ -122,9 +135,9 @@ class JoinGameDialogue ():
                               text_font=self._font,
                               text_scale=ctrlFontSize,
                               text_pos=PIERCEROMAN_OFFSET_MC,
-                              frameColor=(0.25,0.5,0.5,1))
+                              frameTexture=(IMG_GRADIENT_1))
 
-        self._userNameEntry = DirectEntry(parent=nameFrame,
+        """self._userNameEntry = DirectEntry(parent=nameFrame,
                               pos=(ctrlWidth/2-ctrlWidth*1, 0, 0),
                               frameSize=(0, ctrlWidth*2, -height/2, height/2),
                               text_font=self._font,
@@ -132,7 +145,8 @@ class JoinGameDialogue ():
                               text_pos=PIERCEROMAN_OFFSET_MC,
                               width=8,
                               cursorKeys=1,
-                              numLines=1)
+                              numLines=1)"""
+        """
         nmLabel = DirectLabel(parent=nameFrame,
                               pos=(ctrlWidth-ctrlWidth*2, 0, 0),
                               frameSize=(-ctrlWidth/2, ctrlWidth/2, -height/2,
@@ -141,7 +155,8 @@ class JoinGameDialogue ():
                               text_font=self._font,
                               text_scale=(0.12, 0.12),
                               text_pos=PIERCEROMAN_OFFSET_MC,
-                              frameColor=(0.25,0.5,0.5,1))
+                              frameColor=(0.25,0.5,0.5,1))"""
+        #TODO Change above to a server-password system
 
     def _onConnectButton (self):
         """
