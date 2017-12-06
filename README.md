@@ -5,6 +5,7 @@ Note: the instructions below are for development only. If you are looking just t
 
 ## Prerequisites:
 - Python 3.6 with pip (I used Miniconda and conda env).
+- Git
 
 ## Getting it Running:
 First, open a command prompt.
