@@ -15,6 +15,7 @@ from objects.item.BagOfTeaPlusThree import BagOfTeaPlusThree
 from objects.item.ItemType import ItemType
 import random
 from objects.defaultConfig.Consts import *
+from objects.musicSystem.MusicSystem import MusicSystem
 
 class GameManager ():
     """
@@ -32,6 +33,7 @@ class GameManager ():
         self._partyList = None
         self._winScreen = None
         self._hostPlayerCID = None
+        self._musicSystem = MusicSystem()
 
     def startMainMenu (self):
         """ Draws the main menu """
