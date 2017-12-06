@@ -72,6 +72,11 @@ class EnemyController ():
         task.delayTime = self.getRandomTickDelay()
         return task.again
 
+    def deactivateAI (self):
+        """ Called at the end of the game to tell the AI to stop acting. """
+        if self._aiTickTask:
+            taskMgr.remove(self._aiTickTask)
+
     def _considerMove (self, chase):
         """
             Considers a move action and decides based on energy and other

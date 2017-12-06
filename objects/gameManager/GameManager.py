@@ -34,6 +34,7 @@ class GameManager ():
         self._winScreen = None
         self._hostPlayerCID = None
         self._musicSystem = MusicSystem()
+        self._hostedEnemies = list()
 
     def startMainMenu (self):
         """ Draws the main menu """
@@ -155,9 +156,14 @@ class GameManager ():
             cID = self._networkHost.registerNewCID()
             newEnemy = EnemyController(self, cID, newSpawnPosition)
             enemies.append(newEnemy.getCharacter())
+            # Add these enemies to a list so that we can deactivate them later:
+            self._hostedEnemies.append(newEnemy)
+            # Sync their spawns:
             self._networkHost.spawnGameObject(newEnemy.getCharacter())
         # One random enemy holds the legendary bag of tea plus three:
         #chosenEnemy = enemies[random.randint(0, len(enemies)-1)]
+
+        # TODO Remove once TP3 is over: (simply makes all enemies hold item)
         for chosenEnemy in enemies:
             chosenEnemy.assignItem(ItemType.BagOfTeaPlusThree)
 
@@ -209,7 +215,10 @@ class GameManager ():
             Also performs cleanup of the game elements.
         """
         self._winScreen = WinScreen(self, winnerData)
-        # TODO: Stop game from functioning, perhaps start the dungeon tour cam again.
+        # If we are host, tell the AI creatures to stop acting:
+        if self.isHost():
+            for enemy in self._hostedEnemies:
+                enemy.deactivateAI()
 
     def respawnLocalPlayer (self, creature):
         """
