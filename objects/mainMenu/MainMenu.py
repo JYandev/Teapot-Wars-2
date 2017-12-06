@@ -6,9 +6,6 @@ import sys
 from objects.mainMenu.JoinGameDialogue import JoinGameDialogue
 from .GameGuide import GameGuide
 
-TITLE_SCREEN_BACKGROUND_PATH = "objects/mainMenu/TitleScreen.png"
-TITLE_SCREEN_CONTAINER_PATH = "objects/mainMenu/TitleScreenContainer.png"
-
 class MainMenu ():
     """
         Handles all main menu functionality including drawing and starting the
@@ -40,6 +37,13 @@ class MainMenu ():
                                       frameTexture=TITLE_SCREEN_CONTAINER_PATH)
         buttonContainer.setTransparency(TransparencyAttrib.MAlpha)
         buttonContainer.setColor(0.5,1,0.5,1) # TODO Set this to favorite color
+        # Draw Title:
+        titleSize = winHeight-bCSizeY-TITLE_MARGIN*2
+        title = DirectFrame(parent=backgroundFrame,
+                            pos=(bCStartX, 0, -TITLE_MARGIN),
+                            frameSize=(0, bCSizeX, -titleSize, 0),
+                            frameTexture=TITLE_PATH)
+        title.setTransparency(TransparencyAttrib.MAlpha)
 
         buttons = [
             ("Host Game", self._onButtonHostGame),
@@ -69,7 +73,8 @@ class MainMenu ():
                                       text_fg=textColor,
                                       text_pos=PIERCEROMAN_OFFSET_MC,
                                       text_align=TextNode.ACenter,
-                                      command=button[1])
+                                      command=button[1],
+                                      frameTexture=IMG_GRADIENT_1)
             index += 1
         self._elements.extend([backgroundFrame])
 

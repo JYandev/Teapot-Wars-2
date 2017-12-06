@@ -49,7 +49,8 @@ class GameGuide ():
                                    text_scale=GAMEGUIDE_FONT_SIZE,
                                    text_font=self._font,
                                    text_pos=GAMEGUIDE_CLOSE_BUTTON_TEXT_OFFSET,
-                                   command=self.close)
+                                   command=self.close,
+                                   borderWidth=GAMEGUIDE_BUTTON_BORDER_WIDTH)
 
     def close(self):
         self._root.destroy()

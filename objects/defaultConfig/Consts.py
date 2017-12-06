@@ -108,6 +108,13 @@ CPKR_BUTTONCONTAINER_MARGIN = 0.1
 CPKR_BUTTONCONTAINER_WIDTH_PERCENTAGE = 0.7
 # --- ---
 
+# --- (Main Menu) ---
+TITLE_SCREEN_BACKGROUND_PATH = "objects/mainMenu/TitleScreen.png"
+TITLE_SCREEN_CONTAINER_PATH = "objects/mainMenu/TitleScreenContainer.png"
+TITLE_PATH = "objects/mainMenu/Title.png"
+TITLE_MARGIN = 0.1
+# --- ---
+
 # --- (Name Picker) ---
 NPKR_WIDTH_PERCENTAGE = 0.5 # In terms of screen width
 NPKR_HEIGHT_PERCENTAGE = 0.1 # In terms of screen height
@@ -182,6 +189,7 @@ GAMEGUIDE_CLOSE_BUTTON_OFFSET = (0, -0.7)
 GAMEGUIDE_CLOSE_BUTTON_SIZE_X = 0.6
 GAMEGUIDE_CLOSE_BUTTON_SIZE_Y = 0.1
 GAMEGUIDE_CLOSE_BUTTON_TEXT_OFFSET = (0, -0.02)
+GAMEGUIDE_BUTTON_BORDER_WIDTH = (0.03, 0.03)
 # --- ---
 
 #=== ===
