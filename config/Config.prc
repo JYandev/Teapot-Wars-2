@@ -18,4 +18,4 @@ tcp-header-size 4
 
 # --- [Debug Config] ---
 #TODO REMOVE ALL
-direct-gui-edit True
+direct-gui-edit False
