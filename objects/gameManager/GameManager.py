@@ -1,3 +1,16 @@
+"""
+    GameManager is first object instantiated after all of the Panda3D setup
+     finishes in main.py
+    GameManager controls the high-level state of the game, from the main menu,
+     all the way through the game until the win-state. It also bridges the
+     connection from local player to the server.
+    Code is split into 3 main sections for readability:
+    - High-level Flow
+    - Local Client to Networking Bridge (Player did something, Server needs to
+       be notified)
+    - Networking to Local Client Bridge (Server did something, our Local Client
+       needs to update)
+"""
 from objects.localPlayer.PlayerController import PlayerController
 from objects.tileMap.TileMap import TileMap, convertDungeonFromString
 from panda3d.core import Point2D
@@ -36,17 +49,11 @@ class GameManager ():
         self._musicSystem = MusicSystem()
         self._hostedEnemies = list()
 
+    # === High-level Flow ===
     def startMainMenu (self):
         """ Draws the main menu """
         self._mainMenu = MainMenu(self)
         self._mainMenu.draw()
-
-    def getTileMap (self):
-        return self._tileMap
-
-    def isHost (self):
-        """ Returns whether we are hosting or remote """
-        return self._networkHost != None
 
     def startHostGame (self):
         """
@@ -65,33 +72,9 @@ class GameManager ():
         self._networkClient = NetworkClient(self)
         self._networkClient.startClient(ipAddress)
 
-    def createPlayer (self, playerInfo):
-        """
-            Called at the end of the class selection menu sequence.
-            Create a new player and remove the tileOrbiterCam and classSelection
-             UI.
-        """
-        # Destroy menu stuff and tour camera:
-        self._tilemapOrbiterCam.destroy()
-        self._classSelectionMenu.close()
-        # Pick a random spawn point:
-        newSpawnPosition = self._tileMap.getRandomEmptyFloor()
-        # Get an ID for this new character:
-        if self._networkHost:
-            cID = self._networkHost.getMyCID()
-        else:
-            cID = self._networkClient.getCID()
+    # === ===
 
-        newClass = CLASSES_DICT[playerInfo.cClass]
-        self._localPlayer = PlayerController(self, cID, newSpawnPosition,
-                                             newClass)
-        if self._networkHost:
-            self._networkHost.spawnGameObject(self._localPlayer.getCharacter())
-        else:
-            self._networkClient.spawnGameObject(self._localPlayer\
-                                                    .getCharacter())
-
-    # === Networking Interface ===
+    # === Local Client to Networking Bridge ===
     def onLocalPlayerAction (self, cID, actionID, **kwargs):
         """
             Tell our client/host to update the network with information on the
@@ -102,6 +85,64 @@ class GameManager ():
         else:
             self._networkClient.syncAction(actionID, **kwargs)
 
+    def onCreatureDeath (self, creature, amClient):
+        """
+            Called on the host when a creature's HP drops to or below zero.
+            Called on the client when a creature dies on the host and a message
+             is received.
+            Removes the creature from the tileMap, and, in the hosts case,
+             notifies all clients.
+        """
+        self._tileMap.despawnCreature(creature)
+        if not amClient:
+            if creature.getItem() != None:
+                # Drop item and sync!
+                self._networkHost.dropItem(creature.getItem(),
+                                           creature.getGridPosition())
+            self._networkHost.onCreatureDeath(creature)
+
+    def onCreatureHealthChanged (self, creature):
+        """
+            Called after the host player updates damage on a creature.
+            Sync the health change to all other clients!
+        """
+        if self.isHost():
+            self._networkHost.syncHealthChange(creature.getCID(),
+                                               creature.getHealth())
+
+    def updateLocalInfoAndSync (self, info):
+        """
+            Syncs the local player's info with the server and other
+             networkClients.
+        """
+        if self._networkHost:
+            self._networkHost.updateLocalPlayerInfo(info)
+        elif self._networkClient:
+            self._networkClient.updateLocalPlayerInfo(info)
+
+    def localPlayerWinStateAchieved (self):
+        if self.isHost():
+            self._networkHost.localPlayerWins()
+        else:
+            self._networkClient.localPlayerWins()
+
+    def respawnLocalPlayer (self, creature):
+        """
+            Called when the host or client respawn's their character.
+            Tell the rest of the connected players that we've respawned and
+             update the tilemap accordingly if we are the host.
+            Just updates the tilemap if we are only clients.
+        """
+        if self._networkHost:
+            # Pick a random spawn location:
+            newLocation = self._tileMap.getRandomEmptyFloor()
+            # Tell host to sync spawn there:
+            self._networkHost.onLocalPlayerRespawn(creature, newLocation)
+        else:
+            self._networkClient.sendPlayerRespawnRequest()
+    # === ===
+
+    # === Networking to Local Client Bridge ===
     def onLocalClientJoinedParty (self, myID):
         """ Start the Class Selection screen and sets up camera view """
         self._mainMenu.close()
@@ -146,6 +187,45 @@ class GameManager ():
         # Create the enemies:
         self._createGameEnemies()
 
+    def onWinStateAchieved (self, winnerData):
+        """
+            Displays the game over GUI and displays a winner.
+            Also performs cleanup of the game elements.
+        """
+        self._winScreen = WinScreen(self, winnerData)
+        # If we are host, tell the AI creatures to stop acting:
+        if self.isHost():
+            for enemy in self._hostedEnemies:
+                enemy.deactivateAI()
+    # === ===
+
+    # === Game Helpers ===
+    def createPlayer (self, playerInfo):
+        """
+            Called at the end of the class selection menu sequence.
+            Create a new player and remove the tileOrbiterCam and classSelection
+             UI.
+        """
+        # Destroy menu stuff and tour camera:
+        self._tilemapOrbiterCam.destroy()
+        self._classSelectionMenu.close()
+        # Pick a random spawn point:
+        newSpawnPosition = self._tileMap.getRandomEmptyFloor()
+        # Get an ID for this new character:
+        if self._networkHost:
+            cID = self._networkHost.getMyCID()
+        else:
+            cID = self._networkClient.getCID()
+
+        newClass = CLASSES_DICT[playerInfo.cClass]
+        self._localPlayer = PlayerController(self, cID, newSpawnPosition,
+                                             newClass)
+        if self._networkHost:
+            self._networkHost.spawnGameObject(self._localPlayer.getCharacter())
+        else:
+            self._networkClient.spawnGameObject(self._localPlayer\
+                                                    .getCharacter())
+
     def _createGameEnemies (self):
         """
             Creates a bunch of enemies and assigns one to be the key holder.
@@ -166,72 +246,13 @@ class GameManager ():
         # TODO Remove once TP3 is over: (simply makes all enemies hold item)
         for chosenEnemy in enemies:
             chosenEnemy.assignItem(ItemType.BagOfTeaPlusThree)
+    # === ===
 
-    def updateLocalInfoAndSync (self, info):
-        """
-            Syncs the local player's info with the server and other
-             networkClients.
-        """
-        if self._networkHost:
-            self._networkHost.updateLocalPlayerInfo(info)
-        elif self._networkClient:
-            self._networkClient.updateLocalPlayerInfo(info)
+    # === Get/Set ===
+    def getTileMap (self):
+        return self._tileMap
 
-    def onCreatureDeath (self, creature, amClient):
-        """
-            Called on the host when a creature's HP drops to or below zero.
-            Called on the client when a creature dies on the host and a message
-             is received.
-            Removes the creature from the tileMap, and, in the hosts case,
-             notifies all clients.
-        """
-        self._tileMap.despawnCreature(creature)
-        if not amClient:
-            if creature.getItem() != None:
-                # Drop item and sync!
-                self._networkHost.dropItem(creature.getItem(),
-                                           creature.getGridPosition())
-            self._networkHost.onCreatureDeath(creature)
-
-    def onCreatureHealthChanged (self, creature):
-        """
-            Called after the host player updates damage on a creature.
-            Sync the health change to all other clients!
-        """
-        if self.isHost():
-            self._networkHost.syncHealthChange(creature.getCID(),
-                                               creature.getHealth())
-
-    def localPlayerWinStateAchieved (self):
-        print ("LOCAL PLAYER HAS WON!")
-        if self.isHost():
-            self._networkHost.localPlayerWins()
-        else:
-            self._networkClient.localPlayerWins()
-
-    def onWinStateAchieved (self, winnerData):
-        """
-            Displays the game over GUI and displays a winner.
-            Also performs cleanup of the game elements.
-        """
-        self._winScreen = WinScreen(self, winnerData)
-        # If we are host, tell the AI creatures to stop acting:
-        if self.isHost():
-            for enemy in self._hostedEnemies:
-                enemy.deactivateAI()
-
-    def respawnLocalPlayer (self, creature):
-        """
-            Called when the host or client respawn's their character.
-            Tell the rest of the connected players that we've respawned and
-             update the tilemap accordingly if we are the host.
-            Just updates the tilemap if we are only clients.
-        """
-        if self._networkHost:
-            # Pick a random spawn location:
-            newLocation = self._tileMap.getRandomEmptyFloor()
-            # Tell host to sync spawn there:
-            self._networkHost.onLocalPlayerRespawn(creature, newLocation)
-        else:
-            self._networkClient.sendPlayerRespawnRequest()
+    def isHost (self):
+        """ Returns whether we are hosting or remote """
+        return self._networkHost != None
     # === ===
